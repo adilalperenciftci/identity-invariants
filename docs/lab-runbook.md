@@ -79,4 +79,27 @@ A migration Start explicitly targeted at `ID-RODC01` produced a local state `1`,
 
 Events 307, 308, and 309 are present in the local provider metadata. They were not emitted after direct service logon, local-system ticket refresh, or Service Control Manager attempts in states `1` and `2`. Record this result as inconclusive and retain the empty event window alongside the directory snapshots. Never infer an event from the directory transition.
 
+## PAC issuance observations
+
+Capture Kerberos traffic on the adapter that owns `172.28.30.20`. On `ID-SRV01` this is `Ethernet`, backed by the `Microsoft Hyper-V Network Adapter`. `Ethernet 3` is the Npcap loopback adapter with a link-local address and must not be selected by ordinal position. Require one exact interface-name match before starting `dumpcap`.
+
+Use only the lab-owned `pac-client` and `pac-service` accounts and the `HTTP/pac-service.idlab.test` SPN. Generate the transient service keytab with `ktpass +rndPass`; do not place a password in a command argument, file, or evidence record. Pre-populate both account secrets on `ID-RODC01`, then prove the revealed-account state before requesting a ticket. `klist add_bind` requires an elevated local token on this build, so the member-side request harness temporarily uses an elevated scheduled task. This elevation changes only the member token; the domain principal and domain group graph remain unchanged. Exact checkpoint restore is mandatory after the run.
+
+The bounded final service-ticket run produced these observations; account key versions are run metadata and can increase after another lab password rotation:
+
+| Field | RWDC | RODC |
+| --- | --- | --- |
+| KDC source | `172.28.30.10` | `172.28.30.11` |
+| Service ticket key version | `16` | `16` |
+| KDC key version | `2` | `1` |
+| RODC identifier | absent | `4543` |
+| PAC buffer types | `1,6,7,10,12,16,19` | `1,6,7,10,12,16,19` |
+| Signature roles | server, KDC, ticket, extended KDC | server, KDC, ticket, extended KDC |
+
+The RODC TGT metadata used composite key version `297730049`, equal to `4543 << 16 | 1`. Do not derive an RODC identifier from the service-ticket key version: the service ticket remains encrypted with the service account key, while the RODC identifier belongs to KDC key and PAC signature metadata. RODC KDC, ticket, and extended-KDC signature buffers carried the additional two-byte identifier; the server signature did not.
+
+`PAC_ATTRIBUTES_INFO` and `PAC_REQUESTOR` were absent from both decoded service tickets after same-domain domain-local membership processing. This is a direct TGS observation, not proof of the encrypted TGT payload. Preserve requestor binding at that boundary as inconclusive unless a separately authorized TGT decoding method supplies bounded evidence. Do not infer TGT buffer presence from the service ticket alone.
+
+Pass only the exact type-128 authdata region to the bounded PAC parser. Persist frame number, exact KDC address, key versions, buffer metadata, field-specific signature digests, and capture/PAC SHA-256 values. Delete raw JSON input in a `finally` block, then delete the keytab and packet captures before restoring the VMs. The sealed Task 8 ledger contains two normalized records and has SHA-256 `3d1bda6af895f7de22eeaa5f6df5707c60d9ee6a631b507c226a309845707ffe`.
+
 Every evidence run must contain only normalized graph fields, event IDs/counts, stable reason codes, and SHA-256 artifact digests. Seal `evidence.jsonl` with `manifest.json`, validate the manifest in the Ubuntu VM, and restore the exact baseline checkpoints after the final case.
