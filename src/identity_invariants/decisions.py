@@ -53,6 +53,29 @@ class ReasonCode(StrEnum):
     RIGHTS_NOT_ALLOWED = "rights_not_allowed"
     SUBJECT_REJECTED = "subject_rejected"
     ACTOR_REJECTED = "actor_rejected"
+    TENANT_CONTEXT_MISSING = "tenant_context_missing"
+    TENANT_CONTEXT_NOT_ALLOWED = "tenant_context_not_allowed"
+    DISPOSABLE_APPLICATION_MISSING = "disposable_application_missing"
+    AUTHORITY_HOST_NOT_ALLOWED = "authority_host_not_allowed"
+    FIC_IDENTIFIER_MISSING = "fic_identifier_missing"
+    DIRECTORY_ROLE_NOT_MINIMAL = "directory_role_not_minimal"
+    REDACTION_PROBE_FAILED = "redaction_probe_failed"
+    REQUEST_CEILING_INVALID = "request_ceiling_invalid"
+    RUN_LABEL_MISSING = "run_label_missing"
+    REQUEST_CEILING_REACHED = "request_ceiling_reached"
+    OBSERVATION_RECORDED = "observation_recorded"
+    RESPONSE_INVALID = "response_invalid"
+    TRANSPORT_FAILED = "transport_failed"
+    SERVER_2025_RWDC_MISSING = "server_2025_rwdc_missing"
+    CLOUD_KERBEROS_OBJECT_MISSING = "cloud_kerberos_object_missing"
+    PASSWORD_REPLICATION_POLICY_UNVERIFIED = (
+        "password_replication_policy_unverified"
+    )
+    CLOUD_TRUST_POLICY_UNVERIFIED = "cloud_trust_policy_unverified"
+    CERTIFICATE_TRUST_PRECEDENCE = "certificate_trust_precedence"
+    WINDOWS_11_CLIENT_MISSING = "windows_11_client_missing"
+    LINE_OF_SIGHT_MISSING = "line_of_sight_missing"
+    PARTIAL_TGT_MISSING = "partial_tgt_missing"
 
 
 @dataclass(frozen=True, slots=True)
