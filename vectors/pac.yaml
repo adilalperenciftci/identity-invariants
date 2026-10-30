@@ -1,0 +1,14 @@
+profile: ms-pac-bounded-parser
+cases:
+  - id: aligned-contained-unknown-buffer
+    fixture: minimal-unknown.bin
+    expected: accept
+  - id: misaligned-offset
+    mutation: offset-modulo-eight
+    expected: reject
+  - id: bounded-region-overflow
+    mutation: offset-plus-size-outside-container
+    expected: reject
+  - id: rodc-context-explicit
+    mutation: signature-layout-selected-by-issuance-context
+    expected: observe
