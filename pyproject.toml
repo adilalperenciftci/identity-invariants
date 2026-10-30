@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=75", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "identity-invariants"
+version = "0.1.0"
+description = "Deterministic verification of Microsoft identity protocol invariants"
+requires-python = ">=3.12"
+dependencies = [
+  "cryptography>=43,<46",
+  "jsonschema>=4.23,<5",
+  "PyJWT>=2.10,<3",
+  "PyYAML>=6.0,<7",
+]
+
+[project.optional-dependencies]
+dev = [
+  "hypothesis>=6.124,<7",
+  "pytest>=8.3,<10",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+addopts = "--strict-config --strict-markers"
+pythonpath = ["src"]
+testpaths = ["tests"]

@@ -1,0 +1,49 @@
+sources:
+  RFC7523:
+    title: JSON Web Token Profile for OAuth 2.0 Client Authentication and Authorization Grants
+    revision: RFC 7523, May 2015
+    primary_url: https://datatracker.ietf.org/doc/html/rfc7523
+  RFC8693:
+    title: OAuth 2.0 Token Exchange
+    revision: RFC 8693, January 2020
+    primary_url: https://datatracker.ietf.org/doc/html/rfc8693
+  OIDC-CORE:
+    title: OpenID Connect Core 1.0 incorporating errata set 2
+    revision: OpenID Connect Core 1.0, errata set 2
+    primary_url: https://openid.net/specs/openid-connect-core-1_0.html
+  ENTRA-FIC:
+    title: Microsoft Graph federated identity credential overview
+    revision: Microsoft Graph REST API v1.0
+    primary_url: https://learn.microsoft.com/en-us/graph/api/resources/federatedidentitycredentials-overview?view=graph-rest-1.0
+  ENTRA-CLIENT-CREDENTIALS:
+    title: Microsoft identity platform OAuth 2.0 client credentials flow
+    revision: Microsoft identity platform v2.0 endpoint
+    primary_url: https://learn.microsoft.com/en-us/entra/identity-platform/v2-oauth2-client-creds-grant-flow
+  ENTRA-FLEX-FIC:
+    title: Flexible federated identity credentials
+    revision: Microsoft Entra workload identities public preview
+    primary_url: https://learn.microsoft.com/en-us/entra/workload-id/workload-identities-flexible-federated-identity-credentials
+  WHFB-AUTH:
+    title: Windows Hello for Business authentication
+    revision: Windows Server 2025 documentation
+    primary_url: https://learn.microsoft.com/en-us/windows/security/identity-protection/hello-for-business/how-it-works-authentication
+  WHFB-CLOUD-TRUST:
+    title: Hybrid cloud Kerberos trust deployment
+    revision: Windows Server 2025 documentation
+    primary_url: https://learn.microsoft.com/en-us/windows/security/identity-protection/hello-for-business/deploy/hybrid-cloud-kerberos-trust
+  MS-PAC:
+    title: Privilege Attribute Certificate Data Structure
+    revision: MS-PAC Open Specifications current revision, accessed 2026-10-30
+    primary_url: https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-pac/
+  MS-KILE:
+    title: Kerberos Protocol Extensions
+    revision: MS-KILE Open Specifications current revision, accessed 2026-10-30
+    primary_url: https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-kile/
+  DMSA-OVERVIEW:
+    title: Delegated Managed Service Accounts overview
+    revision: Windows Server 2025 documentation
+    primary_url: https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/delegated-managed-service-accounts/delegated-managed-service-accounts-overview
+  DMSA-SETUP:
+    title: Set up delegated Managed Service Accounts
+    revision: Windows Server 2025 documentation
+    primary_url: https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/delegated-managed-service-accounts/delegated-managed-service-accounts-set-up-dmsa

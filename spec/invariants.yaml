@@ -1,0 +1,302 @@
+invariants:
+  - id: WIF-TRANSPORT-001
+    source: ENTRA-CLIENT-CREDENTIALS
+    section: Protocol diagram and access token request
+    summary: Entra workload federation uses client credentials with a JWT bearer client assertion and one resource default scope.
+    evidence_class: spec-oracle
+    positive_cases: [wif-client-credentials-jwt-bearer]
+    negative_cases: [wif-token-exchange-shape, wif-multiple-resource-scopes]
+    observe_cases: []
+  - id: WIF-TYPE-001
+    source: RFC7523
+    section: "3"
+    summary: Issuer and subject are strings, temporal claims are NumericDate numbers, and audience is interpreted without scalar coercion.
+    evidence_class: spec-oracle
+    positive_cases: [wif-typed-claims]
+    negative_cases: [wif-boolean-time, wif-object-subject, wif-array-issuer]
+    observe_cases: []
+  - id: WIF-MATCH-001
+    source: ENTRA-FIC
+    section: issuer subject and audiences properties
+    summary: Standard federated credential issuer, subject, and audience comparisons are exact and case-sensitive.
+    evidence_class: spec-oracle
+    positive_cases: [wif-exact-tuple-match]
+    negative_cases: [wif-case-change, wif-trailing-slash, wif-unicode-normalization, wif-whitespace]
+    observe_cases: []
+  - id: WIF-BIND-001
+    source: ENTRA-FIC
+    section: federatedIdentityCredential resource
+    summary: Credential selection remains bound to tenant, application object, client ID, credential, issuer, subject matcher, and audience.
+    evidence_class: spec-oracle
+    positive_cases: [wif-bound-application-context]
+    negative_cases: [wif-cross-tenant-context, wif-cross-application-context]
+    observe_cases: []
+  - id: WIF-TIME-001
+    source: RFC7523
+    section: "3.1 and 3.2"
+    summary: Expiration is required and all temporal decisions use one injected clock with explicit skew.
+    evidence_class: spec-oracle
+    positive_cases: [wif-valid-temporal-window]
+    negative_cases: [wif-missing-expiration, wif-expired, wif-not-yet-valid, wif-future-issued-at]
+    observe_cases: []
+  - id: WIF-REPLAY-001
+    source: RFC7523
+    section: "3"
+    summary: Repeated JWT IDs are observations unless the selected profile explicitly defines one-time use.
+    evidence_class: spec-oracle
+    positive_cases: [wif-first-jti-use]
+    negative_cases: []
+    observe_cases: [wif-repeated-jti-profile-observation]
+  - id: WIF-FLEX-001
+    source: ENTRA-FLEX-FIC
+    section: Flexible federated identity credential configuration
+    summary: A flexible credential uses either subject or a supported claim expression and retains its immutable platform-claim binding.
+    evidence_class: spec-oracle
+    positive_cases: [wif-flex-supported-expression]
+    negative_cases: [wif-flex-subject-and-expression, wif-flex-mutable-anchor, wif-flex-unsupported-expression]
+    observe_cases: []
+  - id: WIF-KEY-001
+    source: RFC7523
+    section: "3.1 and 3.2"
+    summary: Algorithm and trusted issuer key validation complete before claim-based credential selection.
+    evidence_class: spec-oracle
+    positive_cases: [wif-allowed-algorithm-known-key]
+    negative_cases: [wif-disallowed-algorithm, wif-unknown-key, wif-expired-key]
+    observe_cases: []
+
+  - id: STS-REQ-001
+    source: RFC8693
+    section: "2.1"
+    summary: Grant type, subject token, and subject token type are required and type-consistent.
+    evidence_class: spec-oracle
+    positive_cases: [sts-complete-request]
+    negative_cases: [sts-missing-grant-type, sts-missing-subject-token, sts-missing-subject-token-type]
+    observe_cases: []
+  - id: STS-ACTOR-001
+    source: RFC8693
+    section: "2.1"
+    summary: Actor token and actor token type occur together while subject and actor identities remain distinct.
+    evidence_class: spec-oracle
+    positive_cases: [sts-subject-with-actor]
+    negative_cases: [sts-actor-without-type, sts-type-without-actor, sts-collapsed-subject-actor]
+    observe_cases: []
+  - id: STS-TARGET-001
+    source: RFC8693
+    section: "2.1"
+    summary: Resource indicators are absolute fragment-free URIs and audience identifiers remain unambiguous.
+    evidence_class: spec-oracle
+    positive_cases: [sts-absolute-resource]
+    negative_cases: [sts-relative-resource, sts-resource-fragment, sts-ambiguous-audience]
+    observe_cases: []
+  - id: STS-RIGHTS-001
+    source: RFC8693
+    section: "2.1"
+    summary: Requested rights preserve the full scope and target product without silently dropping a target.
+    evidence_class: spec-oracle
+    positive_cases: [sts-authorized-rights-product]
+    negative_cases: [sts-unauthorized-rights-product, sts-silent-target-drop]
+    observe_cases: []
+  - id: STS-LIFETIME-001
+    source: RFC8693
+    section: "2.1 and 2.2"
+    summary: Exchange does not consume or tightly link the input token unless the selected token profile says otherwise.
+    evidence_class: spec-oracle
+    positive_cases: [sts-independent-output-lifetime]
+    negative_cases: []
+    observe_cases: [sts-profile-lifetime-coupling]
+
+  - id: OIDC-ISS-001
+    source: OIDC-CORE
+    section: "3.1.3.7"
+    summary: The ID token issuer exactly matches the discovered issuer identifier.
+    evidence_class: spec-oracle
+    positive_cases: [oidc-exact-issuer]
+    negative_cases: [oidc-issuer-case-change, oidc-issuer-trailing-slash]
+    observe_cases: []
+  - id: OIDC-AUD-001
+    source: OIDC-CORE
+    section: "3.1.3.7"
+    summary: The audience includes the registered client and contains no untrusted additional audience.
+    evidence_class: spec-oracle
+    positive_cases: [oidc-single-client-audience, oidc-trusted-multiple-audience]
+    negative_cases: [oidc-client-absent, oidc-untrusted-additional-audience]
+    observe_cases: []
+  - id: OIDC-NONCE-001
+    source: OIDC-CORE
+    section: "3.1.2.1 and 3.1.3.7"
+    summary: A sent nonce must match and is consumed once by the local bounded replay policy.
+    evidence_class: spec-oracle
+    positive_cases: [oidc-matching-fresh-nonce]
+    negative_cases: [oidc-missing-nonce, oidc-mismatched-nonce, oidc-reused-nonce]
+    observe_cases: []
+  - id: OIDC-TIME-001
+    source: OIDC-CORE
+    section: "2 and 3.1.3.7"
+    summary: Expiration, issued-at, authentication time, and nonce retention share one injected clock and explicit skew.
+    evidence_class: spec-oracle
+    positive_cases: [oidc-valid-temporal-window]
+    negative_cases: [oidc-expired, oidc-issued-in-future, oidc-auth-time-outside-policy]
+    observe_cases: []
+
+  - id: CKT-PARTIAL-001
+    source: WHFB-AUTH
+    section: Cloud Kerberos trust authentication
+    summary: The partial TGT carries the user SID and is verified by the on-premises domain controller before a full TGT is issued.
+    evidence_class: windows-observation
+    positive_cases: [ckt-verified-partial-to-full-tgt]
+    negative_cases: []
+    observe_cases: [ckt-partial-tgt-signature-chain]
+  - id: CKT-RODC-001
+    source: WHFB-CLOUD-TRUST
+    section: Azure AD Kerberos and password replication policy
+    summary: The AzureADKerberos object retains RODC-like password replication restrictions for privileged identities.
+    evidence_class: windows-observation
+    positive_cases: [ckt-allowed-standard-user]
+    negative_cases: [ckt-blocked-privileged-user]
+    observe_cases: [ckt-azureadkerberos-prp-snapshot]
+  - id: CKT-LOS-001
+    source: WHFB-CLOUD-TRUST
+    section: Prerequisites and deployment validation
+    summary: Domain controller line-of-sight is an explicit precondition for first use and on-premises resource access.
+    evidence_class: windows-observation
+    positive_cases: [ckt-line-of-sight-present]
+    negative_cases: []
+    observe_cases: [ckt-first-use-without-line-of-sight]
+  - id: CKT-PRECEDENCE-001
+    source: WHFB-CLOUD-TRUST
+    section: Policy configuration
+    summary: Certificate trust policy precedence is recorded so its successful path is not classified as cloud trust.
+    evidence_class: windows-observation
+    positive_cases: [ckt-cloud-trust-policy-selected]
+    negative_cases: []
+    observe_cases: [ckt-certificate-trust-precedence]
+
+  - id: PAC-BOUNDS-001
+    source: MS-PAC
+    section: "2.4 PAC_INFO_BUFFER"
+    summary: Every offset is eight-byte aligned and each offset-plus-size range is overflow-safe and contained in the PACTYPE.
+    evidence_class: local-adapter
+    positive_cases: [pac-aligned-contained-buffers]
+    negative_cases: [pac-misaligned-offset, pac-range-overflow, pac-range-outside-container]
+    observe_cases: []
+  - id: PAC-ORDER-001
+    source: MS-PAC
+    section: "2.8 PAC Signatures"
+    summary: Buffer order is semantically free before signing and immutable after signatures are produced.
+    evidence_class: local-adapter
+    positive_cases: [pac-stable-signed-order]
+    negative_cases: [pac-post-signature-reorder]
+    observe_cases: []
+  - id: PAC-ATTR-001
+    source: MS-PAC
+    section: "2.14 PAC_ATTRIBUTES_INFO"
+    summary: FlagsLength counts defined bits, storage is padded to 32-bit units, and undefined padding bits are ignored.
+    evidence_class: local-adapter
+    positive_cases: [pac-attribute-padding]
+    negative_cases: [pac-attribute-short-storage]
+    observe_cases: [pac-duplicate-attributes-ignore-rule]
+  - id: PAC-REQ-001
+    source: MS-KILE
+    section: TGS request PAC requestor validation
+    summary: A same-realm requestor SID resolves to the cname account while delegation identity remains separate.
+    evidence_class: windows-observation
+    positive_cases: [pac-requestor-matches-cname]
+    negative_cases: [pac-requestor-cname-mismatch]
+    observe_cases: [pac-delegation-identity-separation]
+  - id: PAC-SIG-001
+    source: MS-PAC
+    section: "2.8 PAC Signatures"
+    summary: Server, KDC, ticket, and extended KDC signature roles remain distinct and correctly ordered.
+    evidence_class: local-adapter
+    positive_cases: [pac-signature-role-order]
+    negative_cases: [pac-kdc-signature-before-server-signature, pac-signature-role-substitution]
+    observe_cases: []
+  - id: PAC-RODC-001
+    source: MS-PAC
+    section: "2.8.1 PAC_SIGNATURE_DATA"
+    summary: RODCIdentifier is present only for an RODC-issued signature and maps to the documented key-version portion.
+    evidence_class: windows-observation
+    positive_cases: [pac-rodc-identifier-on-rodc-signature]
+    negative_cases: [pac-rodc-identifier-on-rwdc-signature]
+    observe_cases: [pac-rodc-key-version-correlation]
+  - id: PAC-TGS-001
+    source: MS-KILE
+    section: TGS ticket construction
+    summary: A service ticket receives new server and KDC signatures and cannot end with a zero-length PAC buffer.
+    evidence_class: windows-observation
+    positive_cases: [pac-new-tgs-signatures]
+    negative_cases: [pac-zero-length-result-buffer]
+    observe_cases: [pac-tgs-signature-change]
+  - id: PAC-DLG-001
+    source: MS-KILE
+    section: Domain Local Group Membership processing
+    summary: Applicable domain-local group processing removes requestor and attributes structures from the resulting service ticket.
+    evidence_class: windows-observation
+    positive_cases: [pac-domain-local-membership-removal]
+    negative_cases: []
+    observe_cases: [pac-nonapplicable-membership-retention]
+
+  - id: DMSA-LINK-001
+    source: DMSA-OVERVIEW
+    section: Account migration
+    summary: Migration maintains the documented predecessor and successor link relation between the legacy account and dMSA.
+    evidence_class: windows-observation
+    positive_cases: [dmsa-reciprocal-migration-links]
+    negative_cases: [dmsa-one-sided-migration-link]
+    observe_cases: [dmsa-link-replication]
+  - id: DMSA-STATE-001
+    source: DMSA-OVERVIEW
+    section: Migration states
+    summary: States one, two, and three mean started, completed, and standalone, with unsupported transition order rejected atomically.
+    evidence_class: windows-observation
+    positive_cases: [dmsa-started-to-complete, dmsa-standalone]
+    negative_cases: [dmsa-complete-before-start, dmsa-partial-transition]
+    observe_cases: []
+  - id: DMSA-ACL-001
+    source: DMSA-OVERVIEW
+    section: Account migration permissions
+    summary: Migration start grants documented temporary rights and completion removes them.
+    evidence_class: windows-observation
+    positive_cases: [dmsa-temporary-rights-lifecycle]
+    negative_cases: [dmsa-rights-missing-at-start, dmsa-rights-retained-after-complete]
+    observe_cases: []
+  - id: DMSA-SPN-001
+    source: DMSA-OVERVIEW
+    section: Account migration completion
+    summary: Completion transfers SPNs and supported policy attributes before disabling and clearing the legacy account.
+    evidence_class: windows-observation
+    positive_cases: [dmsa-ordered-spn-transfer]
+    negative_cases: [dmsa-disable-before-transfer, dmsa-duplicate-spn-retention]
+    observe_cases: []
+  - id: DMSA-MACHINE-001
+    source: DMSA-SETUP
+    section: Grant client access to the dMSA
+    summary: Only explicitly enrolled machine identities receive dMSA behavior and ticket refresh is a separate transition.
+    evidence_class: windows-observation
+    positive_cases: [dmsa-enrolled-machine]
+    negative_cases: [dmsa-unenrolled-machine]
+    observe_cases: [dmsa-membership-before-ticket-refresh]
+  - id: DMSA-RWDC-001
+    source: DMSA-SETUP
+    section: Prerequisites
+    summary: Migration graph changes require a writable domain controller and an RODC observation never counts as a successful write.
+    evidence_class: windows-observation
+    positive_cases: [dmsa-rwdc-migration-write]
+    negative_cases: [dmsa-rodc-migration-write]
+    observe_cases: []
+  - id: DMSA-EVENT-001
+    source: DMSA-OVERVIEW
+    section: Auditing dMSA activity
+    summary: Operational events 307, 308, and 309 correlate migration, permission enrollment, and key fetch with directory snapshots.
+    evidence_class: windows-observation
+    positive_cases: [dmsa-event-directory-correlation]
+    negative_cases: []
+    observe_cases: [dmsa-event-307, dmsa-event-308, dmsa-event-309]
+  - id: DMSA-ROLLBACK-001
+    source: DMSA-SETUP
+    section: Reset a dMSA account
+    summary: Reset and undo cases restore a documented inactive or unlinked state without deleting the original account.
+    evidence_class: windows-observation
+    positive_cases: [dmsa-reset-to-documented-state]
+    negative_cases: [dmsa-reset-deletes-original-account, dmsa-reset-leaves-active-links]
+    observe_cases: []
