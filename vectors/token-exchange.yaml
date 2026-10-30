@@ -1,0 +1,17 @@
+cases:
+  - id: rfc8693-reference
+    profile: rfc8693
+    form:
+      grant_type: urn:ietf:params:oauth:grant-type:token-exchange
+      subject_token: redacted-reference-token
+      subject_token_type: urn:ietf:params:oauth:token-type:jwt
+      resource: https://api.example/resource
+      scope: read
+  - id: entra-wif-client-credentials
+    profile: entra-wif
+    form:
+      grant_type: client_credentials
+      client_id: reference-client
+      scope: https://graph.microsoft.com/.default
+      client_assertion_type: urn:ietf:params:oauth:client-assertion-type:jwt-bearer
+      client_assertion: redacted-reference-assertion

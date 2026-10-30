@@ -42,6 +42,17 @@ class ReasonCode(StrEnum):
     NONCE_MISSING = "nonce_missing"
     NONCE_MISMATCH = "nonce_mismatch"
     NONCE_REPLAY_OR_EXPIRED = "nonce_replay_or_expired"
+    GRANT_TYPE_INVALID = "grant_type_invalid"
+    REQUEST_FIELD_REQUIRED = "request_field_required"
+    PARAMETER_DUPLICATE = "parameter_duplicate"
+    ACTOR_PAIR_INCOMPLETE = "actor_pair_incomplete"
+    TOKEN_TYPE_NOT_ALLOWED = "token_type_not_allowed"
+    TARGET_INVALID = "target_invalid"
+    TARGET_DUPLICATE = "target_duplicate"
+    SCOPE_INVALID = "scope_invalid"
+    RIGHTS_NOT_ALLOWED = "rights_not_allowed"
+    SUBJECT_REJECTED = "subject_rejected"
+    ACTOR_REJECTED = "actor_rejected"
 
 
 @dataclass(frozen=True, slots=True)
