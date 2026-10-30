@@ -9,10 +9,22 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
-$adapter = Get-NetAdapter | Where-Object Status -eq 'Up' | Select-Object -First 1
+$adapter = Get-NetAdapter |
+    Where-Object {
+        $_.Status -eq 'Up' -and
+        $_.InterfaceDescription -eq 'Microsoft Hyper-V Network Adapter'
+    } |
+    Select-Object -First 1
 if (-not $adapter) {
     throw 'No active identity-lab network adapter was found.'
 }
+
+Get-NetIPAddress `
+    -AddressFamily IPv4 `
+    -IPAddress $IpAddress `
+    -ErrorAction SilentlyContinue |
+    Where-Object InterfaceIndex -ne $adapter.ifIndex |
+    Remove-NetIPAddress -Confirm:$false -ErrorAction Stop
 
 Get-NetIPAddress `
     -InterfaceIndex $adapter.ifIndex `
@@ -28,6 +40,20 @@ New-NetIPAddress `
 Set-DnsClientServerAddress `
     -InterfaceIndex $adapter.ifIndex `
     -ServerAddresses $DnsServer
+foreach ($dnsClient in @(Get-DnsClient)) {
+    $shouldRegister = $dnsClient.InterfaceIndex -eq $adapter.ifIndex
+    if (-not $shouldRegister) {
+        Set-DnsClientServerAddress `
+            -InterfaceIndex $dnsClient.InterfaceIndex `
+            -ResetServerAddresses `
+            -ErrorAction SilentlyContinue
+    }
+    if ($dnsClient.RegisterThisConnectionsAddress -ne $shouldRegister) {
+        Set-DnsClient `
+            -InterfaceIndex $dnsClient.InterfaceIndex `
+            -RegisterThisConnectionsAddress $shouldRegister
+    }
+}
 
 $answerPaths = @(
     'C:\Windows\Panther\Unattend.xml',
