@@ -1,0 +1,81 @@
+{
+  "artifacts": {
+    "builder": {
+      "bytes": 23595,
+      "path": "tools/build_detailed_report.py",
+      "sha256": "d80bf6fada3454c247467c2df63b5f73e9bb0bb17c9aa4c3004477a014764056"
+    },
+    "data": {
+      "bytes": 9032,
+      "path": "reports/program1-detailed-report-data.json",
+      "sha256": "7d753c821469c585d603100b6896e68679f7d8b16b42a2a2156d2b4c688e4adf"
+    },
+    "html": {
+      "bytes": 155011,
+      "path": "reports/program1-detailed-report.html",
+      "sha256": "ec1868fb67e94bb90b2a7e8730ed40cd2932ce7204438916a89020c90b3511f8"
+    },
+    "pdf": {
+      "bytes": 2373135,
+      "path": "reports/program1-detailed-report.pdf",
+      "sha256": "a2e7e7229b5ded7fa09a5cd23f805e68bcdab39b381d9420d0b973db2daedc2f"
+    },
+    "template": {
+      "bytes": 109613,
+      "path": "reports/program1-detailed-report.template.html",
+      "sha256": "82eb5e5007eec9f242d48e386dcb1c8b04747075e632620d5aea4f32ff98d8b4"
+    }
+  },
+  "format_version": 1,
+  "pdf_validation": {
+    "a4": true,
+    "encrypted": false,
+    "extracted_text_characters": 102498,
+    "extracted_text_sha256": "d5b78190ff923e92ab2b091670ddc7e61263ed34c3a3f92417f5d60d9429dd60",
+    "javascript": false,
+    "minimum_page_text_characters": 181,
+    "pages": 40,
+    "tagged": true,
+    "title": "Microsoft Identity ve Hybrid Trust Protokol Invariyantları - Program 1 Teknik Raporu"
+  },
+  "render_environment": {
+    "engine": "Microsoft Edge 156.0.4314.50; Skia/PDF m156",
+    "platform": "Windows Server 2025 build 26100"
+  },
+  "source_binding": {
+    "invariants": 37,
+    "ledger_sha256": "9852c4e00a4c1b25165708541774ba23975ec6c97acd6e0c2b90c6377633f44c",
+    "observations": 25,
+    "outcomes": {
+      "accept": 5,
+      "inconclusive": 3,
+      "observe": 10,
+      "reject": 1,
+      "skip": 6
+    }
+  },
+  "test_results": {
+    "evidence_run": {
+      "ubuntu_passed": 148,
+      "windows_passed": 50
+    },
+    "final_report_regression": {
+      "ubuntu_failed": 0,
+      "ubuntu_passed": 150,
+      "ubuntu_skipped": 3,
+      "windows_failed": 0,
+      "windows_passed": 50,
+      "windows_skipped": 0
+    },
+    "report_contract_tests": 5,
+    "skip_reason": "Private conditional source artifacts were removed after the reviewed evidence run."
+  },
+  "validation_environment": {
+    "pdf_tools": "Poppler 24.02.0",
+    "platform": "Ubuntu 24.04.5 LTS; Python 3.12.3"
+  },
+  "visual_review": {
+    "pages": [1, 2, 10, 12, 18, 25, 26, 32, 33, 35, 40],
+    "status": "pass"
+  }
+}

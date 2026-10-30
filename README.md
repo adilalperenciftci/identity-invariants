@@ -86,6 +86,15 @@ contains 25 normalized Windows and closed-environment observations:
 See the [generated evidence report](reports/identity-invariants.md) for the
 source-to-invariant matrix and exact artifact hashes.
 
+The 40-page [detailed visual report](reports/program1-detailed-report.pdf)
+combines the formal model, laboratory topology, trust-boundary state machines,
+complete invariant and observation matrices, evidence lineage, limitations,
+and prioritized engineering recommendations. Its self-contained
+[HTML edition](reports/program1-detailed-report.html),
+[machine-readable data](reports/program1-detailed-report-data.json), and
+[verification manifest](reports/program1-detailed-report-verification.json)
+are committed beside the PDF for independent review.
+
 ## Repository map
 
 - `spec/`: invariant catalog, source metadata, and schema;

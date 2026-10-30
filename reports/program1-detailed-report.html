@@ -1,0 +1,1635 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Microsoft Identity ve Hybrid Trust Protokol Invariyantları - Program 1 Teknik Raporu</title>
+  <style>
+    :root {
+      --navy-950: #07111f;
+      --navy-900: #0b1829;
+      --navy-800: #11253a;
+      --navy-700: #18344d;
+      --cyan: #00b8d9;
+      --cyan-soft: #dff8fc;
+      --amber: #e39a18;
+      --amber-soft: #fff3d6;
+      --green: #17845b;
+      --green-soft: #e0f5ec;
+      --magenta: #b54889;
+      --magenta-soft: #f9e7f2;
+      --red: #ba3b46;
+      --red-soft: #fce7e9;
+      --slate-900: #17202b;
+      --slate-700: #3d4b5c;
+      --slate-500: #6c7a89;
+      --slate-300: #c7d0da;
+      --slate-200: #dce3ea;
+      --slate-100: #eef2f6;
+      --paper: #ffffff;
+    }
+
+    @page {
+      size: A4;
+      margin: 14mm 13mm 16mm 13mm;
+    }
+
+    @page cover {
+      margin: 0;
+    }
+
+    @page:first {
+      margin: 0;
+    }
+
+    * { box-sizing: border-box; }
+
+    html {
+      font-family: "Segoe UI", Arial, sans-serif;
+      color: var(--slate-900);
+      background: var(--paper);
+      font-size: 10.2pt;
+      line-height: 1.52;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    body { margin: 0; }
+    section { display: flow-root; }
+    .cover + section {
+      break-before: page;
+      page-break-before: always;
+    }
+
+    h1, h2, h3, h4 {
+      color: var(--navy-900);
+      line-height: 1.16;
+      margin: 0 0 0.55em;
+      break-after: avoid;
+    }
+
+    h1 { font-size: 25pt; letter-spacing: -0.03em; }
+    h2 { font-size: 18pt; letter-spacing: -0.02em; }
+    h3 { font-size: 13.2pt; margin-top: 1.2em; }
+    h4 { font-size: 10.8pt; margin-top: 1em; }
+    p { margin: 0 0 0.78em; orphans: 3; widows: 3; }
+    ul, ol { margin: 0.35em 0 0.9em 1.3em; padding: 0; }
+    li { margin: 0.16em 0; }
+    a { color: #086a82; text-decoration: none; }
+    strong { color: var(--navy-900); }
+    small { color: var(--slate-500); }
+    code, .mono {
+      font-family: "Cascadia Mono", "Consolas", "DejaVu Sans Mono", monospace;
+      font-size: 0.87em;
+    }
+
+    .cover {
+      page: cover;
+      height: 297mm;
+      min-height: 0;
+      padding: 24mm 22mm 18mm;
+      color: #eaf6fb;
+      background:
+        radial-gradient(circle at 84% 14%, rgba(0,184,217,0.18), transparent 27%),
+        radial-gradient(circle at 16% 82%, rgba(227,154,24,0.13), transparent 29%),
+        linear-gradient(138deg, var(--navy-950), var(--navy-800));
+      position: relative;
+      overflow: hidden;
+      break-after: page;
+      page-break-after: always;
+    }
+
+    .cover::before {
+      content: none;
+    }
+
+    .cover .eyebrow {
+      position: relative;
+      display: inline-block;
+      padding: 1.7mm 3mm;
+      border: 1px solid rgba(84,214,239,0.55);
+      border-radius: 99px;
+      color: #78e6f8;
+      font-size: 8.5pt;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    .cover h1 {
+      position: relative;
+      color: white;
+      margin-top: 20mm;
+      max-width: 155mm;
+      font-size: 35pt;
+      line-height: 1.03;
+    }
+
+    .cover h1 span { color: #63daf0; }
+    .cover .subtitle {
+      position: relative;
+      max-width: 145mm;
+      color: #b9cedb;
+      font-size: 15pt;
+      line-height: 1.36;
+      margin-top: 8mm;
+    }
+
+    .cover .metrics {
+      position: relative;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 3mm;
+      margin-top: 18mm;
+    }
+
+    .cover .metric {
+      border-top: 2px solid var(--cyan);
+      background: rgba(255,255,255,0.055);
+      padding: 4mm;
+      min-height: 23mm;
+    }
+
+    .cover .metric b { display: block; color: white; font-size: 21pt; line-height: 1; }
+    .cover .metric span { color: #a8c2d1; font-size: 8pt; text-transform: uppercase; letter-spacing: 0.08em; }
+
+    .cover .identity {
+      position: absolute;
+      left: 22mm;
+      right: 22mm;
+      bottom: 18mm;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      border-top: 1px solid rgba(255,255,255,0.17);
+      padding-top: 5mm;
+      color: #b6cbd7;
+      font-size: 9pt;
+    }
+
+    .cover .identity strong { color: #fff; display: block; font-size: 11pt; }
+
+    .page { break-before: page; }
+    .chapter { break-before: page; }
+
+    .chapter-head {
+      margin: 0 -13mm 10mm;
+      padding: 13mm 13mm 8mm;
+      min-height: 50mm;
+      color: white;
+      background:
+        linear-gradient(120deg, rgba(0,184,217,0.14), transparent 45%),
+        var(--navy-900);
+      position: relative;
+      overflow: hidden;
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    .chapter-head::after {
+      content: attr(data-index);
+      position: absolute;
+      right: 9mm;
+      bottom: -8mm;
+      color: rgba(255,255,255,0.06);
+      font-size: 70pt;
+      font-weight: 800;
+    }
+
+    .chapter-head .kicker {
+      color: #65dff3;
+      font-size: 8pt;
+      font-weight: 700;
+      letter-spacing: 0.17em;
+      text-transform: uppercase;
+    }
+
+    .chapter-head h1 { color: white; margin-top: 2mm; max-width: 160mm; }
+    .chapter-head p { color: #b9cbd7; max-width: 165mm; margin: 0; }
+
+    .lead { font-size: 12.2pt; line-height: 1.55; color: var(--slate-700); }
+    .lede-box {
+      border-left: 4px solid var(--cyan);
+      background: var(--cyan-soft);
+      padding: 4mm 5mm;
+      margin: 5mm 0;
+    }
+
+    .callout {
+      padding: 4mm 5mm;
+      margin: 4mm 0 5mm;
+      border-radius: 2mm;
+      break-inside: avoid;
+    }
+
+    .callout.info { border-left: 4px solid var(--cyan); background: var(--cyan-soft); }
+    .callout.observe { border-left: 4px solid var(--amber); background: var(--amber-soft); }
+    .callout.boundary { border-left: 4px solid var(--magenta); background: var(--magenta-soft); }
+    .callout.success { border-left: 4px solid var(--green); background: var(--green-soft); }
+    .callout.limit { border-left: 4px solid var(--slate-500); background: var(--slate-100); }
+    .callout h4 { margin: 0 0 1mm; }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 5mm; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4mm; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 3mm; }
+    .card {
+      border: 1px solid var(--slate-200);
+      border-radius: 2.5mm;
+      padding: 4mm;
+      background: #fff;
+      break-inside: avoid;
+    }
+
+    .card h3, .card h4 { margin-top: 0; }
+    .card .number { color: var(--cyan); font-size: 23pt; font-weight: 800; line-height: 1; }
+    .card .label { color: var(--slate-500); font-size: 8pt; text-transform: uppercase; letter-spacing: 0.08em; }
+
+    .toc {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2mm 8mm;
+      margin-top: 7mm;
+    }
+
+    .toc a {
+      display: flex;
+      gap: 3mm;
+      padding: 2mm 0;
+      color: var(--navy-800);
+      border-bottom: 1px dotted var(--slate-300);
+    }
+
+    .toc .n { color: var(--cyan); font-family: "Cascadia Mono", Consolas, monospace; font-weight: 700; }
+
+    .visual {
+      margin: 5mm 0 6mm;
+      border: 1px solid var(--slate-200);
+      border-radius: 3mm;
+      overflow: hidden;
+      background: #fbfdff;
+      break-inside: avoid;
+    }
+
+    .visual .visual-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding: 3mm 4mm;
+      background: var(--navy-900);
+      color: white;
+      font-size: 9pt;
+      font-weight: 700;
+    }
+
+    .visual .visual-title small { color: #9db4c3; }
+    .visual svg { width: 100%; height: auto; display: block; }
+    .caption { color: var(--slate-500); font-size: 8.5pt; margin: -3mm 1mm 5mm; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 3mm 0 6mm;
+      font-size: 8.3pt;
+    }
+
+    thead { display: table-header-group; }
+    tr { break-inside: avoid; }
+    th {
+      background: var(--navy-800);
+      color: white;
+      text-align: left;
+      font-size: 7.6pt;
+      letter-spacing: 0.03em;
+      padding: 2.2mm 2mm;
+    }
+
+    td {
+      border-bottom: 1px solid var(--slate-200);
+      padding: 2.1mm 2mm;
+      vertical-align: top;
+    }
+
+    tbody tr:nth-child(even) { background: #f6f9fb; }
+    td.num, th.num { text-align: right; }
+    td.url { overflow-wrap: anywhere; font-size: 7.2pt; }
+    td.hash { overflow-wrap: anywhere; letter-spacing: -0.03em; }
+    .keep { white-space: nowrap; }
+
+    .status {
+      display: inline-block;
+      padding: 0.6mm 1.6mm;
+      margin: 0.3mm;
+      border-radius: 99px;
+      font-size: 7pt;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .status.accept { color: #0b5f42; background: #d8f2e7; }
+    .status.reject { color: #8b2832; background: #f9dfe2; }
+    .status.observe { color: #825407; background: #fcebc4; }
+    .status.skip { color: #536274; background: #e7ecf1; }
+    .status.inconclusive { color: #6e3460; background: #f4dfea; }
+    .status.unrecorded { color: #586675; background: #edf1f4; }
+
+    .domain {
+      display: inline-block;
+      min-width: 12mm;
+      text-align: center;
+      padding: 0.6mm 1.4mm;
+      color: #fff;
+      border-radius: 1mm;
+      font-family: "Cascadia Mono", Consolas, monospace;
+      font-size: 7.2pt;
+      font-weight: 700;
+    }
+
+    .domain-wif { background: #087d95; }
+    .domain-sts { background: #176f65; }
+    .domain-oidc { background: #385fa2; }
+    .domain-ckt { background: #9b6210; }
+    .domain-pac { background: #94426f; }
+    .domain-dmsa { background: #7045a0; }
+
+    .equation {
+      font-family: "Cascadia Mono", Consolas, monospace;
+      background: var(--navy-950);
+      color: #d7edf4;
+      padding: 3mm 4mm;
+      border-radius: 2mm;
+      margin: 3mm 0 5mm;
+      font-size: 8.8pt;
+      break-inside: avoid;
+    }
+
+    .decision-table td:first-child { width: 31%; font-weight: 700; }
+    .mini-kpi { display: flex; gap: 4mm; align-items: baseline; margin: 2mm 0; }
+    .mini-kpi b { font-size: 16pt; color: var(--navy-800); }
+    .mini-kpi span { color: var(--slate-500); }
+    .footnote { color: var(--slate-500); font-size: 7.6pt; }
+    .break-before { break-before: page; }
+    .avoid { break-inside: avoid; }
+
+    .command {
+      background: #0a1726;
+      color: #d6edf6;
+      border-left: 3px solid var(--cyan);
+      padding: 3mm 4mm;
+      margin: 2mm 0 4mm;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      font-family: "Cascadia Mono", Consolas, monospace;
+      font-size: 7.8pt;
+    }
+
+    .footer-note {
+      margin-top: 8mm;
+      padding-top: 3mm;
+      border-top: 1px solid var(--slate-200);
+      color: var(--slate-500);
+      font-size: 7.5pt;
+    }
+
+    .appendix-table { font-size: 6.8pt; line-height: 1.3; }
+    .appendix-table th { font-size: 6.5pt; padding: 1.6mm 1.4mm; }
+    .appendix-table td { padding: 1.5mm 1.4mm; }
+  </style>
+</head>
+<body>
+  <section class="cover">
+    <div class="eyebrow">Program 1 / Teknik Araştırma Raporu</div>
+    <h1>Microsoft Identity ve <span>Hybrid Trust</span> Protokol Invariyantları</h1>
+    <p class="subtitle">Workload Identity Federation, OAuth 2.0 Token Exchange, OpenID Connect, Cloud Kerberos Trust, MS-PAC ve dMSA için deterministik doğrulama ve izole laboratuvar kanıtı.</p>
+    <div class="metrics">
+      <div class="metric"><b>37</b><span>formal invariyant</span></div>
+      <div class="metric"><b>25</b><span>normalize gözlem</span></div>
+      <div class="metric"><b>198</b><span>başarılı test</span></div>
+      <div class="metric"><b>0</b><span>doğrulanmış ürün sapması</span></div>
+    </div>
+    <div class="identity">
+      <div><strong>Adil Alperen Çiftci</strong>Principal Systems Engineer</div>
+      <div style="text-align:right"><strong>Sürüm 1.0</strong>30 Ekim 2026 / İstanbul</div>
+    </div>
+  </section>
+
+  <section>
+    <div class="chapter-head" data-index="00">
+      <div class="kicker">Belge kontrolü</div>
+      <h1>Okuma rehberi ve kanıt sınırı</h1>
+      <p>Bu rapor, Program 1 deposundaki gözden geçirilmiş katalog, normalize ledger ve manifest bağlarından üretilmiştir.</p>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <h3>Belge kimliği</h3>
+        <table class="decision-table">
+          <tbody>
+            <tr><td>Başlık</td><td>Microsoft Identity ve Hybrid Trust Protokol Invariyantları</td></tr>
+            <tr><td>Belge türü</td><td>Teknik araştırma ve doğrulama raporu</td></tr>
+            <tr><td>Kanıt dönemi</td><td>30 Ekim 2026</td></tr>
+            <tr><td>Ledger SHA-256</td><td class="mono hash">9852c4e00a4c1b25165708541774ba23975ec6c97acd6e0c2b90c6377633f44c</td></tr>
+            <tr><td>Kanıt commit'i</td><td class="mono hash">937063c019bbe1d9d860b5bed64810c6f5256cb5</td></tr>
+            <tr><td>Commit sayısı</td><td>17 gözden geçirilmiş geliştirme commit'i</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card">
+        <h3>Değerlendirme durumu</h3>
+        <div class="callout boundary">
+          <h4>Ürün etkisi iddiası yoktur</h4>
+          <p>Yerel oracle kararları ve izole laboratuvar gözlemleri, barındırılan bir hizmetin davranışı veya doğrulanmış bir ürün sapması olarak yorumlanmaz.</p>
+        </div>
+        <div class="grid-3">
+          <div><div class="number">N/A</div><div class="label">CWE</div></div>
+          <div><div class="number">N/A</div><div class="label">CVSS</div></div>
+          <div><div class="number">0</div><div class="label">etki iddiası</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout info">
+      <h4>Sonuç terimleri</h4>
+      <p><strong>Kabul</strong> ve <strong>ret</strong> yalnızca tanımlı test sözleşmesinin kararlarıdır. <strong>Gözlem</strong> ölçülmüş fakat tek başına uygunluk sonucu olmayan bir durumu; <strong>atlandı</strong> eksik önkoşulu; <strong>sonuçsuz</strong> ise eldeki kanıtın invariyantı çözmeye yetmediğini belirtir.</p>
+    </div>
+
+    <h2>İçindekiler</h2>
+    <nav class="toc">
+      <a href="#executive-summary"><span class="n">01</span> Yönetici özeti</a>
+      <a href="#scope-and-claims"><span class="n">02</span> Kapsam ve iddia sınırları</a>
+      <a href="#formal-method"><span class="n">03</span> Formal yöntem</a>
+      <a href="#laboratory-architecture"><span class="n">04</span> Laboratuvar mimarisi</a>
+      <a href="#workload-identity"><span class="n">05</span> Workload Identity Federation</a>
+      <a href="#token-exchange"><span class="n">06</span> OAuth 2.0 Token Exchange</a>
+      <a href="#openid-connect"><span class="n">07</span> OpenID Connect</a>
+      <a href="#ms-pac"><span class="n">08</span> MS-PAC / MS-KILE</a>
+      <a href="#dmsa"><span class="n">09</span> dMSA yaşam döngüsü</a>
+      <a href="#cloud-kerberos"><span class="n">10</span> Cloud Kerberos Trust</a>
+      <a href="#test-strategy"><span class="n">11</span> Test stratejisi</a>
+      <a href="#observations"><span class="n">12</span> Ampirik gözlemler</a>
+      <a href="#evidence-integrity"><span class="n">13</span> Kanıt bütünlüğü</a>
+      <a href="#limitations"><span class="n">14</span> Sınırlamalar</a>
+      <a href="#recommendations"><span class="n">15</span> Mühendislik önerileri</a>
+      <a href="#appendix-invariants"><span class="n">A</span> İnvariyant matrisi</a>
+      <a href="#appendix-observations"><span class="n">B</span> Gözlem indeksi</a>
+      <a href="#appendix-hashes"><span class="n">C</span> Hash zinciri</a>
+      <a href="#appendix-commits"><span class="n">D</span> Commit zaman çizelgesi</a>
+      <a href="#appendix-reproduction"><span class="n">E</span> Yeniden üretim</a>
+      <a href="#appendix-glossary"><span class="n">F</span> Terimler</a>
+      <a href="#appendix-sources"><span class="n">G</span> Kaynak indeksi</a>
+    </nav>
+  </section>
+
+  <section id="executive-summary" class="chapter">
+    <div class="chapter-head" data-index="01">
+      <div class="kicker">Yönetici özeti</div>
+      <h1>Ölçülen, kanıtlanan ve özellikle iddia edilmeyenler</h1>
+      <p>Program 1, kimlik protokollerinin farklı güven katmanlarını tek bir sonuç sınıfına sıkıştırmadan doğrular.</p>
+    </div>
+
+    <p class="lead">Çalışma, altı protokol alanındaki 37 kaynak-bağlı invariyantı çalıştırılabilir kararlara ve izole laboratuvar gözlemlerine dönüştürdü. Temel sonuç bir ürün bulgusu değil; kaynak, tip, zaman, durum ve kanıt sınırlarını birbirinden ayıran yeniden üretilebilir bir doğrulama sistemidir.</p>
+    <p><strong>Doğrulama özeti:</strong> 37 formal invariyant, 25 normalize gözlem ve 198 test. Doğrulanmış ürün sapması bulunmadığı için CWE ve CVSS atanmadı.</p>
+
+    <div class="grid-4">
+      <div class="card"><div class="number">37</div><div class="label">katalog kuralı</div><p>Her kural birincil kaynak, revizyon, bölüm ve kanıt sınıfına bağlıdır.</p></div>
+      <div class="card"><div class="number">25</div><div class="label">ledger kaydı</div><p>Yalnızca normalize karar, neden kodu ve SHA-256 bağları tutulur.</p></div>
+      <div class="card"><div class="number">148</div><div class="label">Ubuntu testi</div><p>Unit, property ve integration katmanları aynı derlemede geçti.</p></div>
+      <div class="card"><div class="number">50</div><div class="label">Windows testi</div><p>Topoloji, forest, dMSA, PAC ve Cloud Trust kapıları geçti.</p></div>
+    </div>
+
+    <div id="results-chart" class="visual">
+      <div class="visual-title"><span>Şekil 1 - Normalize gözlem sonuç dağılımı</span><small>n = 25</small></div>
+      <svg viewBox="0 0 920 270" role="img" aria-label="Kabul 5, ret 1, gözlem 10, atlandı 6, sonuçsuz 3">
+        <rect width="920" height="270" fill="#fbfdff"/>
+        <g font-family="Segoe UI, Arial" font-size="18" fill="#26384b">
+          <text x="35" y="48">Gözlem</text><rect x="175" y="28" width="600" height="28" rx="5" fill="#e39a18"/><text x="790" y="49" font-weight="700">10</text>
+          <text x="35" y="91">Atlandı</text><rect x="175" y="71" width="360" height="28" rx="5" fill="#7a8998"/><text x="550" y="92" font-weight="700">6</text>
+          <text x="35" y="134">Kabul</text><rect x="175" y="114" width="300" height="28" rx="5" fill="#17845b"/><text x="490" y="135" font-weight="700">5</text>
+          <text x="35" y="177">Sonuçsuz</text><rect x="175" y="157" width="180" height="28" rx="5" fill="#b54889"/><text x="370" y="178" font-weight="700">3</text>
+          <text x="35" y="220">Ret</text><rect x="175" y="200" width="60" height="28" rx="5" fill="#ba3b46"/><text x="250" y="221" font-weight="700">1</text>
+        </g>
+        <line x1="175" y1="242" x2="775" y2="242" stroke="#c7d0da"/>
+        <g font-family="Segoe UI, Arial" font-size="12" fill="#6c7a89">
+          <text x="172" y="260">0</text><text x="292" y="260">2</text><text x="412" y="260">4</text><text x="532" y="260">6</text><text x="652" y="260">8</text><text x="766" y="260">10</text>
+        </g>
+      </svg>
+    </div>
+
+    <h3>Ana mühendislik sonuçları</h3>
+    <ol>
+      <li><strong>Tip ayrımı korunmuştur.</strong> String, array, integer ve boolean değerleri sessizce birbirine dönüştürülmez. Issuer, subject, audience ve NumericDate alanları kendi sözleşmeleri içinde değerlendirilir.</li>
+      <li><strong>Bağlam tamlığı açıkça modellenmiştir.</strong> Tenant, application object, client ID, credential, issuer, subject matcher ve audience birlikte taşınmadığında bir federated identity seçimi tamamlanmış sayılmaz.</li>
+      <li><strong>Zaman kararı tek saatten üretilir.</strong> Expiration, not-before, issued-at, auth-time, nonce saklama ve skew kararları enjekte edilen aynı saate bağlıdır; sınır eşitlikleri testlerle sabitlenmiştir.</li>
+      <li><strong>Token exchange çokluluğu kaybolmaz.</strong> Tekil parametre tekrarları reddedilir; resource ve audience çokluluğu korunur; scope-target kartesyen ürünü eksikse karar kapanır.</li>
+      <li><strong>PAC ayrıştırma önce yapısal sınırları doğrular.</strong> Descriptor sayısı, çarpım, sekiz bayt hizalama, offset-plus-size, overlap, SID ve signature şekilleri doğrulanmadan typed buffer sunulmaz.</li>
+      <li><strong>dMSA işlemi yalnızca komut dönüşüyle sınıflandırılmaz.</strong> Migration state, reciprocal link, geçici ACL, enrollment, SPN/policy aktarımı, RWDC/RODC kaynağı ve restore digest birlikte incelenir.</li>
+      <li><strong>Cloud Kerberos kapısı kapalı varsayılanla çalışır.</strong> Disposable tenant ve joined Windows 11 client bağlamı olmadan dış istek oluşturulmaz; RWDC-local durum client line-of-sight yerine geçmez.</li>
+      <li><strong>Kanıt zinciri tekrar üretilebilirdir.</strong> Canonical JSONL ledger, kaynak manifestleri ve rapor, byte-level SHA-256 bağlarıyla birbirine bağlanmıştır.</li>
+    </ol>
+
+    <div class="callout observe">
+      <h4>En önemli yorum sınırı</h4>
+      <p>Bir testin başarılı olması, Microsoft Entra veya Windows ürününün bütün olası dağıtımlarda aynı davranacağını kanıtlamaz. Başarı, yalnızca tanımlı oracle veya belirtilen Windows Server 2025 laboratuvar koşulunda invariyant testinin geçtiğini gösterir.</p>
+    </div>
+  </section>
+
+  <section id="scope-and-claims" class="chapter">
+    <div class="chapter-head" data-index="02">
+      <div class="kicker">Kapsam</div>
+      <h1>Güven sınırları ve iddia sözleşmesi</h1>
+      <p>Her karar, ait olduğu kanıt sınıfında anlam taşır; sınıflar arasında otomatik yükseltme yapılmaz.</p>
+    </div>
+
+    <h2>Kapsanan protokol yüzeyleri</h2>
+    <table>
+      <thead><tr><th>Alan</th><th>Normatif odak</th><th>Doğrulama biçimi</th><th>Katalog</th></tr></thead>
+      <tbody>
+        <tr><td>Workload Identity Federation</td><td>RFC 7523 assertion, FIC bağlamı, typed claims, key-before-claim, zaman ve replay</td><td>Deterministik spec oracle + kapalı Entra gözlem kapısı</td><td>8</td></tr>
+        <tr><td>OAuth 2.0 Token Exchange</td><td>RFC 8693 required fields, actor atomikliği, target URI, rights product, lifetime</td><td>Typed request parser ve policy oracle</td><td>5</td></tr>
+        <tr><td>OpenID Connect</td><td>Issuer, audience, nonce ve ortak zaman ekseni</td><td>Deterministik ID token decision state machine</td><td>4</td></tr>
+        <tr><td>Cloud Kerberos Trust</td><td>Partial TGT, AzureADKerberos/PRP, line-of-sight, policy precedence</td><td>Read-only Windows prerequisite gate</td><td>4</td></tr>
+        <tr><td>MS-PAC / MS-KILE</td><td>Descriptor bounds, ordering, attributes, requestor, signatures, RODC, TGS ve DLG</td><td>Bounded parser + Windows service-ticket observation</td><td>8</td></tr>
+        <tr><td>dMSA</td><td>Reciprocal links, state, ACL, SPN/policy, enrollment, RWDC, events, rollback</td><td>Three-node AD graph observation</td><td>8</td></tr>
+      </tbody>
+    </table>
+
+    <h2>Dört kanıt sınıfı</h2>
+    <div class="grid-2">
+      <div class="card"><h3>spec-oracle</h3><p>Kamuya açık protokol kuralından türetilen, ağ erişimi yapmayan typed karar. Bu sınıfın kabul/ret sonucu, yerel karar sözleşmesine aittir.</p></div>
+      <div class="card"><h3>local-adapter</h3><p>Bir implementasyon sınırından normalize edilen yapı veya bounded parser sonucu. Ham protokol materyali saklanmaz.</p></div>
+      <div class="card"><h3>windows-observation</h3><p>İzole Windows Server 2025 topolojisinde ölçülen durum. Ortam fingerprint'i ve checkpoint restore kapısı ile bağlanır.</p></div>
+      <div class="card"><h3>entra-observation</h3><p>Yalnızca disposable tenant, application, authority, budget ve redaction önkoşulları tam olduğunda açılan dış gözlem sınıfı. Bu çalışmada kapalı kaldı.</p></div>
+    </div>
+
+    <div id="trust-pipeline" class="visual">
+      <div class="visual-title"><span>Şekil 2 - Kanıt sınıfları arasında yükseltmesiz veri akışı</span><small>trust pipeline</small></div>
+      <svg viewBox="0 0 960 390" role="img" aria-label="Kaynak katalogdan oracle ve adapter katmanlarına, normalize ledger ve rapora veri akışı">
+        <defs><marker id="arrow2" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#527086"/></marker></defs>
+        <rect width="960" height="390" fill="#fbfdff"/>
+        <g font-family="Segoe UI, Arial">
+          <rect x="35" y="145" width="155" height="90" rx="12" fill="#11253a"/><text x="112" y="178" text-anchor="middle" fill="#fff" font-size="17" font-weight="700">Kaynak katalog</text><text x="112" y="204" text-anchor="middle" fill="#9edbe8" font-size="13">37 invariyant</text>
+          <rect x="260" y="35" width="180" height="72" rx="12" fill="#dff8fc" stroke="#00b8d9" stroke-width="2"/><text x="350" y="66" text-anchor="middle" fill="#0b4250" font-size="16" font-weight="700">Typed spec oracle</text><text x="350" y="88" text-anchor="middle" fill="#3d6570" font-size="12">network I/O yok</text>
+          <rect x="260" y="125" width="180" height="72" rx="12" fill="#f9e7f2" stroke="#b54889" stroke-width="2"/><text x="350" y="156" text-anchor="middle" fill="#65304f" font-size="16" font-weight="700">Local adapter</text><text x="350" y="178" text-anchor="middle" fill="#76566b" font-size="12">bounded normalization</text>
+          <rect x="260" y="215" width="180" height="72" rx="12" fill="#fff3d6" stroke="#e39a18" stroke-width="2"/><text x="350" y="246" text-anchor="middle" fill="#714d0e" font-size="16" font-weight="700">Windows observation</text><text x="350" y="268" text-anchor="middle" fill="#806d45" font-size="12">izole üç node</text>
+          <rect x="260" y="305" width="180" height="60" rx="12" fill="#eef2f6" stroke="#7a8998" stroke-width="2"/><text x="350" y="333" text-anchor="middle" fill="#4d5d6d" font-size="16" font-weight="700">Entra gate</text><text x="350" y="353" text-anchor="middle" fill="#657483" font-size="12">closed by default</text>
+          <rect x="520" y="125" width="175" height="130" rx="12" fill="#e0f5ec" stroke="#17845b" stroke-width="2"/><text x="607" y="165" text-anchor="middle" fill="#12583e" font-size="17" font-weight="700">Normalize kayıt</text><text x="607" y="192" text-anchor="middle" fill="#386a59" font-size="13">case / rule / outcome</text><text x="607" y="214" text-anchor="middle" fill="#386a59" font-size="13">reason / class / digest</text><text x="607" y="237" text-anchor="middle" fill="#386a59" font-size="13">ham materyal yok</text>
+          <rect x="765" y="75" width="160" height="92" rx="12" fill="#11253a"/><text x="845" y="110" text-anchor="middle" fill="#fff" font-size="17" font-weight="700">Canonical ledger</text><text x="845" y="135" text-anchor="middle" fill="#9edbe8" font-size="13">25 JSONL kayıt</text>
+          <rect x="765" y="220" width="160" height="92" rx="12" fill="#11253a"/><text x="845" y="255" text-anchor="middle" fill="#fff" font-size="17" font-weight="700">Rapor katmanı</text><text x="845" y="280" text-anchor="middle" fill="#9edbe8" font-size="13">hash doğrulamalı</text>
+          <g stroke="#527086" stroke-width="2" marker-end="url(#arrow2)" fill="none">
+            <path d="M190 172 L260 71"/><path d="M190 183 L260 161"/><path d="M190 200 L260 251"/><path d="M190 213 L260 335"/>
+            <path d="M440 71 C485 71 485 151 520 158"/><path d="M440 161 L520 177"/><path d="M440 251 L520 210"/><path d="M440 335 C490 335 485 231 520 224"/>
+            <path d="M695 175 L765 130"/><path d="M845 167 L845 220"/>
+          </g>
+        </g>
+      </svg>
+    </div>
+
+    <h2>İddia matrisi</h2>
+    <table class="decision-table">
+      <thead><tr><th>İfade</th><th>Bu raporda yapılır mı?</th><th>Gerekçe</th></tr></thead>
+      <tbody>
+        <tr><td>Yerel oracle belirtilen girdiyi kabul/ret eder.</td><td><span class="status accept">Evet</span></td><td>Karar, typed input ve sabit kaynak kuralı ile yeniden üretilebilir.</td></tr>
+        <tr><td>Windows laboratuvarında belirtilen durum gözlendi.</td><td><span class="status accept">Evet</span></td><td>Topoloji, checkpoint ve manifest fingerprint'i ile sınırlandırılmıştır.</td></tr>
+        <tr><td>Microsoft Entra barındırılan hizmeti şu şekilde davranır.</td><td><span class="status skip">Hayır</span></td><td>Disposable tenant bağlamı yoktur; gate dış istek üretmeden kapanmıştır.</td></tr>
+        <tr><td>Bir ürün güvenlik sapması doğrulanmıştır.</td><td><span class="status skip">Hayır</span></td><td>Bağımsız ürün davranışı ve etki doğrulaması yapılmamıştır.</td></tr>
+        <tr><td>CWE/CVSS atanmalıdır.</td><td><span class="status skip">Hayır</span></td><td>Etki ve ürün yüzeyi doğrulanmadan sınıflandırma yapılmaz.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section id="formal-method" class="chapter">
+    <div class="chapter-head" data-index="03">
+      <div class="kicker">Formal yöntem</div>
+      <h1>Spesifikasyondan çalıştırılabilir invariyanta</h1>
+      <p>Metinsel gereksinimler typed predicates, explicit clocks, bounded arithmetic ve normalize neden kodlarına dönüştürülür.</p>
+    </div>
+
+    <h2>İnvariyant şeması</h2>
+    <p>Her katalog girdisi yedi zorunlu semantik taşır: benzersiz rule ID, source ID, kaynak bölümü, kısa normatif özet, evidence class, en az bir positive case ve negative ya da observe case. Source ID ayrıca başlık, revizyon ve HTTPS primary URL ile bağlanır.</p>
+    <div class="equation">Invariant := (id, source, revision, section, summary, evidence_class, cases)</div>
+    <p>Bu bağ, test adının tek başına normatif anlam taşıdığı varsayımını ortadan kaldırır. Test, ancak hangi kaynak bölümünü ve hangi karar sınıfını temsil ettiğiyle birlikte denetlenebilir.</p>
+
+    <h3>Karar fonksiyonunun özellikleri</h3>
+    <div class="grid-2">
+      <div class="card"><h4>Deterministik</h4><p>Aynı typed input, aynı injected clock, aynı policy profile ve aynı source revision aynı karar ve reason code üretir.</p></div>
+      <div class="card"><h4>Fail-closed</h4><p>Eksik alan, tip belirsizliği, bilinmeyen reason code veya karşılanmayan önkoşul başarıya normalize edilmez.</p></div>
+      <div class="card"><h4>Bağlam korunumu</h4><p>Tenant, application, issuer, subject, audience, actor ve target gibi eksenler birbirine karıştırılmaz.</p></div>
+      <div class="card"><h4>Kanıt sınıfı korunumu</h4><p>Bir local-adapter sonucu windows-observation veya hosted-service iddiasına otomatik yükseltilmez.</p></div>
+    </div>
+
+    <h2>Sınır değer yaklaşımı</h2>
+    <p>Zaman, uzunluk ve offset kararlarında yalnızca tipik geçerli örnekler kullanılmadı. Eşitlik noktaları, bir önceki ve bir sonraki değer, negatif sayılar, boolean-as-integer durumu, aşırı descriptor sayısı, misalignment, overlap, duplicate singleton ve repeated identifier durumları property testlerle kapsandı.</p>
+    <div class="equation">accepted_time := (nbf - skew) &lt;= now &lt;= (exp + skew)  AND  iat &lt;= (now + future_tolerance)</div>
+    <div class="equation">contained_region := offset % 8 == 0  AND  0 &lt; size &lt;= limit  AND  offset &lt;= total - size</div>
+    <p>İkinci ifade, <code>offset + size</code> toplamını doğrudan hesaplamadan önce <code>offset &lt;= total - size</code> biçiminde kontrol ederek sabit-width aritmetik için overflow-safe bir sözleşme kurar.</p>
+
+    <h2>Reason code disiplini</h2>
+    <p>Serbest metin hata mesajları kanıt formatına taşınmaz. Her karar enum ile tanımlı, bounded ve lower-case bir reason code kullanır. Bu yaklaşım; dil, platform veya exception metni değişse bile evidence diff'lerinin semantik kalmasını sağlar.</p>
+    <div class="callout boundary">
+      <h4>Negatif test ile ürün etkisi arasındaki ayrım</h4>
+      <p>Bir oracle'ın girdiyi reddetmesi, gerçek bir hizmetin aynı girdiyi kabul ettiği veya bu farkın güvenlik etkisi taşıdığı anlamına gelmez. Ürün davranışı bağımsız olarak gözlenmeden karşılaştırmalı sonuç kurulmaz.</p>
+    </div>
+
+    <h2>Katalog kapsamı</h2>
+    <table>
+      <thead><tr><th>Kod</th><th>Alan</th><th class="num">İnvariyant</th><th class="num">Normalize gözlem</th></tr></thead>
+      <tbody><tr><td><span class="domain domain-ckt">CKT</span></td><td>Cloud Kerberos Trust</td><td class="num">4</td><td class="num">4</td></tr>
+<tr><td><span class="domain domain-dmsa">DMSA</span></td><td>Delegated Managed Service Account</td><td class="num">8</td><td class="num">13</td></tr>
+<tr><td><span class="domain domain-oidc">OIDC</span></td><td>OpenID Connect</td><td class="num">4</td><td class="num">0</td></tr>
+<tr><td><span class="domain domain-pac">PAC</span></td><td>MS-PAC / MS-KILE</td><td class="num">8</td><td class="num">6</td></tr>
+<tr><td><span class="domain domain-sts">STS</span></td><td>OAuth 2.0 Token Exchange</td><td class="num">5</td><td class="num">0</td></tr>
+<tr><td><span class="domain domain-wif">WIF</span></td><td>Workload Identity Federation</td><td class="num">8</td><td class="num">2</td></tr></tbody>
+    </table>
+  </section>
+
+  <section id="laboratory-architecture" class="chapter">
+    <div class="chapter-head" data-index="04">
+      <div class="kicker">Laboratuvar</div>
+      <h1>İzole üç node Active Directory topolojisi</h1>
+      <p>Derleme ve property testleri Ubuntu'da; directory, Kerberos ve dMSA gözlemleri private Hyper-V segmentinde yürütülür.</p>
+    </div>
+
+    <div id="architecture-map" class="visual">
+      <div class="visual-title"><span>Şekil 3 - Çalıştırma ve kanıt topolojisi</span><small>host koordinasyon / VM doğrulama</small></div>
+      <svg viewBox="0 0 980 560" role="img" aria-label="Host, Ubuntu ve üç Windows Server node içeren izole laboratuvar topolojisi">
+        <defs><marker id="arrow3" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#4f6d80"/></marker></defs>
+        <rect width="980" height="560" fill="#fbfdff"/>
+        <g font-family="Segoe UI, Arial">
+          <rect x="24" y="24" width="932" height="512" rx="18" fill="none" stroke="#b54889" stroke-width="3" stroke-dasharray="10 7"/>
+          <text x="45" y="56" fill="#8c356b" font-size="16" font-weight="700">İZOLE HYPER-V LAB SINIRI</text>
+          <rect x="55" y="90" width="250" height="160" rx="14" fill="#dff8fc" stroke="#00b8d9" stroke-width="2"/>
+          <text x="180" y="125" text-anchor="middle" fill="#073f4a" font-size="19" font-weight="700">Bluex-Ubuntu</text>
+          <text x="180" y="153" text-anchor="middle" fill="#376471" font-size="14">Ubuntu 24.04.5 LTS</text>
+          <text x="180" y="178" text-anchor="middle" fill="#376471" font-size="14">Python 3.12.3</text>
+          <text x="180" y="205" text-anchor="middle" fill="#376471" font-size="13">build / pytest / property tests</text>
+          <text x="180" y="226" text-anchor="middle" fill="#376471" font-size="13">manifest verify / report render</text>
+          <rect x="55" y="305" width="250" height="142" rx="14" fill="#11253a"/>
+          <text x="180" y="343" text-anchor="middle" fill="#fff" font-size="19" font-weight="700">Host koordinasyon</text>
+          <text x="180" y="373" text-anchor="middle" fill="#a9c3d1" font-size="14">Git ve artifact sync</text>
+          <text x="180" y="400" text-anchor="middle" fill="#a9c3d1" font-size="13">derleme ve protokol testi yok</text>
+          <text x="180" y="425" text-anchor="middle" fill="#a9c3d1" font-size="13">raw kanıt kalıcı değil</text>
+          <rect x="380" y="90" width="540" height="357" rx="16" fill="#fff3d6" stroke="#e39a18" stroke-width="2"/>
+          <text x="650" y="123" text-anchor="middle" fill="#68460d" font-size="18" font-weight="700">Bluex-Identity private switch</text>
+          <text x="650" y="147" text-anchor="middle" fill="#806d45" font-size="13">NAT yok / default route yok / statik adresler</text>
+          <rect x="415" y="180" width="140" height="120" rx="12" fill="#fff" stroke="#9d6a11" stroke-width="2"/>
+          <text x="485" y="214" text-anchor="middle" fill="#4e3a17" font-size="17" font-weight="700">ID-DC01</text>
+          <text x="485" y="241" text-anchor="middle" fill="#6b5b3e" font-size="13">RWDC</text>
+          <text x="485" y="265" text-anchor="middle" fill="#6b5b3e" font-size="12">schema 91</text>
+          <text x="485" y="286" text-anchor="middle" fill="#6b5b3e" font-size="12">write authority</text>
+          <rect x="580" y="180" width="140" height="120" rx="12" fill="#fff" stroke="#9d6a11" stroke-width="2"/>
+          <text x="650" y="214" text-anchor="middle" fill="#4e3a17" font-size="17" font-weight="700">ID-RODC01</text>
+          <text x="650" y="241" text-anchor="middle" fill="#6b5b3e" font-size="13">RODC</text>
+          <text x="650" y="265" text-anchor="middle" fill="#6b5b3e" font-size="12">read-only boundary</text>
+          <text x="650" y="286" text-anchor="middle" fill="#6b5b3e" font-size="12">ticket origin</text>
+          <rect x="745" y="180" width="140" height="120" rx="12" fill="#fff" stroke="#9d6a11" stroke-width="2"/>
+          <text x="815" y="214" text-anchor="middle" fill="#4e3a17" font-size="17" font-weight="700">ID-SRV01</text>
+          <text x="815" y="241" text-anchor="middle" fill="#6b5b3e" font-size="13">member server</text>
+          <text x="815" y="265" text-anchor="middle" fill="#6b5b3e" font-size="12">service logon</text>
+          <text x="815" y="286" text-anchor="middle" fill="#6b5b3e" font-size="12">secure channel</text>
+          <rect x="445" y="350" width="410" height="60" rx="12" fill="#f9e7f2" stroke="#b54889"/>
+          <text x="650" y="375" text-anchor="middle" fill="#65304f" font-size="15" font-weight="700">Exact checkpoint set + graph digest gate</text>
+          <text x="650" y="397" text-anchor="middle" fill="#76566b" font-size="12">her mutating case öncesi restore / her case sonrası doğrulama</text>
+          <g fill="none" stroke="#4f6d80" stroke-width="2" marker-end="url(#arrow3)">
+            <path d="M305 171 L380 171"/><path d="M305 376 L380 376"/>
+            <path d="M555 240 L580 240"/><path d="M720 240 L745 240"/>
+            <path d="M650 300 L650 350"/>
+          </g>
+          <rect x="380" y="476" width="540" height="38" rx="8" fill="#e0f5ec" stroke="#17845b"/>
+          <text x="650" y="501" text-anchor="middle" fill="#165b42" font-size="14" font-weight="700">Dış yönlendirme yok - laboratuvar gözlemi topology fingerprint ile sınırlı</text>
+        </g>
+      </svg>
+    </div>
+
+    <h2>Ortam fingerprint'i</h2>
+    <table><thead><tr><th>Bileşen</th><th>Doğrulanmış değer</th></tr></thead><tbody><tr><td class="mono">seed</td><td>20261030</td></tr>
+<tr><td class="mono">topology</td><td>ID-DC01, ID-RODC01, and ID-SRV01 on private Bluex-Identity; no default route</td></tr>
+<tr><td class="mono">ubuntu</td><td>Ubuntu 24.04.5 LTS; Python 3.12.3</td></tr>
+<tr><td class="mono">windows</td><td>Windows Server 2025 build 26100; forest and domain mode 2025; schema 91</td></tr></tbody></table>
+
+    <h2>Mutasyon güvenliği</h2>
+    <ol>
+      <li>Mutating case başlamadan önce üç VM exact checkpoint setine döndürülür.</li>
+      <li>AD Web Services readiness ve domain health doğrulanır.</li>
+      <li>Baseline graph digest RWDC ve RODC perspektifinden kontrol edilir.</li>
+      <li>Member secure channel doğrulanır; varsayılan route bulunmadığı teyit edilir.</li>
+      <li>Case yürütülür, yalnızca allow-listed alanlar normalize edilir.</li>
+      <li>Raw ticket, token, credential ve directory response committed tree'ye girmez.</li>
+      <li>Case sonunda checkpoint restore ve digest doğrulaması tekrarlanır.</li>
+    </ol>
+    <div class="callout success"><h4>Restore sonucu</h4><p>Exact checkpoint restoration, üç node için baseline graph digest'lerini yeniden üretti. dMSA Undo ve Reset işlemleri state ve linkleri geri getirse de member enrollment'ı temizledi; bu nedenle tam temizlik için checkpoint restore zorunlu kaldı.</p></div>
+  </section>
+
+  <section id="workload-identity" class="chapter">
+    <div class="chapter-head" data-index="05">
+      <div class="kicker">Workload Identity Federation</div>
+      <h1>JWT assertion, FIC bağlamı ve typed claim sözleşmeleri</h1>
+      <p>Karar sırası, anahtar güvenini claim eşlemesinden önce kurar; tip ve bağlam kaybını kabul etmez.</p>
+    </div>
+
+    <p class="lead">Federated credential seçimi yalnızca issuer-subject-audience üçlüsü değildir. Çalışma, seçim bağlamını tenant, application object, client ID, credential resource, issuer, subject matcher ve audience eksenlerinin tamamı olarak tanımlar.</p>
+
+    <div id="wif-state-machine" class="visual">
+      <div class="visual-title"><span>Şekil 4 - JWT assertion değerlendirme durum makinesi</span><small>RFC 7523 + FIC binding</small></div>
+      <svg viewBox="0 0 980 430" role="img" aria-label="JWT assertion parse, key trust, typed claims, exact binding, time and replay state machine">
+        <defs><marker id="arrow4" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#4c697d"/></marker></defs>
+        <rect width="980" height="430" fill="#fbfdff"/>
+        <g font-family="Segoe UI, Arial">
+          <g fill="#dff8fc" stroke="#00a6c3" stroke-width="2">
+            <rect x="35" y="55" width="125" height="68" rx="12"/><rect x="195" y="55" width="125" height="68" rx="12"/><rect x="355" y="55" width="125" height="68" rx="12"/><rect x="515" y="55" width="125" height="68" rx="12"/><rect x="675" y="55" width="125" height="68" rx="12"/><rect x="835" y="55" width="110" height="68" rx="12"/>
+          </g>
+          <g fill="#123f4b" font-size="14" font-weight="700" text-anchor="middle">
+            <text x="97" y="83">JSON parse</text><text x="97" y="104" font-size="11" font-weight="400">duplicate yok</text>
+            <text x="257" y="83">Key trust</text><text x="257" y="104" font-size="11" font-weight="400">alg / kid / validity</text>
+            <text x="417" y="83">Typed claims</text><text x="417" y="104" font-size="11" font-weight="400">coercion yok</text>
+            <text x="577" y="83">Exact tuple</text><text x="577" y="104" font-size="11" font-weight="400">iss / sub / aud</text>
+            <text x="737" y="83">Time</text><text x="737" y="104" font-size="11" font-weight="400">one clock</text>
+            <text x="890" y="83">Replay</text><text x="890" y="104" font-size="11" font-weight="400">profile policy</text>
+          </g>
+          <g fill="none" stroke="#4c697d" stroke-width="2" marker-end="url(#arrow4)">
+            <path d="M160 89 L195 89"/><path d="M320 89 L355 89"/><path d="M480 89 L515 89"/><path d="M640 89 L675 89"/><path d="M800 89 L835 89"/>
+          </g>
+          <rect x="340" y="180" width="300" height="108" rx="14" fill="#e0f5ec" stroke="#17845b" stroke-width="2"/>
+          <text x="490" y="214" text-anchor="middle" fill="#155b41" font-size="18" font-weight="700">Credential context binding</text>
+          <text x="490" y="242" text-anchor="middle" fill="#386a59" font-size="13">tenant + app object + client ID + credential</text>
+          <text x="490" y="266" text-anchor="middle" fill="#386a59" font-size="13">issuer + subject matcher + audience</text>
+          <path d="M577 123 L577 180" fill="none" stroke="#4c697d" stroke-width="2" marker-end="url(#arrow4)"/>
+          <rect x="70" y="335" width="240" height="58" rx="12" fill="#fce7e9" stroke="#ba3b46"/>
+          <text x="190" y="359" text-anchor="middle" fill="#792630" font-size="15" font-weight="700">Reject + stable reason</text><text x="190" y="380" text-anchor="middle" fill="#8b4e55" font-size="11">ilk başarısız invariyant</text>
+          <rect x="670" y="335" width="240" height="58" rx="12" fill="#e0f5ec" stroke="#17845b"/>
+          <text x="790" y="359" text-anchor="middle" fill="#155b41" font-size="15" font-weight="700">Accept / observe</text><text x="790" y="380" text-anchor="middle" fill="#386a59" font-size="11">profile-bound decision</text>
+          <path d="M340 240 C230 240 230 335 230 335" fill="none" stroke="#ba3b46" stroke-width="2" marker-end="url(#arrow4)"/>
+          <path d="M640 240 C750 240 750 335 750 335" fill="none" stroke="#17845b" stroke-width="2" marker-end="url(#arrow4)"/>
+          <text x="250" y="218" fill="#ba3b46" font-size="12">herhangi bir kapı kapalı</text>
+          <text x="684" y="218" fill="#17845b" font-size="12">tüm zorunlu kapılar açık</text>
+        </g>
+      </svg>
+    </div>
+
+    <h2>Sekiz WIF invariyantı</h2>
+    <table>
+      <thead><tr><th>ID</th><th>Sözleşme</th><th>Kritik ayrım</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">WIF-TRANSPORT-001</td><td>Client credentials akışı JWT bearer client assertion ve tek resource default scope kullanır.</td><td>RFC 8693 token-exchange request biçimi ile karıştırılmaz.</td></tr>
+        <tr><td class="mono">WIF-TYPE-001</td><td>Issuer/subject string, temporal claims NumericDate, audience scalar veya array semantiğinde kalır.</td><td>Boolean integer gibi kabul edilmez; object/string coercion yoktur.</td></tr>
+        <tr><td class="mono">WIF-MATCH-001</td><td>Standart issuer, subject ve audience karşılaştırmaları exact ve case-sensitive'dir.</td><td>Trailing slash, whitespace ve Unicode normalization sessizce uygulanmaz.</td></tr>
+        <tr><td class="mono">WIF-BIND-001</td><td>Credential seçimi tenant ve application context ile birlikte bağlanır.</td><td>Cross-tenant veya cross-application eşleşme tamamlanmış sayılmaz.</td></tr>
+        <tr><td class="mono">WIF-TIME-001</td><td>Expiration zorunludur; temporal kararlar tek injected clock ve explicit skew kullanır.</td><td>Farklı alanlar farklı saat okumaz.</td></tr>
+        <tr><td class="mono">WIF-REPLAY-001</td><td>Repeated JWT ID, profile one-time use tanımlamıyorsa gözlem olarak kalır.</td><td>Spec gerektirmeden evrensel replay reddi uydurulmaz.</td></tr>
+        <tr><td class="mono">WIF-FLEX-001</td><td>Flexible credential subject veya desteklenen claim expression kullanır ve immutable anchor'ı korur.</td><td>Subject ile expression aynı anda etkin değildir.</td></tr>
+        <tr><td class="mono">WIF-KEY-001</td><td>Algorithm ve trusted issuer key doğrulaması claim policy'den önce tamamlanır.</td><td>Untrusted key ile doğru claim tuple'ı kabul edilmez.</td></tr>
+      </tbody>
+    </table>
+
+    <h2>Zaman ve replay modeli</h2>
+    <p>Clock bağımlılığı constructor üzerinden enjekte edilir. Bu sayede expiration eşitliği, future issued-at toleransı ve nonce/JTI retention penceresi duvar saatine bağlı flaky testler olmadan ölçülür. Tekrar kullanım politikası profile-specific tutulur: bir profil repeated JTI'yi enforce edebilirken diğeri yalnızca observe edebilir.</p>
+    <div class="callout info"><h4>Kapalı Entra gözlem kapısı</h4><p>Disposable tenant context mevcut olmadığı için Ubuntu ve Windows gözlem yolları <code>tenant_context_missing</code> ile atlandı. Dış istek sayısı sıfır kaldı; bu atlama, canlı hizmet davranışına ilişkin olumlu veya olumsuz sonuç değildir.</p></div>
+  </section>
+
+  <section id="token-exchange" class="chapter">
+    <div class="chapter-head" data-index="06">
+      <div class="kicker">RFC 8693</div>
+      <h1>Token Exchange: çokluluk, actor ve rights product</h1>
+      <p>Parser, request parametrelerini policy kararından önce kayıpsız ve tip güvenli biçimde normalleştirir.</p>
+    </div>
+
+    <p class="lead">RFC 8693 doğrulamasındaki ana risk, eksik alan kadar fazla alanın sessizce kaybolmasıdır. Uygulama repeated resource ve audience değerlerini korur; singleton tekrarlarını reddeder; actor token ile actor token type'ı atomik işler.</p>
+
+    <div id="token-exchange-flow" class="visual">
+      <div class="visual-title"><span>Şekil 5 - Token exchange karar akışı</span><small>request shape -> policy product</small></div>
+      <svg viewBox="0 0 980 470" role="img" aria-label="Token exchange required fields, actor pair, target, rights product and lifetime validation flow">
+        <defs><marker id="arrow5" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#4e6c80"/></marker></defs>
+        <rect width="980" height="470" fill="#fbfdff"/>
+        <g font-family="Segoe UI, Arial">
+          <rect x="40" y="40" width="210" height="100" rx="14" fill="#11253a"/>
+          <text x="145" y="74" text-anchor="middle" fill="#fff" font-size="17" font-weight="700">Raw form parameters</text>
+          <text x="145" y="101" text-anchor="middle" fill="#a7c3d2" font-size="12">order + multiplicity retained</text>
+          <text x="145" y="122" text-anchor="middle" fill="#a7c3d2" font-size="12">duplicate singleton visible</text>
+          <rect x="330" y="25" width="270" height="80" rx="12" fill="#dff8fc" stroke="#00a6c3" stroke-width="2"/>
+          <text x="465" y="56" text-anchor="middle" fill="#0a4653" font-size="16" font-weight="700">1. Required subject tuple</text>
+          <text x="465" y="80" text-anchor="middle" fill="#3d6670" font-size="12">grant + subject token + token type</text>
+          <rect x="330" y="125" width="270" height="80" rx="12" fill="#dff8fc" stroke="#00a6c3" stroke-width="2"/>
+          <text x="465" y="156" text-anchor="middle" fill="#0a4653" font-size="16" font-weight="700">2. Actor atomicity</text>
+          <text x="465" y="180" text-anchor="middle" fill="#3d6670" font-size="12">token XOR type forbidden; identity distinct</text>
+          <rect x="330" y="225" width="270" height="80" rx="12" fill="#dff8fc" stroke="#00a6c3" stroke-width="2"/>
+          <text x="465" y="256" text-anchor="middle" fill="#0a4653" font-size="16" font-weight="700">3. Target syntax</text>
+          <text x="465" y="280" text-anchor="middle" fill="#3d6670" font-size="12">absolute resource URI; no fragment</text>
+          <rect x="330" y="325" width="270" height="80" rx="12" fill="#fff3d6" stroke="#e39a18" stroke-width="2"/>
+          <text x="465" y="356" text-anchor="middle" fill="#6e4b0f" font-size="16" font-weight="700">4. Rights product</text>
+          <text x="465" y="380" text-anchor="middle" fill="#806c44" font-size="12">scope x target; silent drop forbidden</text>
+          <rect x="690" y="90" width="235" height="110" rx="14" fill="#e0f5ec" stroke="#17845b" stroke-width="2"/>
+          <text x="807" y="125" text-anchor="middle" fill="#155b41" font-size="17" font-weight="700">Profile decision</text>
+          <text x="807" y="151" text-anchor="middle" fill="#386a59" font-size="12">subject / actor separate</text>
+          <text x="807" y="174" text-anchor="middle" fill="#386a59" font-size="12">target set complete</text>
+          <rect x="690" y="275" width="235" height="95" rx="14" fill="#f9e7f2" stroke="#b54889" stroke-width="2"/>
+          <text x="807" y="310" text-anchor="middle" fill="#65304f" font-size="17" font-weight="700">Lifetime semantics</text>
+          <text x="807" y="337" text-anchor="middle" fill="#76566b" font-size="12">input not consumed unless</text>
+          <text x="807" y="358" text-anchor="middle" fill="#76566b" font-size="12">selected profile says so</text>
+          <g fill="none" stroke="#4e6c80" stroke-width="2" marker-end="url(#arrow5)">
+            <path d="M250 90 L330 65"/><path d="M250 90 C295 90 295 165 330 165"/>
+            <path d="M250 90 C285 90 285 265 330 265"/><path d="M250 90 C275 90 275 365 330 365"/>
+            <path d="M600 65 C655 65 655 125 690 135"/><path d="M600 165 L690 150"/><path d="M600 265 L690 175"/><path d="M600 365 C650 365 650 190 690 180"/>
+            <path d="M807 200 L807 275"/>
+          </g>
+          <rect x="330" y="430" width="595" height="24" rx="8" fill="#fce7e9"/>
+          <text x="627" y="447" text-anchor="middle" fill="#8d2f39" font-size="12" font-weight="700">Her kapı stable reason code ile fail-closed; hedef veya hak sessizce düşmez.</text>
+        </g>
+      </svg>
+    </div>
+
+    <h2>Beş temel sözleşme</h2>
+    <table>
+      <thead><tr><th>ID</th><th>Predicate</th><th>Negatif sınırlar</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">STS-REQ-001</td><td>Grant type, subject token ve subject token type mevcut ve type-consistent.</td><td>Her zorunlu alanın tek tek eksikliği.</td></tr>
+        <tr><td class="mono">STS-ACTOR-001</td><td>Actor token/type birlikte bulunur; normalized actor subject ile aynı değildir.</td><td>Half pair ve collapsed identity.</td></tr>
+        <tr><td class="mono">STS-TARGET-001</td><td>Resource absolute, fragment-free URI; audience unambiguous identifier.</td><td>Relative URI, fragment ve ambiguous audience.</td></tr>
+        <tr><td class="mono">STS-RIGHTS-001</td><td>Requested rights, scope ve target'ın tam kartesyen ürününü korur.</td><td>Unauthorized pair ve silent target loss.</td></tr>
+        <tr><td class="mono">STS-LIFETIME-001</td><td>Input token consumption/coupling yalnızca seçili profile açıkça aitse uygulanır.</td><td>Spec'te olmayan global lifetime coupling.</td></tr>
+      </tbody>
+    </table>
+
+    <h2>Transport profile ayrımı</h2>
+    <p>Entra WIF client credentials request ile RFC 8693 token exchange aynı HTTP form familyasını kullanabilse de semantik olarak farklı profillerdir. Harness, <code>grant_type</code>, assertion transport field'ları, subject token, actor token ve requested target alanlarını profil kimliğiyle birlikte değerlendirir. Böylece bir request'in yalnızca benzer parametre isimleri nedeniyle yanlış state machine'e girmesi engellenir.</p>
+  </section>
+
+  <section id="openid-connect" class="chapter">
+    <div class="chapter-head" data-index="07">
+      <div class="kicker">OpenID Connect</div>
+      <h1>Issuer, audience, nonce ve ortak zaman ekseni</h1>
+      <p>ID token değerlendirmesi discovery issuer, registered client, sent nonce ve policy clock bağlamında yapılır.</p>
+    </div>
+
+    <h2>OIDC karar sırası</h2>
+    <ol>
+      <li><strong>Issuer exact match:</strong> Discovered issuer identifier ile token <code>iss</code> değeri byte-level string semantiğinde karşılaştırılır; case veya trailing slash normalizasyonu yapılmaz.</li>
+      <li><strong>Audience membership:</strong> Registered client audience setinde bulunmalıdır. Ek audience varsa her ek değer explicit trusted set içinde olmalıdır.</li>
+      <li><strong>Nonce binding:</strong> Authorization request'te nonce gönderildiyse ID token aynı nonce'u taşır. Kabul edilen nonce local replay policy içinde tek kullanımlık tüketilir.</li>
+      <li><strong>Temporal consistency:</strong> <code>exp</code>, <code>iat</code>, isteğe bağlı <code>auth_time</code>, <code>max_age</code> ve nonce retention aynı injected clock'tan türetilir.</li>
+    </ol>
+
+    <div class="grid-2">
+      <div class="card"><h3>Audience invariant</h3><div class="equation">client_id in aud  AND  (aud - trusted_audiences) == empty</div><p>Client bulunması tek başına yeterli değildir; bilinmeyen ek audience kararın kapanmasına neden olur.</p></div>
+      <div class="card"><h3>Nonce invariant</h3><div class="equation">sent_nonce != null  =>  token_nonce == sent_nonce  AND  consume_once(sent_nonce)</div><p>Gönderilen nonce'un token'da olmaması, farklı olması veya daha önce tüketilmiş olması ayrı reason code üretir.</p></div>
+    </div>
+
+    <h2>Zaman sınırları</h2>
+    <p>Property testler expiration sınırının skew sonrası exclusivity davranışını, not-before sınırının inclusivity davranışını, far-past ve future issued-at durumlarını ve boolean NumericDate girdilerini kapsar. <code>auth_time</code>, yalnızca <code>max_age</code> talep edildiğinde typed ve policy-bound bir zorunluluğa dönüşür.</p>
+    <div class="callout success"><h4>Deterministik nonce expiry</h4><p>Nonce store duvar saatini doğrudan okumaz. Test clock ilerletildiğinde tam retention sınırında karar tekrar üretilebilir; test suite zamanlamaya bağlı bekleme kullanmaz.</p></div>
+
+    <h2>OIDC invariyant özeti</h2>
+    <table>
+      <thead><tr><th>ID</th><th>Bağ</th><th>Temel negatif case</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">OIDC-ISS-001</td><td>Token issuer = discovered issuer</td><td>case-change, trailing slash</td></tr>
+        <tr><td class="mono">OIDC-AUD-001</td><td>Registered client present; no untrusted additional audience</td><td>client absent, untrusted extra</td></tr>
+        <tr><td class="mono">OIDC-NONCE-001</td><td>Sent nonce present, equal, fresh and consumed once</td><td>missing, mismatch, reuse</td></tr>
+        <tr><td class="mono">OIDC-TIME-001</td><td>exp/iat/auth_time/retention share one clock</td><td>expired, future iat, old auth_time</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section id="ms-pac" class="chapter">
+    <div class="chapter-head" data-index="08">
+      <div class="kicker">MS-PAC / MS-KILE</div>
+      <h1>Bounded yapı ayrıştırma ve ticket-origin bağlamı</h1>
+      <p>Parser, PACTYPE descriptor tablosunu ve her buffer bölgesini doğrulamadan typed içerik sunmaz.</p>
+    </div>
+
+    <p class="lead">PAC doğrulaması yalnızca buffer type listesini okumak değildir. Descriptor count, descriptor table arithmetic, sekiz bayt alignment, offset-size containment, overlap, per-buffer limit, SID exact length ve signature shape aynı yapısal güven sınırının parçalarıdır.</p>
+
+    <div id="pac-bounds-model" class="visual">
+      <div class="visual-title"><span>Şekil 6 - PACTYPE bounded region modeli</span><small>descriptor table + contained buffers</small></div>
+      <svg viewBox="0 0 980 500" role="img" aria-label="PAC header, descriptor table, aligned buffer regions and validation gates">
+        <rect width="980" height="500" fill="#fbfdff"/>
+        <g font-family="Segoe UI, Arial">
+          <text x="45" y="42" fill="#26384b" font-size="17" font-weight="700">PACTYPE byte container</text>
+          <rect x="45" y="65" width="890" height="140" rx="10" fill="#eef2f6" stroke="#6c7a89" stroke-width="2"/>
+          <rect x="55" y="78" width="150" height="112" rx="8" fill="#11253a"/>
+          <text x="130" y="113" text-anchor="middle" fill="#fff" font-size="15" font-weight="700">Header</text>
+          <text x="130" y="140" text-anchor="middle" fill="#a9c2d0" font-size="12">cBuffers</text><text x="130" y="163" text-anchor="middle" fill="#a9c2d0" font-size="12">version</text>
+          <rect x="220" y="78" width="270" height="112" rx="8" fill="#dff8fc" stroke="#00a6c3"/>
+          <text x="355" y="107" text-anchor="middle" fill="#0b4653" font-size="15" font-weight="700">PAC_INFO_BUFFER[]</text>
+          <text x="355" y="133" text-anchor="middle" fill="#3b6570" font-size="12">type / size / offset</text>
+          <text x="355" y="158" text-anchor="middle" fill="#3b6570" font-size="12">count x descriptor-size bounded</text>
+          <rect x="505" y="78" width="120" height="112" rx="8" fill="#e0f5ec" stroke="#17845b"/>
+          <text x="565" y="112" text-anchor="middle" fill="#155b41" font-size="14" font-weight="700">Buffer A</text><text x="565" y="139" text-anchor="middle" fill="#386a59" font-size="11">offset % 8 = 0</text><text x="565" y="162" text-anchor="middle" fill="#386a59" font-size="11">contained</text>
+          <rect x="640" y="78" width="105" height="112" rx="8" fill="#fff3d6" stroke="#e39a18"/>
+          <text x="692" y="112" text-anchor="middle" fill="#69470d" font-size="14" font-weight="700">Gap</text><text x="692" y="139" text-anchor="middle" fill="#7b6947" font-size="11">padding</text>
+          <rect x="760" y="78" width="160" height="112" rx="8" fill="#e0f5ec" stroke="#17845b"/>
+          <text x="840" y="112" text-anchor="middle" fill="#155b41" font-size="14" font-weight="700">Buffer B</text><text x="840" y="139" text-anchor="middle" fill="#386a59" font-size="11">no overlap</text><text x="840" y="162" text-anchor="middle" fill="#386a59" font-size="11">type-specific shape</text>
+          <g transform="translate(45 250)">
+            <rect x="0" y="0" width="205" height="80" rx="10" fill="#fce7e9" stroke="#ba3b46"/><text x="102" y="30" text-anchor="middle" fill="#7b2932" font-size="15" font-weight="700">1. Count gate</text><text x="102" y="55" text-anchor="middle" fill="#8a5258" font-size="11">table arithmetic bounded</text>
+            <rect x="225" y="0" width="205" height="80" rx="10" fill="#f9e7f2" stroke="#b54889"/><text x="327" y="30" text-anchor="middle" fill="#65304f" font-size="15" font-weight="700">2. Region gate</text><text x="327" y="55" text-anchor="middle" fill="#76566b" font-size="11">alignment / containment</text>
+            <rect x="450" y="0" width="205" height="80" rx="10" fill="#fff3d6" stroke="#e39a18"/><text x="552" y="30" text-anchor="middle" fill="#69470d" font-size="15" font-weight="700">3. Layout gate</text><text x="552" y="55" text-anchor="middle" fill="#7b6947" font-size="11">overlap / zero / ceiling</text>
+            <rect x="675" y="0" width="205" height="80" rx="10" fill="#dff8fc" stroke="#00a6c3"/><text x="777" y="30" text-anchor="middle" fill="#0b4653" font-size="15" font-weight="700">4. Typed gate</text><text x="777" y="55" text-anchor="middle" fill="#3b6570" font-size="11">SID / attr / signature</text>
+          </g>
+          <rect x="165" y="385" width="650" height="70" rx="12" fill="#11253a"/>
+          <text x="490" y="414" text-anchor="middle" fill="#fff" font-size="16" font-weight="700">Typed PAC buffers exposed only after all structural gates</text>
+          <text x="490" y="439" text-anchor="middle" fill="#a7c3d2" font-size="12">unknown buffer preserved as bounded opaque metadata; raw bytes not persisted</text>
+        </g>
+      </svg>
+    </div>
+
+    <h2>Yapısal invariyantlar</h2>
+    <table>
+      <thead><tr><th>ID</th><th>Kontrol</th><th>Karar ayrıntısı</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">PAC-BOUNDS-001</td><td>Alignment ve contained region</td><td>Her offset sekiz bayt hizalı; offset-plus-size overflow-safe ve container içinde.</td></tr>
+        <tr><td class="mono">PAC-ORDER-001</td><td>Signature ordering</td><td>Server ve KDC signature konumları yapısal sözleşmeye göre değerlendirilir.</td></tr>
+        <tr><td class="mono">PAC-ATTR-001</td><td>PAC_ATTRIBUTES_INFO</td><td>32-bit flag rounding uygulanır; padding bitleri semantik flag sayılmaz.</td></tr>
+        <tr><td class="mono">PAC-REQ-001</td><td>PAC_REQUESTOR</td><td>SID revision, subauthority count ve exact buffer length birlikte doğrulanır.</td></tr>
+        <tr><td class="mono">PAC-SIG-001</td><td>Signature shape</td><td>Role, signature length ve context-bound identifier ayrıştırılır.</td></tr>
+        <tr><td class="mono">PAC-RODC-001</td><td>RODC identifier</td><td>KDC key version bağlamındaki RODC bileşeni ticket-origin ile ayrı tutulur.</td></tr>
+        <tr><td class="mono">PAC-TGS-001</td><td>TGS ticket construction</td><td>Service ticket issuance yalnızca bounded metadata ile gözlenir.</td></tr>
+        <tr><td class="mono">PAC-DLG-001</td><td>Domain-local processing</td><td>Gözlenen buffer seti grup işleme bağlamında normalize edilir; üyelik etkisi çıkarımsanmaz.</td></tr>
+      </tbody>
+    </table>
+
+    <h2>Windows ticket gözlemi</h2>
+    <p>RWDC ve RODC kaynaklı service ticket'lar ayrı, bounded capture akışlarında işlendi. Cache isolation ve requested KDC eşleşmesi doğrulandı. Normalized kayıt, buffer type setini, signature role sırasını, attributes/requestor presence bitlerini ve RODC identifier bağlamını tuttu; ticket byte'ları, session key veya reusable principal identifier saklanmadı.</p>
+
+    <div class="grid-2">
+      <div class="callout success"><h4>Gözlenen</h4><p>Service ticket buffer seti, server/KDC/ticket/extended-KDC signature rolleri ve RODC KDC identifier bağlamı ölçüldü.</p></div>
+      <div class="callout observe"><h4>Çözülmeyen sınır</h4><p>PAC requestor binding encrypted TGT içinde kaldığı için <code>PAC-REQ-001</code> bu laboratuvar kanıtıyla sonuçsuzdur. Service ticket gözlemi TGT requestor sonucuna yükseltilmedi.</p></div>
+    </div>
+
+    <h2>Parser kaynak limitleri</h2>
+    <p>Parser hem container toplam boyutuna hem descriptor sayısına hem de tekil buffer boyutuna üst sınır uygular. Büyük declared count, descriptor table aritmetiği yapılmadan reddedilir. Arbitrary bounded byte input property testi, parser'ın yalnızca ilan edilmiş hata sınıflarıyla çıkmasını ve hiçbir region'ın container dışına taşmamasını doğrular.</p>
+  </section>
+
+  <section id="dmsa" class="chapter">
+    <div class="chapter-head" data-index="09">
+      <div class="kicker">Delegated Managed Service Account</div>
+      <h1>Directory graph olarak yaşam döngüsü doğrulaması</h1>
+      <p>Komut başarısı tek başına yeterli değildir; state, link, ACL, enrollment ve authority birlikte ölçülür.</p>
+    </div>
+
+    <div id="dmsa-state-graph" class="visual">
+      <div class="visual-title"><span>Şekil 7 - dMSA migration graph ve otorite sınırı</span><small>predecessor / successor / member</small></div>
+      <svg viewBox="0 0 980 510" role="img" aria-label="Predecessor ve dMSA successor reciprocal links, temporary ACL, member enrollment and RWDC RODC boundary">
+        <defs><marker id="arrow7" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#536f82"/></marker></defs>
+        <rect width="980" height="510" fill="#fbfdff"/>
+        <g font-family="Segoe UI, Arial">
+          <rect x="60" y="65" width="235" height="140" rx="16" fill="#eef2f6" stroke="#6c7a89" stroke-width="2"/>
+          <text x="177" y="103" text-anchor="middle" fill="#304152" font-size="18" font-weight="700">Predecessor account</text>
+          <text x="177" y="132" text-anchor="middle" fill="#5d6c7b" font-size="13">legacy SPN / policy</text>
+          <text x="177" y="157" text-anchor="middle" fill="#5d6c7b" font-size="13">superseded-by link</text>
+          <text x="177" y="182" text-anchor="middle" fill="#5d6c7b" font-size="13">temporary permission edge</text>
+          <rect x="370" y="65" width="250" height="140" rx="16" fill="#f9e7f2" stroke="#b54889" stroke-width="2"/>
+          <text x="495" y="103" text-anchor="middle" fill="#65304f" font-size="18" font-weight="700">dMSA successor</text>
+          <text x="495" y="132" text-anchor="middle" fill="#76566b" font-size="13">migration state 0 / 1 / 2 / 3</text>
+          <text x="495" y="157" text-anchor="middle" fill="#76566b" font-size="13">supersedes link</text>
+          <text x="495" y="182" text-anchor="middle" fill="#76566b" font-size="13">SPN + policy destination</text>
+          <rect x="710" y="65" width="210" height="140" rx="16" fill="#dff8fc" stroke="#00a6c3" stroke-width="2"/>
+          <text x="815" y="103" text-anchor="middle" fill="#0b4653" font-size="18" font-weight="700">Member server</text>
+          <text x="815" y="132" text-anchor="middle" fill="#3b6570" font-size="13">explicit allow-list</text>
+          <text x="815" y="157" text-anchor="middle" fill="#3b6570" font-size="13">service logon scope</text>
+          <text x="815" y="182" text-anchor="middle" fill="#3b6570" font-size="13">secure channel</text>
+          <path d="M295 113 L370 113" stroke="#536f82" stroke-width="2" marker-end="url(#arrow7)"/><path d="M370 165 L295 165" stroke="#536f82" stroke-width="2" marker-end="url(#arrow7)"/>
+          <text x="332" y="100" text-anchor="middle" fill="#536f82" font-size="10">supersededBy</text><text x="332" y="187" text-anchor="middle" fill="#536f82" font-size="10">supersedes</text>
+          <path d="M620 135 L710 135" stroke="#536f82" stroke-width="2" marker-end="url(#arrow7)"/><text x="665" y="122" text-anchor="middle" fill="#536f82" font-size="10">enrollment</text>
+          <rect x="90" y="285" width="360" height="110" rx="14" fill="#e0f5ec" stroke="#17845b" stroke-width="2"/>
+          <text x="270" y="317" text-anchor="middle" fill="#155b41" font-size="17" font-weight="700">RWDC authority</text>
+          <text x="270" y="345" text-anchor="middle" fill="#386a59" font-size="13">documented write transition</text>
+          <text x="270" y="370" text-anchor="middle" fill="#386a59" font-size="13">replication + graph digest</text>
+          <rect x="530" y="285" width="360" height="110" rx="14" fill="#fff3d6" stroke="#e39a18" stroke-width="2"/>
+          <text x="710" y="317" text-anchor="middle" fill="#69470d" font-size="17" font-weight="700">RODC boundary</text>
+          <text x="710" y="345" text-anchor="middle" fill="#7b6947" font-size="13">local transition request observed</text>
+          <text x="710" y="370" text-anchor="middle" fill="#7b6947" font-size="13">write authority ayrı sınıflandırılır</text>
+          <rect x="190" y="440" width="600" height="42" rx="10" fill="#11253a"/>
+          <text x="490" y="466" text-anchor="middle" fill="#fff" font-size="14" font-weight="700">Exact checkpoint restore -> baseline state + links + enrollment + secure channel</text>
+          <path d="M270 395 L350 440" stroke="#536f82" stroke-width="2" marker-end="url(#arrow7)"/><path d="M710 395 L630 440" stroke="#536f82" stroke-width="2" marker-end="url(#arrow7)"/>
+        </g>
+      </svg>
+    </div>
+
+    <h2>Yaşam döngüsü invariyantları</h2>
+    <table>
+      <thead><tr><th>ID</th><th>Graph predicate</th><th>Laboratuvar yorumu</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">DMSA-LINK-001</td><td>Predecessor ve successor reciprocal migration linkleri aynı ilişkiyi gösterir.</td><td>Replication sonrası reciprocal linkler gözlendi.</td></tr>
+        <tr><td class="mono">DMSA-STATE-001</td><td>Migration state yalnızca desteklenen sırada ilerler.</td><td>Start öncesi complete reddedildi; ordered completion kabul edildi; standalone state 3 gözlenmedi.</td></tr>
+        <tr><td class="mono">DMSA-ACL-001</td><td>Geçici migration permission edge yalnızca geçiş penceresine bağlıdır.</td><td>Ordered completion sonucu kabul edildi.</td></tr>
+        <tr><td class="mono">DMSA-SPN-001</td><td>Completion, SPN ve ilgili policy state'in successor'a aktarımını bağlar.</td><td>Completion graph'ında sözleşme sağlandı.</td></tr>
+        <tr><td class="mono">DMSA-MACHINE-001</td><td>Member enrollment explicit allow-list membership ile temsil edilir.</td><td>Enrollment edge açıkça gözlendi; dolaylı izin çıkarımı yapılmadı.</td></tr>
+        <tr><td class="mono">DMSA-RWDC-001</td><td>Writable directory authority ile RODC-local davranış ayrıdır.</td><td>RWDC transition kabul; RODC-local transition ayrı gözlem.</td></tr>
+        <tr><td class="mono">DMSA-EVENT-001</td><td>Audit event, directory state ve bounded observation window ile korele edilir.</td><td>Desteklenen event emission gözlenmedi; sonuçsuz.</td></tr>
+        <tr><td class="mono">DMSA-ROLLBACK-001</td><td>Cleanup state, link, ACL, enrollment ve baseline digest'in tamamını geri getirir.</td><td>Undo/Reset enrollment'ı temizledi; exact checkpoint restore digest match verdi.</td></tr>
+      </tbody>
+    </table>
+
+    <h2>Durum geçişi sonuçları</h2>
+    <p>Başlangıç durumunda build-created account state 0 olarak kaldı. Start-to-complete sırası state, ACL ve SPN invariyantları için kabul edildi. Complete-before-start negatif case'i <code>invalid_transition</code> ile reddedildi. Dokümante standalone state 3, test edilen build 26100 koşulunda gözlenemedi; bu nedenle ürün genellemesi yapılmadan sonuçsuz bırakıldı.</p>
+
+    <h3>Event korelasyonu</h3>
+    <p>Direct service logon, local-system ticket refresh ve Service Control Manager pencereleri; enrolled member scope ve normalized event fields ile çalıştırıldı. Desteklenen dMSA event emission bu pencerelerde gözlenmedi. Yokluk, event'in hiçbir koşulda üretilmediği iddiasına çevrilmedi; <code>DMSA-EVENT-001</code> sonuçsuz kaldı.</p>
+
+    <div class="callout observe"><h4>Undo/Reset ile restore aynı işlem değildir</h4><p>Undo ve Reset directory state/link görünümünü geri getirdi fakat machine enrollment edge'ini temizledi. Exact checkpoint restore ise state, link, enrollment, secure channel ve baseline graph digest'in tamamını yeniden üretti. Rapor, bu iki temizlik düzeyini ayrı sınıflandırır.</p></div>
+  </section>
+
+  <section id="cloud-kerberos" class="chapter">
+    <div class="chapter-head" data-index="10">
+      <div class="kicker">Cloud Kerberos Trust</div>
+      <h1>Dokuz koşullu, read-only ve kapalı önkoşul kapısı</h1>
+      <p>RWDC-local varlıklar, joined Windows 11 client line-of-sight veya partial TGT kanıtı yerine geçmez.</p>
+    </div>
+
+    <div id="cloud-trust-gate" class="visual">
+      <div class="visual-title"><span>Şekil 8 - Cloud Trust prerequisite gate</span><small>all conditions required</small></div>
+      <svg viewBox="0 0 980 510" role="img" aria-label="Cloud Kerberos Trust için dokuz prerequisite ve kapalı gate">
+        <defs><marker id="arrow8" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#576f80"/></marker></defs>
+        <rect width="980" height="510" fill="#fbfdff"/>
+        <g font-family="Segoe UI, Arial">
+          <g font-size="13" font-weight="700" text-anchor="middle">
+            <rect x="35" y="40" width="175" height="58" rx="10" fill="#e0f5ec" stroke="#17845b"/><text x="122" y="75" fill="#155b41">Server 2025 RWDC</text>
+            <rect x="230" y="40" width="175" height="58" rx="10" fill="#eef2f6" stroke="#7a8998"/><text x="317" y="65" fill="#536274">AzureADKerberos</text><text x="317" y="84" fill="#536274">object</text>
+            <rect x="425" y="40" width="175" height="58" rx="10" fill="#e0f5ec" stroke="#17845b"/><text x="512" y="65" fill="#155b41">Password replication</text><text x="512" y="84" fill="#155b41">policy intact</text>
+            <rect x="620" y="40" width="150" height="58" rx="10" fill="#eef2f6" stroke="#7a8998"/><text x="695" y="65" fill="#536274">Cloud Trust</text><text x="695" y="84" fill="#536274">policy</text>
+            <rect x="790" y="40" width="155" height="58" rx="10" fill="#eef2f6" stroke="#7a8998"/><text x="867" y="65" fill="#536274">Certificate Trust</text><text x="867" y="84" fill="#536274">precedence</text>
+            <rect x="105" y="145" width="175" height="58" rx="10" fill="#eef2f6" stroke="#7a8998"/><text x="192" y="170" fill="#536274">Windows 11</text><text x="192" y="189" fill="#536274">expected client</text>
+            <rect x="305" y="145" width="175" height="58" rx="10" fill="#eef2f6" stroke="#7a8998"/><text x="392" y="180" fill="#536274">Client joined</text>
+            <rect x="505" y="145" width="175" height="58" rx="10" fill="#eef2f6" stroke="#7a8998"/><text x="592" y="180" fill="#536274">Line of sight</text>
+            <rect x="705" y="145" width="175" height="58" rx="10" fill="#eef2f6" stroke="#7a8998"/><text x="792" y="180" fill="#536274">Partial TGT</text>
+          </g>
+          <g fill="none" stroke="#576f80" stroke-width="2" marker-end="url(#arrow8)">
+            <path d="M122 98 L350 280"/><path d="M317 98 L390 280"/><path d="M512 98 L430 280"/><path d="M695 98 L470 280"/><path d="M867 98 L510 280"/>
+            <path d="M192 203 L550 280"/><path d="M392 203 L590 280"/><path d="M592 203 L630 280"/><path d="M792 203 L670 280"/>
+          </g>
+          <path d="M330 280 L690 280 L735 330 L690 380 L330 380 L285 330 Z" fill="#fff3d6" stroke="#e39a18" stroke-width="3"/>
+          <text x="510" y="320" text-anchor="middle" fill="#6f4c0f" font-size="20" font-weight="700">All prerequisites true?</text>
+          <text x="510" y="349" text-anchor="middle" fill="#816d44" font-size="13">typed booleans + expected client binding</text>
+          <rect x="55" y="430" width="320" height="55" rx="11" fill="#eef2f6" stroke="#7a8998"/>
+          <text x="215" y="454" text-anchor="middle" fill="#536274" font-size="15" font-weight="700">NO -> skip, 0 external requests</text><text x="215" y="474" text-anchor="middle" fill="#687886" font-size="11">normalized missing reasons</text>
+          <rect x="605" y="430" width="320" height="55" rx="11" fill="#e0f5ec" stroke="#17845b"/>
+          <text x="765" y="454" text-anchor="middle" fill="#155b41" font-size="15" font-weight="700">YES -> bounded observation</text><text x="765" y="474" text-anchor="middle" fill="#386a59" font-size="11">request budget consumed before transport</text>
+          <path d="M360 380 L240 430" fill="none" stroke="#7a8998" stroke-width="2" marker-end="url(#arrow8)"/><path d="M660 380 L740 430" fill="none" stroke="#17845b" stroke-width="2" marker-end="url(#arrow8)"/>
+        </g>
+      </svg>
+    </div>
+
+    <h2>Kapı koşulları</h2>
+    <p>Gate yalnızca boolean envanter kabul eder ve koşulları birbirinden bağımsız tutar: Server 2025 RWDC, AzureADKerberos object, password replication policy, Cloud Trust policy, Certificate Trust precedence, expected Windows 11 client, client joined durumu, client line-of-sight ve partial TGT. Beklenen client disabled veya unjoined ise remote probe yapılmaz.</p>
+
+    <h3>R5 inceleme düzeltmesi</h3>
+    <p>Bağımsız dal incelemesi, disabled veya unjoined expected client durumunda line-of-sight ve partial-TGT helper'larının çağrılmaması gerektiğini işaretledi. Önceki davranış iki odak testte başarısız olarak yeniden üretildi. Üretim kapısı, <code>Enabled</code>, <code>Windows11Client</code> ve <code>ClientJoined</code koşullarını probe öncesi zorunlu kılacak şekilde daraltıldı. Odak test 10/10, tam Windows suite 50/50 geçti.</p>
+
+    <h2>Bu koşudaki sonuç</h2>
+    <table>
+      <thead><tr><th>İnvariyant</th><th>Sonuç</th><th>Neden</th><th>Yorum</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">CKT-RODC-001</td><td><span class="status skip">Atlandı</span></td><td class="mono">cloud_kerberos_object_missing</td><td>AzureADKerberos object yok; PRP davranışı canlı bağlamda değerlendirilmedi.</td></tr>
+        <tr><td class="mono">CKT-PRECEDENCE-001</td><td><span class="status skip">Atlandı</span></td><td class="mono">cloud_trust_policy_unverified</td><td>Policy seçimi doğrulanmadı; certificate-trust başarılı yol cloud-trust diye sınıflandırılmadı.</td></tr>
+        <tr><td class="mono">CKT-LOS-001</td><td><span class="status skip">Atlandı</span></td><td class="mono">line_of_sight_missing</td><td>RWDC-local reachability, Windows 11 client line-of-sight yerine kullanılmadı.</td></tr>
+        <tr><td class="mono">CKT-PARTIAL-001</td><td><span class="status skip">Atlandı</span></td><td class="mono">partial_tgt_missing</td><td>Partial TGT yok; full TGT zinciri hakkında sonuç kurulmadı.</td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout success"><h4>Network side-effect sonucu</h4><p>Kapalı Cloud Trust ve Entra bağlamlarında external request count sıfır kaldı. Skip kaydı, eksik önkoşulları ayrı reason code'larla korudu ve bir transport request inşa etmedi.</p></div>
+  </section>
+
+  <section id="test-strategy" class="chapter">
+    <div class="chapter-head" data-index="11">
+      <div class="kicker">Doğrulama</div>
+      <h1>Unit, property, integration ve Windows contract testleri</h1>
+      <p>Toplam 198 test, kaynak katalogdan PDF üretimine kadar farklı hata sınıflarını kapatır.</p>
+    </div>
+
+    <div class="grid-3">
+      <div class="card"><div class="number">148</div><div class="label">pytest</div><p>Unit, property ve integration testleri; üç conditional integration etkin.</p></div>
+      <div class="card"><div class="number">50</div><div class="label">Pester</div><p>Preflight, topology, forest, dMSA, PAC ve Cloud Trust contract testleri.</p></div>
+      <div class="card"><div class="number">0</div><div class="label">başarısız test</div><p>Son reviewed evidence commit'inde iki platform suite'i temiz.</p></div>
+    </div>
+
+    <div id="coverage-heatmap" class="visual">
+      <div class="visual-title"><span>Şekil 9 - Doğrulama katmanları kapsam haritası</span><small>koyu = doğrudan, açık = dolaylı/kapalı</small></div>
+      <svg viewBox="0 0 980 430" role="img" aria-label="Altı protokol alanı ve beş test katmanı için coverage heatmap">
+        <rect width="980" height="430" fill="#fbfdff"/>
+        <g font-family="Segoe UI, Arial" font-size="13">
+          <g fill="#304152" font-weight="700">
+            <text x="330" y="48" text-anchor="middle">Unit</text><text x="450" y="48" text-anchor="middle">Property</text><text x="570" y="48" text-anchor="middle">Integration</text><text x="690" y="48" text-anchor="middle">Windows</text><text x="810" y="48" text-anchor="middle">Evidence</text>
+          </g>
+          <g fill="#304152" font-weight="700">
+            <text x="35" y="94">WIF</text><text x="35" y="148">STS</text><text x="35" y="202">OIDC</text><text x="35" y="256">CKT</text><text x="35" y="310">PAC</text><text x="35" y="364">dMSA</text>
+          </g>
+          <g>
+            <rect x="280" y="70" width="100" height="36" rx="5" fill="#087d95"/><rect x="400" y="70" width="100" height="36" rx="5" fill="#087d95"/><rect x="520" y="70" width="100" height="36" rx="5" fill="#3da9bd"/><rect x="640" y="70" width="100" height="36" rx="5" fill="#dce3ea"/><rect x="760" y="70" width="100" height="36" rx="5" fill="#7ac5d3"/>
+            <rect x="280" y="124" width="100" height="36" rx="5" fill="#176f65"/><rect x="400" y="124" width="100" height="36" rx="5" fill="#176f65"/><rect x="520" y="124" width="100" height="36" rx="5" fill="#58a99f"/><rect x="640" y="124" width="100" height="36" rx="5" fill="#dce3ea"/><rect x="760" y="124" width="100" height="36" rx="5" fill="#a6d1cc"/>
+            <rect x="280" y="178" width="100" height="36" rx="5" fill="#385fa2"/><rect x="400" y="178" width="100" height="36" rx="5" fill="#385fa2"/><rect x="520" y="178" width="100" height="36" rx="5" fill="#7896c7"/><rect x="640" y="178" width="100" height="36" rx="5" fill="#dce3ea"/><rect x="760" y="178" width="100" height="36" rx="5" fill="#a7b8d6"/>
+            <rect x="280" y="232" width="100" height="36" rx="5" fill="#dce3ea"/><rect x="400" y="232" width="100" height="36" rx="5" fill="#dce3ea"/><rect x="520" y="232" width="100" height="36" rx="5" fill="#d9b878"/><rect x="640" y="232" width="100" height="36" rx="5" fill="#9b6210"/><rect x="760" y="232" width="100" height="36" rx="5" fill="#c58d3d"/>
+            <rect x="280" y="286" width="100" height="36" rx="5" fill="#94426f"/><rect x="400" y="286" width="100" height="36" rx="5" fill="#94426f"/><rect x="520" y="286" width="100" height="36" rx="5" fill="#94426f"/><rect x="640" y="286" width="100" height="36" rx="5" fill="#b8789c"/><rect x="760" y="286" width="100" height="36" rx="5" fill="#b8789c"/>
+            <rect x="280" y="340" width="100" height="36" rx="5" fill="#a78fc4"/><rect x="400" y="340" width="100" height="36" rx="5" fill="#dce3ea"/><rect x="520" y="340" width="100" height="36" rx="5" fill="#8f6db1"/><rect x="640" y="340" width="100" height="36" rx="5" fill="#7045a0"/><rect x="760" y="340" width="100" height="36" rx="5" fill="#8f6db1"/>
+          </g>
+          <g fill="#fff" font-size="11" font-weight="700" text-anchor="middle">
+            <text x="330" y="93">direct</text><text x="450" y="93">direct</text><text x="570" y="93">gate</text><text x="810" y="93">skip</text>
+            <text x="330" y="147">direct</text><text x="450" y="147">direct</text><text x="570" y="147">E2E</text>
+            <text x="330" y="201">direct</text><text x="450" y="201">time</text><text x="570" y="201">E2E</text>
+            <text x="570" y="255">gate</text><text x="690" y="255">direct</text><text x="810" y="255">skip</text>
+            <text x="330" y="309">parser</text><text x="450" y="309">bounds</text><text x="570" y="309">adapter</text><text x="690" y="309">ticket</text><text x="810" y="309">sealed</text>
+            <text x="330" y="363">model</text><text x="570" y="363">ledger</text><text x="690" y="363">graph</text><text x="810" y="363">sealed</text>
+          </g>
+          <rect x="280" y="398" width="100" height="14" fill="#11253a"/><text x="390" y="410" fill="#536274" font-size="11">doğrudan</text>
+          <rect x="470" y="398" width="100" height="14" fill="#a7b8c8"/><text x="580" y="410" fill="#536274" font-size="11">dolaylı</text>
+          <rect x="660" y="398" width="100" height="14" fill="#dce3ea"/><text x="770" y="410" fill="#536274" font-size="11">kapsam dışı/kapalı</text>
+        </g>
+      </svg>
+    </div>
+
+    <h2>Test katmanları</h2>
+    <table>
+      <thead><tr><th>Katman</th><th>Örnek sözleşmeler</th><th>Başarısız olduğunda yakalanan sınıf</th></tr></thead>
+      <tbody>
+        <tr><td>Unit</td><td>Exact issuer, duplicate singleton, key-before-claim, report escaping</td><td>Yerel state machine ve input validation hatası</td></tr>
+        <tr><td>Property</td><td>Temporal boundaries, claim types, PAC arithmetic, resource URI, redaction</td><td>Sınır değeri, tip coercion ve bounded arithmetic sapması</td></tr>
+        <tr><td>Integration</td><td>Closed Entra gate, Windows PAC adapter, evidence assembly, byte-stable report</td><td>Katmanlar arası bağlam veya provenance kaybı</td></tr>
+        <tr><td>Pester contract</td><td>Private topology, no default route, dMSA graph, PAC capture, Cloud gate</td><td>Windows orchestration ve mutation safety sapması</td></tr>
+        <tr><td>Artifact verification</td><td>Manifest digest, record count, source hash, secret-shape scan</td><td>Kanıt bütünlüğü veya public-safe boundary ihlali</td></tr>
+      </tbody>
+    </table>
+
+    <h2>Review-driven regression döngüsü</h2>
+        <p>Bağımsız incelemede bulunan Cloud gate koşulu, BEFORE FAIL ve AFTER PASS kanıtıyla düzeltildi. Disabled expected client ve unjoined expected client testleri önce yanlış probe davranışını yakaladı; minimum gate değişikliği sonrasında odak suite 10/10, tam Windows suite 50/50 ve Ubuntu suite 148/148 geçti. Bu, rapordaki &quot;zero external requests on closed context&quot; iddiasının yalnızca tasarım niyeti değil, regresyonla sabitlenmiş davranış olduğunu gösterir.</p>
+  </section>
+
+  <section id="observations" class="chapter">
+    <div class="chapter-head" data-index="12">
+      <div class="kicker">Ampirik sonuçlar</div>
+      <h1>25 normalize gözlemin teknik yorumu</h1>
+      <p>Sonuç dağılımı tek başına skor değildir; her outcome yalnızca ilgili invariyant ve evidence class içinde okunur.</p>
+    </div>
+
+    <h2>Sonuç dağılımı</h2>
+    <div class="grid-4">
+      <div class="card"><div class="number" style="color:#17845b">5</div><div class="label">kabul</div><p>Ordered dMSA transitions, RWDC write ve exact restore.</p></div>
+      <div class="card"><div class="number" style="color:#ba3b46">1</div><div class="label">ret</div><p>Complete-before-start invalid transition.</p></div>
+      <div class="card"><div class="number" style="color:#e39a18">10</div><div class="label">gözlem</div><p>dMSA graph ve PAC service-ticket metadata.</p></div>
+      <div class="card"><div class="number" style="color:#7a8998">9</div><div class="label">açık sınır</div><p>6 skip + 3 inconclusive.</p></div>
+    </div>
+
+    <h2>dMSA sonuç kümesi</h2>
+    <ul>
+      <li>Reciprocal migration links replication sonrasında gözlendi.</li>
+      <li>Member enrollment explicit allow-list edge olarak kaydedildi.</li>
+      <li>Ordered completion; state, ACL ve SPN invariyantları için kabul edildi.</li>
+      <li>Complete-before-start reddedildi ve directory mutation başarısı iddia edilmedi.</li>
+      <li>RODC-local transition persisted durumu gözlem olarak ayrıldı; RWDC write authority ile eşitlenmedi.</li>
+      <li>Standalone state 3 ve supported event emission, eldeki kanıtla sonuçsuz kaldı.</li>
+      <li>Undo/Reset state ve linkleri geri getirdi ancak enrollment'ı temizledi; checkpoint restore baseline digest match verdi.</li>
+    </ul>
+
+    <h2>PAC sonuç kümesi</h2>
+    <ul>
+      <li>RWDC ve RODC service ticket issuance bounded adapter üzerinden gözlendi.</li>
+      <li>Gözlenen buffer type seti ve signature role sırası normalize edildi.</li>
+      <li>RODC identifier yalnızca doğru KDC/signature context içinde yorumlandı.</li>
+      <li>Service ticket'ta attributes buffer bulunmaması gözlem olarak kaydedildi; evrensel yokluk iddiası yapılmadı.</li>
+      <li>Encrypted TGT içindeki requestor binding değerlendirilmediği için PAC requestor sonucu açık bırakıldı.</li>
+    </ul>
+
+    <h2>Cloud ve Entra kapıları</h2>
+    <p>Dört Cloud Trust invariyantı eksik prerequisite nedeniyle, iki WIF live gate kaydı disposable tenant context eksikliği nedeniyle atlandı. Altı skip kaydı da dış istek oluşturmadan normalize edildi. Skip, başarısız ürün davranışı değildir; deneyin başlaması için gereken koşulun hazır olmadığını ispatlar.</p>
+
+    <h2>Reason code yoğunluğu</h2>
+    <table><thead><tr><th>Normalize neden</th><th class="num">Kayıt</th></tr></thead><tbody><tr><td class="mono">allow_list_membership_is_explicit</td><td class="num">1</td></tr>
+<tr><td class="mono">attributes_buffer_absent</td><td class="num">1</td></tr>
+<tr><td class="mono">checkpoint_restore_digest_match</td><td class="num">1</td></tr>
+<tr><td class="mono">cloud_kerberos_object_missing</td><td class="num">1</td></tr>
+<tr><td class="mono">cloud_trust_policy_unverified</td><td class="num">1</td></tr>
+<tr><td class="mono">documented_state_three_not_observed</td><td class="num">1</td></tr>
+<tr><td class="mono">invalid_transition</td><td class="num">1</td></tr>
+<tr><td class="mono">line_of_sight_missing</td><td class="num">1</td></tr>
+<tr><td class="mono">ordered_completion</td><td class="num">3</td></tr>
+<tr><td class="mono">partial_tgt_missing</td><td class="num">1</td></tr>
+<tr><td class="mono">reciprocal_links_replicated</td><td class="num">1</td></tr>
+<tr><td class="mono">rodc_identifier_observed</td><td class="num">1</td></tr>
+<tr><td class="mono">rodc_local_transition_persisted</td><td class="num">1</td></tr>
+<tr><td class="mono">service_ticket_buffers_observed</td><td class="num">1</td></tr>
+<tr><td class="mono">service_ticket_issuance_observed</td><td class="num">1</td></tr>
+<tr><td class="mono">signature_roles_observed</td><td class="num">1</td></tr>
+<tr><td class="mono">state_links_restored_enrollment_cleared</td><td class="num">2</td></tr>
+<tr><td class="mono">supported_events_not_observed</td><td class="num">1</td></tr>
+<tr><td class="mono">tenant_context_missing</td><td class="num">2</td></tr>
+<tr><td class="mono">tgt_requestor_not_assessed</td><td class="num">1</td></tr>
+<tr><td class="mono">writable_directory_transition</td><td class="num">1</td></tr></tbody></table>
+
+    <div class="callout boundary"><h4>Skorlamaya uygun olmayan dağılım</h4><p>Accept sayısının yüksekliği veya skip sayısının düşüklüğü kalite skoru değildir. Katalogda bazı kurallar deterministic oracle ile test edilirken committed ledger yalnızca Windows/Entra observation katmanını içerir. Bu nedenle 37 kuralın 25 kayıtla bire bir olması beklenmez.</p></div>
+  </section>
+
+  <section id="evidence-integrity" class="chapter">
+    <div class="chapter-head" data-index="13">
+      <div class="kicker">Kanıt mühendisliği</div>
+      <h1>Canonical ledger, source binding ve public-safe render</h1>
+      <p>Kanıt doğruluğu yalnızca içeriğe değil, byte dizisine, kaynak record hash'ine ve atomik yazma davranışına bağlıdır.</p>
+    </div>
+
+    <div id="evidence-chain" class="visual">
+      <div class="visual-title"><span>Şekil 10 - Uçtan uca kanıt zinciri</span><small>source record -> report</small></div>
+      <svg viewBox="0 0 980 390" role="img" aria-label="Özel laboratuvar kaynağından normalize sealed source, public ledger, manifest ve rapora hash zinciri">
+        <defs><marker id="arrow10" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#4d6b7f"/></marker></defs>
+        <rect width="980" height="390" fill="#fbfdff"/>
+        <g font-family="Segoe UI, Arial">
+          <rect x="35" y="90" width="155" height="115" rx="13" fill="#f9e7f2" stroke="#b54889" stroke-width="2"/>
+          <text x="112" y="124" text-anchor="middle" fill="#65304f" font-size="16" font-weight="700">Raw lab</text><text x="112" y="148" text-anchor="middle" fill="#76566b" font-size="12">private / transient</text><text x="112" y="174" text-anchor="middle" fill="#76566b" font-size="12">token/ticket yok</text><text x="112" y="194" text-anchor="middle" fill="#76566b" font-size="12">committed tree dışında</text>
+          <rect x="235" y="90" width="155" height="115" rx="13" fill="#fff3d6" stroke="#e39a18" stroke-width="2"/>
+          <text x="312" y="124" text-anchor="middle" fill="#69470d" font-size="16" font-weight="700">Normalizer</text><text x="312" y="148" text-anchor="middle" fill="#7b6947" font-size="12">allow-listed fields</text><text x="312" y="174" text-anchor="middle" fill="#7b6947" font-size="12">stable reason</text><text x="312" y="194" text-anchor="middle" fill="#7b6947" font-size="12">artifact digest</text>
+          <rect x="435" y="90" width="155" height="115" rx="13" fill="#dff8fc" stroke="#00a6c3" stroke-width="2"/>
+          <text x="512" y="124" text-anchor="middle" fill="#0b4653" font-size="16" font-weight="700">Sealed sources</text><text x="512" y="148" text-anchor="middle" fill="#3b6570" font-size="12">5 exact inputs</text><text x="512" y="174" text-anchor="middle" fill="#3b6570" font-size="12">SHA-256 bound</text><text x="512" y="194" text-anchor="middle" fill="#3b6570" font-size="12">schema checked</text>
+          <rect x="635" y="90" width="155" height="115" rx="13" fill="#e0f5ec" stroke="#17845b" stroke-width="2"/>
+          <text x="712" y="124" text-anchor="middle" fill="#155b41" font-size="16" font-weight="700">Public ledger</text><text x="712" y="148" text-anchor="middle" fill="#386a59" font-size="12">canonical JSONL</text><text x="712" y="174" text-anchor="middle" fill="#386a59" font-size="12">25 records</text><text x="712" y="194" text-anchor="middle" fill="#386a59" font-size="12">byte digest</text>
+          <rect x="835" y="90" width="110" height="115" rx="13" fill="#11253a"/>
+          <text x="890" y="124" text-anchor="middle" fill="#fff" font-size="16" font-weight="700">Report</text><text x="890" y="150" text-anchor="middle" fill="#a7c3d2" font-size="12">Markdown</text><text x="890" y="174" text-anchor="middle" fill="#a7c3d2" font-size="12">JSON</text><text x="890" y="194" text-anchor="middle" fill="#a7c3d2" font-size="12">PDF</text>
+          <g fill="none" stroke="#4d6b7f" stroke-width="2" marker-end="url(#arrow10)"><path d="M190 147 L235 147"/><path d="M390 147 L435 147"/><path d="M590 147 L635 147"/><path d="M790 147 L835 147"/></g>
+          <rect x="235" y="265" width="555" height="72" rx="12" fill="#eef2f6" stroke="#6c7a89"/>
+          <text x="512" y="293" text-anchor="middle" fill="#304152" font-size="15" font-weight="700">Manifest: filename + exact digest + record count + format version</text>
+          <text x="512" y="318" text-anchor="middle" fill="#5d6c7b" font-size="12">source-record provenance + environment fingerprint + atomic output replacement</text>
+          <path d="M512 205 L512 265" fill="none" stroke="#4d6b7f" stroke-width="2" marker-end="url(#arrow10)"/>
+        </g>
+      </svg>
+    </div>
+
+    <h2>Canonical serialization</h2>
+    <p>Ledger satırları sorted key ve compact separator ile UTF-8/LF olarak yazılır. Her record, invariant ID, case ID, outcome, reason, evidence class, input digest, artifact digest ve bounded metadata taşır. Seal işleminden sonra append reddedilir. Manifest; ledger filename, exact SHA-256, record count ve format version alanlarını bağlar.</p>
+
+    <h2>Public-safe filtreler</h2>
+    <p>Persistence ve report render öncesinde private-key marker, bearer header, JWT-shaped value, credential-shaped field, local credential path, raw ticket/assertion alanı ve UUID-shaped reusable identifier taranır. Renderer yalnızca görünen metni değil, ledger'ın render edilmeyen metadata alanlarını da tarar. Unsafe output var olan raporun üzerine atomik olarak yazılmaz.</p>
+
+    <h2>Deterministik render</h2>
+    <ul>
+      <li>Katalog invariant ID'ye göre sıralıdır.</li>
+      <li>Gözlemler rule, case, outcome ve reason sırasına göre düzenlenir.</li>
+      <li>JSON key'leri ve mapping'ler sort edilir.</li>
+      <li>HTML template yalnızca allow-listed placeholder'lar kabul eder.</li>
+      <li>Build, 37/25 sayıları ve outcome dağılımı değişirse kapanır.</li>
+      <li>Committed Markdown ve JSON, fresh render ile byte-for-byte karşılaştırılır.</li>
+    </ul>
+
+    <div class="callout success"><h4>Reviewed ledger</h4><p class="mono hash">9852c4e00a4c1b25165708541774ba23975ec6c97acd6e0c2b90c6377633f44c</p><p>Bu digest, 25 canonical JSONL kaydının exact byte dizisine aittir. Rapor ekindeki source manifest ve artifact hash tablosu zincirin alt bileşenlerini listeler.</p></div>
+  </section>
+
+  <section id="limitations" class="chapter">
+    <div class="chapter-head" data-index="14">
+      <div class="kicker">Sınırlamalar</div>
+      <h1>Kanıtın çözmediği sorular</h1>
+      <p>Belirsizliği saklamak, ölçülmeyen bir davranışı varsaymaktan daha güçlü bir mühendislik sonucudur.</p>
+    </div>
+
+    <h2>Hosted Entra davranışı</h2>
+    <p>Disposable tenant, application ve authority bağlamı sağlanmadı. Entra adapter kapalı gate'te iki skip kaydı üretti ve dış istek yapmadı. Bu nedenle issuer/audience/subject mapping'in barındırılan hizmetteki gerçek davranışı hakkında sonuç yoktur.</p>
+
+    <h2>Cloud Kerberos end-to-end zinciri</h2>
+    <p>AzureADKerberos object, selected Cloud Trust policy, joined Windows 11 client, client line-of-sight ve partial TGT hazır değildi. Cloud Trust sonuçları yalnızca prerequisite gate'in fail-closed davranışını kanıtlar; partial-to-full TGT dönüşümünü ölçmez.</p>
+
+    <h2>PAC requestor sınırı</h2>
+    <p>Service ticket PAC gözlemleri, encrypted TGT içindeki PAC_REQUESTOR binding'i çözmez. Bu nedenle <code>PAC-REQ-001</code> için service-ticket metadata'dan requestor sonucu türetilmedi.</p>
+
+    <h2>dMSA state 3 ve event emission</h2>
+    <p>Standalone state 3, build-created account ile gözlenmedi. Desteklenen event emission, üç kontrollü workload penceresinde görülmedi. Bu yokluklar, farklı build, policy veya service path'lerinde aynı sonucu garanti etmez.</p>
+
+    <h2>Ortam genellenebilirliği</h2>
+    <p>Windows gözlemleri Windows Server 2025 build 26100, forest/domain mode 2025, schema 91 ve private üç-node topolojiye bağlıdır. Farklı cumulative update, schema, trust, site, replication topology veya identity provider davranışı ayrı fingerprint gerektirir.</p>
+
+    <h2>Değerlendirme sınırı</h2>
+    <div class="callout boundary"><h4>CWE ve CVSS atanmadı</h4><p>Çalışma bir ürün sapması ve etkisini bağımsız olarak doğrulamadı. Yerel oracle farklılığı, skipped live gate veya sonuçsuz laboratuvar gözlemi tek başına güvenlik sınıflandırması için yeterli değildir.</p></div>
+  </section>
+
+  <section id="recommendations" class="chapter">
+    <div class="chapter-head" data-index="15">
+      <div class="kicker">Sonraki mühendislik adımları</div>
+      <h1>Kanıt kapsamını güvenli biçimde genişletme</h1>
+      <p>Öneriler, mevcut fail-closed ve public-safe sınırları zayıflatmadan gözlem çözünürlüğünü artırır.</p>
+    </div>
+
+    <h2>Öncelik 1 - Disposable Entra bağlamı</h2>
+    <ol>
+      <li>Tek kullanımlık tenant ve application object'i açık owner/expiry politikasıyla oluştur.</li>
+      <li>Authority, tenant, application, client ve credential ID'lerini allow-list digest'leriyle bağla; reusable identifier'ları public evidence'a yazma.</li>
+      <li>Network request budget'i transport öncesi consume et ve response retention'ı mevcut allow-list ile sınırla.</li>
+      <li>Standard ve flexible FIC profillerini ayrı case setleriyle gözle; preview behavior'ı stable profile'a genelleme.</li>
+      <li>Koşu sonunda external resources için bağımsız cleanup manifest'i üret.</li>
+    </ol>
+
+    <h2>Öncelik 2 - Windows 11 Cloud Trust client</h2>
+    <ol>
+      <li>Expected client'i ayrı VM ve exact checkpoint ile oluştur.</li>
+      <li>Joined, enabled, Windows 11, line-of-sight ve policy result koşullarını client'tan ölç.</li>
+      <li>Partial TGT observation helper'ını bounded ve read-only tut; ticket byte'larını committed tree'ye taşımadan signature-chain metadata üret.</li>
+      <li>Certificate Trust precedence case'ini Cloud Trust case'inden bağımsız çalıştır.</li>
+      <li>Gate kapanışında external request count sıfır regresyonunu koru.</li>
+    </ol>
+
+    <h2>Öncelik 3 - PAC requestor çözünürlüğü</h2>
+    <p>Encrypted TGT içindeki type-128 authorization-data region'ını izole, bounded ve ticket-byte retention olmadan doğrulayacak ayrı bir adapter tasarla. Service-ticket ve TGT kaynaklarını farklı evidence record'lara bağla; requestor SID yalnızca digest/shape metadata ile temsil edilsin.</p>
+
+    <h2>Öncelik 4 - dMSA varyant matrisi</h2>
+    <p>Build revision, forest functional level, member OS ve migration path eksenlerinde küçük bir varyant matrisi kur. Her varyant exact checkpoint seti ve graph digest taşımalı. State 3 veya event emission gözlenirse önce mevcut reason taxonomy genişletilmeli; serbest metin raporla sınıflandırma yapılmamalı.</p>
+
+    <h2>Öncelik 5 - Uzun dönem kanıt sürdürülebilirliği</h2>
+    <ul>
+      <li>Source revision değiştiğinde katalog diff review zorunlu kılınmalı.</li>
+      <li>Manifest format version değişikliği geriye dönük parser testiyle gelmeli.</li>
+      <li>Report builder, PDF extracted text ve representative page raster hash'leri CI dışı laboratuvar gate'inde doğrulanmalı.</li>
+      <li>Environment fingerprint'e cumulative update ve PowerShell/Pester sürümü eklenmeli.</li>
+      <li>Her yeni observation class için ayrı interpretation section yazılmalı.</li>
+    </ul>
+  </section>
+
+  <section id="appendix-invariants" class="chapter">
+    <div class="chapter-head" data-index="A">
+      <div class="kicker">Ek A</div>
+      <h1>Tam invariyant matrisi</h1>
+      <p>Aşağıdaki 37 satır doğrudan katalog ve generated report modelinden üretilir.</p>
+    </div>
+    <table class="appendix-table">
+      <thead><tr><th>ID</th><th>Alan</th><th>Normatif özet</th><th>Kaynak / bölüm</th><th>Sınıf</th><th class="num">Case</th><th>Ledger sonucu</th></tr></thead>
+      <tbody><tr><td class="mono keep">CKT-LOS-001</td><td><span class="domain domain-ckt">CKT</span></td><td>Domain controller line-of-sight is an explicit precondition for first use and on-premises resource access.</td><td><a href="https://learn.microsoft.com/en-us/windows/security/identity-protection/hello-for-business/deploy/hybrid-cloud-kerberos-trust">WHFB-CLOUD-TRUST</a><br><small>Prerequisites and deployment validation</small></td><td class="mono">windows-observation</td><td class="num">2</td><td><span class="status skip">Atlandı</span></td></tr>
+<tr><td class="mono keep">CKT-PARTIAL-001</td><td><span class="domain domain-ckt">CKT</span></td><td>The partial TGT carries the user SID and is verified by the on-premises domain controller before a full TGT is issued.</td><td><a href="https://learn.microsoft.com/en-us/windows/security/identity-protection/hello-for-business/how-it-works-authentication">WHFB-AUTH</a><br><small>Cloud Kerberos trust authentication</small></td><td class="mono">windows-observation</td><td class="num">2</td><td><span class="status skip">Atlandı</span></td></tr>
+<tr><td class="mono keep">CKT-PRECEDENCE-001</td><td><span class="domain domain-ckt">CKT</span></td><td>Certificate trust policy precedence is recorded so its successful path is not classified as cloud trust.</td><td><a href="https://learn.microsoft.com/en-us/windows/security/identity-protection/hello-for-business/deploy/hybrid-cloud-kerberos-trust">WHFB-CLOUD-TRUST</a><br><small>Policy configuration</small></td><td class="mono">windows-observation</td><td class="num">2</td><td><span class="status skip">Atlandı</span></td></tr>
+<tr><td class="mono keep">CKT-RODC-001</td><td><span class="domain domain-ckt">CKT</span></td><td>The AzureADKerberos object retains RODC-like password replication restrictions for privileged identities.</td><td><a href="https://learn.microsoft.com/en-us/windows/security/identity-protection/hello-for-business/deploy/hybrid-cloud-kerberos-trust">WHFB-CLOUD-TRUST</a><br><small>Azure AD Kerberos and password replication policy</small></td><td class="mono">windows-observation</td><td class="num">3</td><td><span class="status skip">Atlandı</span></td></tr>
+<tr><td class="mono keep">DMSA-ACL-001</td><td><span class="domain domain-dmsa">DMSA</span></td><td>Migration start grants documented temporary rights and completion removes them.</td><td><a href="https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/delegated-managed-service-accounts/delegated-managed-service-accounts-overview">DMSA-OVERVIEW</a><br><small>Account migration permissions</small></td><td class="mono">windows-observation</td><td class="num">3</td><td><span class="status accept">Kabul</span></td></tr>
+<tr><td class="mono keep">DMSA-EVENT-001</td><td><span class="domain domain-dmsa">DMSA</span></td><td>Operational events 307, 308, and 309 correlate migration, permission enrollment, and key fetch with directory snapshots.</td><td><a href="https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/delegated-managed-service-accounts/delegated-managed-service-accounts-overview">DMSA-OVERVIEW</a><br><small>Auditing dMSA activity</small></td><td class="mono">windows-observation</td><td class="num">4</td><td><span class="status inconclusive">Sonuçsuz</span></td></tr>
+<tr><td class="mono keep">DMSA-LINK-001</td><td><span class="domain domain-dmsa">DMSA</span></td><td>Migration maintains the documented predecessor and successor link relation between the legacy account and dMSA.</td><td><a href="https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/delegated-managed-service-accounts/delegated-managed-service-accounts-overview">DMSA-OVERVIEW</a><br><small>Account migration</small></td><td class="mono">windows-observation</td><td class="num">3</td><td><span class="status observe">Gözlem</span></td></tr>
+<tr><td class="mono keep">DMSA-MACHINE-001</td><td><span class="domain domain-dmsa">DMSA</span></td><td>Only explicitly enrolled machine identities receive dMSA behavior and ticket refresh is a separate transition.</td><td><a href="https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/delegated-managed-service-accounts/delegated-managed-service-accounts-set-up-dmsa">DMSA-SETUP</a><br><small>Grant client access to the dMSA</small></td><td class="mono">windows-observation</td><td class="num">3</td><td><span class="status observe">Gözlem</span></td></tr>
+<tr><td class="mono keep">DMSA-ROLLBACK-001</td><td><span class="domain domain-dmsa">DMSA</span></td><td>Reset and undo cases restore a documented inactive or unlinked state without deleting the original account.</td><td><a href="https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/delegated-managed-service-accounts/delegated-managed-service-accounts-set-up-dmsa">DMSA-SETUP</a><br><small>Reset a dMSA account</small></td><td class="mono">windows-observation</td><td class="num">3</td><td><span class="status accept">Kabul</span> <span class="status observe">Gözlem</span> <span class="status observe">Gözlem</span></td></tr>
+<tr><td class="mono keep">DMSA-RWDC-001</td><td><span class="domain domain-dmsa">DMSA</span></td><td>Migration graph changes require a writable domain controller and an RODC observation never counts as a successful write.</td><td><a href="https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/delegated-managed-service-accounts/delegated-managed-service-accounts-set-up-dmsa">DMSA-SETUP</a><br><small>Prerequisites</small></td><td class="mono">windows-observation</td><td class="num">2</td><td><span class="status observe">Gözlem</span> <span class="status accept">Kabul</span></td></tr>
+<tr><td class="mono keep">DMSA-SPN-001</td><td><span class="domain domain-dmsa">DMSA</span></td><td>Completion transfers SPNs and supported policy attributes before disabling and clearing the legacy account.</td><td><a href="https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/delegated-managed-service-accounts/delegated-managed-service-accounts-overview">DMSA-OVERVIEW</a><br><small>Account migration completion</small></td><td class="mono">windows-observation</td><td class="num">3</td><td><span class="status accept">Kabul</span></td></tr>
+<tr><td class="mono keep">DMSA-STATE-001</td><td><span class="domain domain-dmsa">DMSA</span></td><td>States one, two, and three mean started, completed, and standalone, with unsupported transition order rejected atomically.</td><td><a href="https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/delegated-managed-service-accounts/delegated-managed-service-accounts-overview">DMSA-OVERVIEW</a><br><small>Migration states</small></td><td class="mono">windows-observation</td><td class="num">4</td><td><span class="status reject">Ret</span> <span class="status inconclusive">Sonuçsuz</span> <span class="status accept">Kabul</span></td></tr>
+<tr><td class="mono keep">OIDC-AUD-001</td><td><span class="domain domain-oidc">OIDC</span></td><td>The audience includes the registered client and contains no untrusted additional audience.</td><td><a href="https://openid.net/specs/openid-connect-core-1_0.html">OIDC-CORE</a><br><small>3.1.3.7</small></td><td class="mono">spec-oracle</td><td class="num">4</td><td><span class="status unrecorded">Kayıt yok</span></td></tr>
+<tr><td class="mono keep">OIDC-ISS-001</td><td><span class="domain domain-oidc">OIDC</span></td><td>The ID token issuer exactly matches the discovered issuer identifier.</td><td><a href="https://openid.net/specs/openid-connect-core-1_0.html">OIDC-CORE</a><br><small>3.1.3.7</small></td><td class="mono">spec-oracle</td><td class="num">3</td><td><span class="status unrecorded">Kayıt yok</span></td></tr>
+<tr><td class="mono keep">OIDC-NONCE-001</td><td><span class="domain domain-oidc">OIDC</span></td><td>A sent nonce must match and is consumed once by the local bounded replay policy.</td><td><a href="https://openid.net/specs/openid-connect-core-1_0.html">OIDC-CORE</a><br><small>3.1.2.1 and 3.1.3.7</small></td><td class="mono">spec-oracle</td><td class="num">4</td><td><span class="status unrecorded">Kayıt yok</span></td></tr>
+<tr><td class="mono keep">OIDC-TIME-001</td><td><span class="domain domain-oidc">OIDC</span></td><td>Expiration, issued-at, authentication time, and nonce retention share one injected clock and explicit skew.</td><td><a href="https://openid.net/specs/openid-connect-core-1_0.html">OIDC-CORE</a><br><small>2 and 3.1.3.7</small></td><td class="mono">spec-oracle</td><td class="num">4</td><td><span class="status unrecorded">Kayıt yok</span></td></tr>
+<tr><td class="mono keep">PAC-ATTR-001</td><td><span class="domain domain-pac">PAC</span></td><td>FlagsLength counts defined bits, storage is padded to 32-bit units, and undefined padding bits are ignored.</td><td><a href="https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-pac/">MS-PAC</a><br><small>2.14 PAC_ATTRIBUTES_INFO</small></td><td class="mono">local-adapter</td><td class="num">3</td><td><span class="status observe">Gözlem</span></td></tr>
+<tr><td class="mono keep">PAC-BOUNDS-001</td><td><span class="domain domain-pac">PAC</span></td><td>Every offset is eight-byte aligned and each offset-plus-size range is overflow-safe and contained in the PACTYPE.</td><td><a href="https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-pac/">MS-PAC</a><br><small>2.4 PAC_INFO_BUFFER</small></td><td class="mono">local-adapter</td><td class="num">4</td><td><span class="status unrecorded">Kayıt yok</span></td></tr>
+<tr><td class="mono keep">PAC-DLG-001</td><td><span class="domain domain-pac">PAC</span></td><td>Applicable domain-local group processing removes requestor and attributes structures from the resulting service ticket.</td><td><a href="https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-kile/">MS-KILE</a><br><small>Domain Local Group Membership processing</small></td><td class="mono">windows-observation</td><td class="num">2</td><td><span class="status observe">Gözlem</span></td></tr>
+<tr><td class="mono keep">PAC-ORDER-001</td><td><span class="domain domain-pac">PAC</span></td><td>Buffer order is semantically free before signing and immutable after signatures are produced.</td><td><a href="https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-pac/">MS-PAC</a><br><small>2.8 PAC Signatures</small></td><td class="mono">local-adapter</td><td class="num">2</td><td><span class="status unrecorded">Kayıt yok</span></td></tr>
+<tr><td class="mono keep">PAC-REQ-001</td><td><span class="domain domain-pac">PAC</span></td><td>A same-realm requestor SID resolves to the cname account while delegation identity remains separate.</td><td><a href="https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-kile/">MS-KILE</a><br><small>TGS request PAC requestor validation</small></td><td class="mono">windows-observation</td><td class="num">3</td><td><span class="status inconclusive">Sonuçsuz</span></td></tr>
+<tr><td class="mono keep">PAC-RODC-001</td><td><span class="domain domain-pac">PAC</span></td><td>RODCIdentifier is present only for an RODC-issued signature and maps to the documented key-version portion.</td><td><a href="https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-pac/">MS-PAC</a><br><small>2.8.1 PAC_SIGNATURE_DATA</small></td><td class="mono">windows-observation</td><td class="num">3</td><td><span class="status observe">Gözlem</span></td></tr>
+<tr><td class="mono keep">PAC-SIG-001</td><td><span class="domain domain-pac">PAC</span></td><td>Server, KDC, ticket, and extended KDC signature roles remain distinct and correctly ordered.</td><td><a href="https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-pac/">MS-PAC</a><br><small>2.8 PAC Signatures</small></td><td class="mono">local-adapter</td><td class="num">3</td><td><span class="status observe">Gözlem</span></td></tr>
+<tr><td class="mono keep">PAC-TGS-001</td><td><span class="domain domain-pac">PAC</span></td><td>A service ticket receives new server and KDC signatures and cannot end with a zero-length PAC buffer.</td><td><a href="https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-kile/">MS-KILE</a><br><small>TGS ticket construction</small></td><td class="mono">windows-observation</td><td class="num">3</td><td><span class="status observe">Gözlem</span></td></tr>
+<tr><td class="mono keep">STS-ACTOR-001</td><td><span class="domain domain-sts">STS</span></td><td>Actor token and actor token type occur together while subject and actor identities remain distinct.</td><td><a href="https://datatracker.ietf.org/doc/html/rfc8693">RFC8693</a><br><small>2.1</small></td><td class="mono">spec-oracle</td><td class="num">4</td><td><span class="status unrecorded">Kayıt yok</span></td></tr>
+<tr><td class="mono keep">STS-LIFETIME-001</td><td><span class="domain domain-sts">STS</span></td><td>Exchange does not consume or tightly link the input token unless the selected token profile says otherwise.</td><td><a href="https://datatracker.ietf.org/doc/html/rfc8693">RFC8693</a><br><small>2.1 and 2.2</small></td><td class="mono">spec-oracle</td><td class="num">2</td><td><span class="status unrecorded">Kayıt yok</span></td></tr>
+<tr><td class="mono keep">STS-REQ-001</td><td><span class="domain domain-sts">STS</span></td><td>Grant type, subject token, and subject token type are required and type-consistent.</td><td><a href="https://datatracker.ietf.org/doc/html/rfc8693">RFC8693</a><br><small>2.1</small></td><td class="mono">spec-oracle</td><td class="num">4</td><td><span class="status unrecorded">Kayıt yok</span></td></tr>
+<tr><td class="mono keep">STS-RIGHTS-001</td><td><span class="domain domain-sts">STS</span></td><td>Requested rights preserve the full scope and target product without silently dropping a target.</td><td><a href="https://datatracker.ietf.org/doc/html/rfc8693">RFC8693</a><br><small>2.1</small></td><td class="mono">spec-oracle</td><td class="num">3</td><td><span class="status unrecorded">Kayıt yok</span></td></tr>
+<tr><td class="mono keep">STS-TARGET-001</td><td><span class="domain domain-sts">STS</span></td><td>Resource indicators are absolute fragment-free URIs and audience identifiers remain unambiguous.</td><td><a href="https://datatracker.ietf.org/doc/html/rfc8693">RFC8693</a><br><small>2.1</small></td><td class="mono">spec-oracle</td><td class="num">4</td><td><span class="status unrecorded">Kayıt yok</span></td></tr>
+<tr><td class="mono keep">WIF-BIND-001</td><td><span class="domain domain-wif">WIF</span></td><td>Credential selection remains bound to tenant, application object, client ID, credential, issuer, subject matcher, and audience.</td><td><a href="https://learn.microsoft.com/en-us/graph/api/resources/federatedidentitycredentials-overview?view=graph-rest-1.0">ENTRA-FIC</a><br><small>federatedIdentityCredential resource</small></td><td class="mono">spec-oracle</td><td class="num">3</td><td><span class="status skip">Atlandı</span> <span class="status skip">Atlandı</span></td></tr>
+<tr><td class="mono keep">WIF-FLEX-001</td><td><span class="domain domain-wif">WIF</span></td><td>A flexible credential uses either subject or a supported claim expression and retains its immutable platform-claim binding.</td><td><a href="https://learn.microsoft.com/en-us/entra/workload-id/workload-identities-flexible-federated-identity-credentials">ENTRA-FLEX-FIC</a><br><small>Flexible federated identity credential configuration</small></td><td class="mono">spec-oracle</td><td class="num">4</td><td><span class="status unrecorded">Kayıt yok</span></td></tr>
+<tr><td class="mono keep">WIF-KEY-001</td><td><span class="domain domain-wif">WIF</span></td><td>Algorithm and trusted issuer key validation complete before claim-based credential selection.</td><td><a href="https://datatracker.ietf.org/doc/html/rfc7523">RFC7523</a><br><small>3.1 and 3.2</small></td><td class="mono">spec-oracle</td><td class="num">4</td><td><span class="status unrecorded">Kayıt yok</span></td></tr>
+<tr><td class="mono keep">WIF-MATCH-001</td><td><span class="domain domain-wif">WIF</span></td><td>Standard federated credential issuer, subject, and audience comparisons are exact and case-sensitive.</td><td><a href="https://learn.microsoft.com/en-us/graph/api/resources/federatedidentitycredentials-overview?view=graph-rest-1.0">ENTRA-FIC</a><br><small>issuer subject and audiences properties</small></td><td class="mono">spec-oracle</td><td class="num">5</td><td><span class="status unrecorded">Kayıt yok</span></td></tr>
+<tr><td class="mono keep">WIF-REPLAY-001</td><td><span class="domain domain-wif">WIF</span></td><td>Repeated JWT IDs are observations unless the selected profile explicitly defines one-time use.</td><td><a href="https://datatracker.ietf.org/doc/html/rfc7523">RFC7523</a><br><small>3</small></td><td class="mono">spec-oracle</td><td class="num">2</td><td><span class="status unrecorded">Kayıt yok</span></td></tr>
+<tr><td class="mono keep">WIF-TIME-001</td><td><span class="domain domain-wif">WIF</span></td><td>Expiration is required and all temporal decisions use one injected clock with explicit skew.</td><td><a href="https://datatracker.ietf.org/doc/html/rfc7523">RFC7523</a><br><small>3.1 and 3.2</small></td><td class="mono">spec-oracle</td><td class="num">5</td><td><span class="status unrecorded">Kayıt yok</span></td></tr>
+<tr><td class="mono keep">WIF-TRANSPORT-001</td><td><span class="domain domain-wif">WIF</span></td><td>Entra workload federation uses client credentials with a JWT bearer client assertion and one resource default scope.</td><td><a href="https://learn.microsoft.com/en-us/entra/identity-platform/v2-oauth2-client-creds-grant-flow">ENTRA-CLIENT-CREDENTIALS</a><br><small>Protocol diagram and access token request</small></td><td class="mono">spec-oracle</td><td class="num">3</td><td><span class="status unrecorded">Kayıt yok</span></td></tr>
+<tr><td class="mono keep">WIF-TYPE-001</td><td><span class="domain domain-wif">WIF</span></td><td>Issuer and subject are strings, temporal claims are NumericDate numbers, and audience is interpreted without scalar coercion.</td><td><a href="https://datatracker.ietf.org/doc/html/rfc7523">RFC7523</a><br><small>3</small></td><td class="mono">spec-oracle</td><td class="num">4</td><td><span class="status unrecorded">Kayıt yok</span></td></tr></tbody>
+    </table>
+        <p class="footnote">&quot;Kayıt yok&quot;, deterministic testin bulunmadığı anlamına gelmez; committed public ledger yalnızca normalize Windows/Entra gözlem kayıtlarını içerir. Spec oracle kapsamı test suite içinde doğrulanır.</p>
+  </section>
+
+  <section id="appendix-observations" class="chapter">
+    <div class="chapter-head" data-index="B">
+      <div class="kicker">Ek B</div>
+      <h1>Normalize gözlem indeksi</h1>
+      <p>Her satır canonical ledger ile generated JSON report arasında bire bir doğrulanmıştır.</p>
+    </div>
+    <table class="appendix-table">
+      <thead><tr><th class="num">#</th><th>Case ID</th><th>Rule ID</th><th>Outcome</th><th>Reason</th><th>Evidence class</th></tr></thead>
+      <tbody><tr><td class="num">1</td><td class="mono">ckt-line-of-sight</td><td class="mono keep">CKT-LOS-001</td><td><span class="status skip">Atlandı</span></td><td class="mono">line_of_sight_missing</td><td class="mono">windows-observation</td></tr>
+<tr><td class="num">2</td><td class="mono">ckt-partial-tgt-gate</td><td class="mono keep">CKT-PARTIAL-001</td><td><span class="status skip">Atlandı</span></td><td class="mono">partial_tgt_missing</td><td class="mono">windows-observation</td></tr>
+<tr><td class="num">3</td><td class="mono">ckt-policy-precedence-gate</td><td class="mono keep">CKT-PRECEDENCE-001</td><td><span class="status skip">Atlandı</span></td><td class="mono">cloud_trust_policy_unverified</td><td class="mono">windows-observation</td></tr>
+<tr><td class="num">4</td><td class="mono">ckt-rodc-object-gate</td><td class="mono keep">CKT-RODC-001</td><td><span class="status skip">Atlandı</span></td><td class="mono">cloud_kerberos_object_missing</td><td class="mono">windows-observation</td></tr>
+<tr><td class="num">5</td><td class="mono">dmsa-started-to-complete--dmsa-acl-001</td><td class="mono keep">DMSA-ACL-001</td><td><span class="status accept">Kabul</span></td><td class="mono">ordered_completion</td><td class="mono">windows-observation</td></tr>
+<tr><td class="num">6</td><td class="mono">dmsa-event-directory-correlation</td><td class="mono keep">DMSA-EVENT-001</td><td><span class="status inconclusive">Sonuçsuz</span></td><td class="mono">supported_events_not_observed</td><td class="mono">windows-observation</td></tr>
+<tr><td class="num">7</td><td class="mono">dmsa-reciprocal-migration-links</td><td class="mono keep">DMSA-LINK-001</td><td><span class="status observe">Gözlem</span></td><td class="mono">reciprocal_links_replicated</td><td class="mono">windows-observation</td></tr>
+<tr><td class="num">8</td><td class="mono">dmsa-enrolled-machine</td><td class="mono keep">DMSA-MACHINE-001</td><td><span class="status observe">Gözlem</span></td><td class="mono">allow_list_membership_is_explicit</td><td class="mono">windows-observation</td></tr>
+<tr><td class="num">9</td><td class="mono">dmsa-baseline-restore</td><td class="mono keep">DMSA-ROLLBACK-001</td><td><span class="status accept">Kabul</span></td><td class="mono">checkpoint_restore_digest_match</td><td class="mono">windows-observation</td></tr>
+<tr><td class="num">10</td><td class="mono">dmsa-reset-to-documented-state</td><td class="mono keep">DMSA-ROLLBACK-001</td><td><span class="status observe">Gözlem</span></td><td class="mono">state_links_restored_enrollment_cleared</td><td class="mono">windows-observation</td></tr>
+<tr><td class="num">11</td><td class="mono">dmsa-undo-to-documented-state</td><td class="mono keep">DMSA-ROLLBACK-001</td><td><span class="status observe">Gözlem</span></td><td class="mono">state_links_restored_enrollment_cleared</td><td class="mono">windows-observation</td></tr>
+<tr><td class="num">12</td><td class="mono">dmsa-rodc-migration-write</td><td class="mono keep">DMSA-RWDC-001</td><td><span class="status observe">Gözlem</span></td><td class="mono">rodc_local_transition_persisted</td><td class="mono">windows-observation</td></tr>
+<tr><td class="num">13</td><td class="mono">dmsa-rwdc-migration-write</td><td class="mono keep">DMSA-RWDC-001</td><td><span class="status accept">Kabul</span></td><td class="mono">writable_directory_transition</td><td class="mono">windows-observation</td></tr>
+<tr><td class="num">14</td><td class="mono">dmsa-started-to-complete--dmsa-spn-001</td><td class="mono keep">DMSA-SPN-001</td><td><span class="status accept">Kabul</span></td><td class="mono">ordered_completion</td><td class="mono">windows-observation</td></tr>
+<tr><td class="num">15</td><td class="mono">dmsa-complete-before-start</td><td class="mono keep">DMSA-STATE-001</td><td><span class="status reject">Ret</span></td><td class="mono">invalid_transition</td><td class="mono">windows-observation</td></tr>
+<tr><td class="num">16</td><td class="mono">dmsa-standalone</td><td class="mono keep">DMSA-STATE-001</td><td><span class="status inconclusive">Sonuçsuz</span></td><td class="mono">documented_state_three_not_observed</td><td class="mono">windows-observation</td></tr>
+<tr><td class="num">17</td><td class="mono">dmsa-started-to-complete--dmsa-state-001</td><td class="mono keep">DMSA-STATE-001</td><td><span class="status accept">Kabul</span></td><td class="mono">ordered_completion</td><td class="mono">windows-observation</td></tr>
+<tr><td class="num">18</td><td class="mono">pac-attributes-service-ticket</td><td class="mono keep">PAC-ATTR-001</td><td><span class="status observe">Gözlem</span></td><td class="mono">attributes_buffer_absent</td><td class="mono">windows-observation</td></tr>
+<tr><td class="num">19</td><td class="mono">pac-domain-local-processing</td><td class="mono keep">PAC-DLG-001</td><td><span class="status observe">Gözlem</span></td><td class="mono">service_ticket_buffers_observed</td><td class="mono">windows-observation</td></tr>
+<tr><td class="num">20</td><td class="mono">pac-requestor-tgt-boundary</td><td class="mono keep">PAC-REQ-001</td><td><span class="status inconclusive">Sonuçsuz</span></td><td class="mono">tgt_requestor_not_assessed</td><td class="mono">windows-observation</td></tr>
+<tr><td class="num">21</td><td class="mono">pac-rodc-identifier</td><td class="mono keep">PAC-RODC-001</td><td><span class="status observe">Gözlem</span></td><td class="mono">rodc_identifier_observed</td><td class="mono">windows-observation</td></tr>
+<tr><td class="num">22</td><td class="mono">pac-signature-roles</td><td class="mono keep">PAC-SIG-001</td><td><span class="status observe">Gözlem</span></td><td class="mono">signature_roles_observed</td><td class="mono">windows-observation</td></tr>
+<tr><td class="num">23</td><td class="mono">pac-service-ticket-issuance</td><td class="mono keep">PAC-TGS-001</td><td><span class="status observe">Gözlem</span></td><td class="mono">service_ticket_issuance_observed</td><td class="mono">windows-observation</td></tr>
+<tr><td class="num">24</td><td class="mono">wif-live-gate-ubuntu-lab</td><td class="mono keep">WIF-BIND-001</td><td><span class="status skip">Atlandı</span></td><td class="mono">tenant_context_missing</td><td class="mono">entra-observation</td></tr>
+<tr><td class="num">25</td><td class="mono">wif-live-gate-windows-lab</td><td class="mono keep">WIF-BIND-001</td><td><span class="status skip">Atlandı</span></td><td class="mono">tenant_context_missing</td><td class="mono">entra-observation</td></tr></tbody>
+    </table>
+  </section>
+
+  <section id="appendix-hashes" class="chapter">
+    <div class="chapter-head" data-index="C">
+      <div class="kicker">Ek C</div>
+      <h1>Artifact ve source manifest hash zinciri</h1>
+      <p>Digest'ler küçük harfli SHA-256 olarak verified machine-readable report'tan üretilir.</p>
+    </div>
+    <table class="appendix-table">
+      <thead><tr><th>Artifact bağı</th><th>SHA-256</th></tr></thead>
+      <tbody><tr><td class="mono">public-ledger</td><td class="mono hash">9852c4e00a4c1b25165708541774ba23975ec6c97acd6e0c2b90c6377633f44c</td></tr>
+<tr><td class="mono">record/ckt-line-of-sight/source-ledger</td><td class="mono hash">464736fc7f5fe25bc775ef1e4097f23556f31775a5b912e7b44134a504cd6af0</td></tr>
+<tr><td class="mono">record/ckt-line-of-sight/source-record</td><td class="mono hash">464736fc7f5fe25bc775ef1e4097f23556f31775a5b912e7b44134a504cd6af0</td></tr>
+<tr><td class="mono">record/ckt-partial-tgt-gate/source-ledger</td><td class="mono hash">464736fc7f5fe25bc775ef1e4097f23556f31775a5b912e7b44134a504cd6af0</td></tr>
+<tr><td class="mono">record/ckt-partial-tgt-gate/source-record</td><td class="mono hash">464736fc7f5fe25bc775ef1e4097f23556f31775a5b912e7b44134a504cd6af0</td></tr>
+<tr><td class="mono">record/ckt-policy-precedence-gate/source-ledger</td><td class="mono hash">464736fc7f5fe25bc775ef1e4097f23556f31775a5b912e7b44134a504cd6af0</td></tr>
+<tr><td class="mono">record/ckt-policy-precedence-gate/source-record</td><td class="mono hash">464736fc7f5fe25bc775ef1e4097f23556f31775a5b912e7b44134a504cd6af0</td></tr>
+<tr><td class="mono">record/ckt-rodc-object-gate/source-ledger</td><td class="mono hash">464736fc7f5fe25bc775ef1e4097f23556f31775a5b912e7b44134a504cd6af0</td></tr>
+<tr><td class="mono">record/ckt-rodc-object-gate/source-record</td><td class="mono hash">464736fc7f5fe25bc775ef1e4097f23556f31775a5b912e7b44134a504cd6af0</td></tr>
+<tr><td class="mono">record/dmsa-baseline-restore/source-ledger</td><td class="mono hash">024bbf6c01333a08a383587cf701985d26dbe9eef975518aebc271e8f25ef9fc</td></tr>
+<tr><td class="mono">record/dmsa-baseline-restore/source-record</td><td class="mono hash">10a41931157ea15bdae43f981795da94327ff117a128a05796e0942f903d5bf7</td></tr>
+<tr><td class="mono">record/dmsa-complete-before-start/source-ledger</td><td class="mono hash">024bbf6c01333a08a383587cf701985d26dbe9eef975518aebc271e8f25ef9fc</td></tr>
+<tr><td class="mono">record/dmsa-complete-before-start/source-record</td><td class="mono hash">afc7a6ccaaf23641982253a217521961bf4a0366b21dac9a1490fdcd48e53ed2</td></tr>
+<tr><td class="mono">record/dmsa-enrolled-machine/source-ledger</td><td class="mono hash">024bbf6c01333a08a383587cf701985d26dbe9eef975518aebc271e8f25ef9fc</td></tr>
+<tr><td class="mono">record/dmsa-enrolled-machine/source-record</td><td class="mono hash">3beadb0c4ead768999593cf42d6db1013d35dd24fa548600de6ee8e5cbafcb12</td></tr>
+<tr><td class="mono">record/dmsa-event-directory-correlation/source-ledger</td><td class="mono hash">024bbf6c01333a08a383587cf701985d26dbe9eef975518aebc271e8f25ef9fc</td></tr>
+<tr><td class="mono">record/dmsa-event-directory-correlation/source-record</td><td class="mono hash">5cd381882d94c9624fafb244712a2bb97c0e4f4cef442821fb7291709041d82b</td></tr>
+<tr><td class="mono">record/dmsa-reciprocal-migration-links/source-ledger</td><td class="mono hash">024bbf6c01333a08a383587cf701985d26dbe9eef975518aebc271e8f25ef9fc</td></tr>
+<tr><td class="mono">record/dmsa-reciprocal-migration-links/source-record</td><td class="mono hash">5f3320bf5180927b7288ca6a515b9a30a3fdf84e508af2cc1e06a64058feb8e4</td></tr>
+<tr><td class="mono">record/dmsa-reset-to-documented-state/source-ledger</td><td class="mono hash">024bbf6c01333a08a383587cf701985d26dbe9eef975518aebc271e8f25ef9fc</td></tr>
+<tr><td class="mono">record/dmsa-reset-to-documented-state/source-record</td><td class="mono hash">89d931cf3e9dc280d5fe2a9fe5812ac3a2cf764a6c84fadeef7fcd640ec7132e</td></tr>
+<tr><td class="mono">record/dmsa-rodc-migration-write/source-ledger</td><td class="mono hash">024bbf6c01333a08a383587cf701985d26dbe9eef975518aebc271e8f25ef9fc</td></tr>
+<tr><td class="mono">record/dmsa-rodc-migration-write/source-record</td><td class="mono hash">4d014c3c70adaecd568f5d602f8acc03e2530d92412ba0ef48f86dfa3b67b929</td></tr>
+<tr><td class="mono">record/dmsa-rwdc-migration-write/source-ledger</td><td class="mono hash">024bbf6c01333a08a383587cf701985d26dbe9eef975518aebc271e8f25ef9fc</td></tr>
+<tr><td class="mono">record/dmsa-rwdc-migration-write/source-record</td><td class="mono hash">05ef5fb49d9003cde66457177b58dbbfa3271aed25864af982b3c0a7785cf135</td></tr>
+<tr><td class="mono">record/dmsa-standalone/source-ledger</td><td class="mono hash">024bbf6c01333a08a383587cf701985d26dbe9eef975518aebc271e8f25ef9fc</td></tr>
+<tr><td class="mono">record/dmsa-standalone/source-record</td><td class="mono hash">34800b16b0f8e89b88bbf9b6a725f354f65c3eaf22e8bad9d8b8b8bcb73747c2</td></tr>
+<tr><td class="mono">record/dmsa-started-to-complete--dmsa-acl-001/source-ledger</td><td class="mono hash">024bbf6c01333a08a383587cf701985d26dbe9eef975518aebc271e8f25ef9fc</td></tr>
+<tr><td class="mono">record/dmsa-started-to-complete--dmsa-acl-001/source-record</td><td class="mono hash">cf6e0bcb4faa2c6d3c886c5c9d15784043dd09035716980f4c7a5ad6c756417b</td></tr>
+<tr><td class="mono">record/dmsa-started-to-complete--dmsa-spn-001/source-ledger</td><td class="mono hash">024bbf6c01333a08a383587cf701985d26dbe9eef975518aebc271e8f25ef9fc</td></tr>
+<tr><td class="mono">record/dmsa-started-to-complete--dmsa-spn-001/source-record</td><td class="mono hash">cf6e0bcb4faa2c6d3c886c5c9d15784043dd09035716980f4c7a5ad6c756417b</td></tr>
+<tr><td class="mono">record/dmsa-started-to-complete--dmsa-state-001/source-ledger</td><td class="mono hash">024bbf6c01333a08a383587cf701985d26dbe9eef975518aebc271e8f25ef9fc</td></tr>
+<tr><td class="mono">record/dmsa-started-to-complete--dmsa-state-001/source-record</td><td class="mono hash">cf6e0bcb4faa2c6d3c886c5c9d15784043dd09035716980f4c7a5ad6c756417b</td></tr>
+<tr><td class="mono">record/dmsa-undo-to-documented-state/source-ledger</td><td class="mono hash">024bbf6c01333a08a383587cf701985d26dbe9eef975518aebc271e8f25ef9fc</td></tr>
+<tr><td class="mono">record/dmsa-undo-to-documented-state/source-record</td><td class="mono hash">d13a70bf1b23b13fae3b2c1cf4b4482914406507cedce3945b09f8eb07ce1109</td></tr>
+<tr><td class="mono">record/pac-attributes-service-ticket/source-ledger</td><td class="mono hash">3d1bda6af895f7de22eeaa5f6df5707c60d9ee6a631b507c226a309845707ffe</td></tr>
+<tr><td class="mono">record/pac-attributes-service-ticket/source-record-rodc</td><td class="mono hash">d77d0ed8da9a12196794998e8c69ff19aba3012c80cc86c1b132d30314e534be</td></tr>
+<tr><td class="mono">record/pac-attributes-service-ticket/source-record-rwdc</td><td class="mono hash">44f5e1a4644724f46b53971da784a2531a36453127015b539d4186bfd29e4e06</td></tr>
+<tr><td class="mono">record/pac-domain-local-processing/source-ledger</td><td class="mono hash">3d1bda6af895f7de22eeaa5f6df5707c60d9ee6a631b507c226a309845707ffe</td></tr>
+<tr><td class="mono">record/pac-domain-local-processing/source-record-rodc</td><td class="mono hash">d77d0ed8da9a12196794998e8c69ff19aba3012c80cc86c1b132d30314e534be</td></tr>
+<tr><td class="mono">record/pac-domain-local-processing/source-record-rwdc</td><td class="mono hash">44f5e1a4644724f46b53971da784a2531a36453127015b539d4186bfd29e4e06</td></tr>
+<tr><td class="mono">record/pac-requestor-tgt-boundary/source-ledger</td><td class="mono hash">3d1bda6af895f7de22eeaa5f6df5707c60d9ee6a631b507c226a309845707ffe</td></tr>
+<tr><td class="mono">record/pac-requestor-tgt-boundary/source-record-rodc</td><td class="mono hash">d77d0ed8da9a12196794998e8c69ff19aba3012c80cc86c1b132d30314e534be</td></tr>
+<tr><td class="mono">record/pac-requestor-tgt-boundary/source-record-rwdc</td><td class="mono hash">44f5e1a4644724f46b53971da784a2531a36453127015b539d4186bfd29e4e06</td></tr>
+<tr><td class="mono">record/pac-rodc-identifier/source-ledger</td><td class="mono hash">3d1bda6af895f7de22eeaa5f6df5707c60d9ee6a631b507c226a309845707ffe</td></tr>
+<tr><td class="mono">record/pac-rodc-identifier/source-record-rodc</td><td class="mono hash">d77d0ed8da9a12196794998e8c69ff19aba3012c80cc86c1b132d30314e534be</td></tr>
+<tr><td class="mono">record/pac-rodc-identifier/source-record-rwdc</td><td class="mono hash">44f5e1a4644724f46b53971da784a2531a36453127015b539d4186bfd29e4e06</td></tr>
+<tr><td class="mono">record/pac-service-ticket-issuance/source-ledger</td><td class="mono hash">3d1bda6af895f7de22eeaa5f6df5707c60d9ee6a631b507c226a309845707ffe</td></tr>
+<tr><td class="mono">record/pac-service-ticket-issuance/source-record-rodc</td><td class="mono hash">d77d0ed8da9a12196794998e8c69ff19aba3012c80cc86c1b132d30314e534be</td></tr>
+<tr><td class="mono">record/pac-service-ticket-issuance/source-record-rwdc</td><td class="mono hash">44f5e1a4644724f46b53971da784a2531a36453127015b539d4186bfd29e4e06</td></tr>
+<tr><td class="mono">record/pac-signature-roles/source-ledger</td><td class="mono hash">3d1bda6af895f7de22eeaa5f6df5707c60d9ee6a631b507c226a309845707ffe</td></tr>
+<tr><td class="mono">record/pac-signature-roles/source-record-rodc</td><td class="mono hash">d77d0ed8da9a12196794998e8c69ff19aba3012c80cc86c1b132d30314e534be</td></tr>
+<tr><td class="mono">record/pac-signature-roles/source-record-rwdc</td><td class="mono hash">44f5e1a4644724f46b53971da784a2531a36453127015b539d4186bfd29e4e06</td></tr>
+<tr><td class="mono">record/wif-live-gate-ubuntu-lab/source-ledger</td><td class="mono hash">9a6f96a6de428e34d2c1cd136fb3ebb631a82a33d7c3152748ca0ab028956b10</td></tr>
+<tr><td class="mono">record/wif-live-gate-ubuntu-lab/source-record</td><td class="mono hash">5dbdab7652f42a2dcc3e9e4111ed2305b34361e9a585ab31c3994fb69b1c1395</td></tr>
+<tr><td class="mono">record/wif-live-gate-windows-lab/source-ledger</td><td class="mono hash">683102d242f601909ae64bbff71c96ff09970e41fd842de5503e2182ee9215f7</td></tr>
+<tr><td class="mono">record/wif-live-gate-windows-lab/source-record</td><td class="mono hash">31c45ebd581a1056cf3f3eb07e68591c71174b693c560efbb8c14e6c78ed8616</td></tr>
+<tr><td class="mono">source-manifest/task7-windows-ledger</td><td class="mono hash">024bbf6c01333a08a383587cf701985d26dbe9eef975518aebc271e8f25ef9fc</td></tr>
+<tr><td class="mono">source-manifest/task8-pac-ledger</td><td class="mono hash">3d1bda6af895f7de22eeaa5f6df5707c60d9ee6a631b507c226a309845707ffe</td></tr>
+<tr><td class="mono">source-manifest/task9-cloud-gate</td><td class="mono hash">464736fc7f5fe25bc775ef1e4097f23556f31775a5b912e7b44134a504cd6af0</td></tr>
+<tr><td class="mono">source-manifest/task9-ubuntu-ledger</td><td class="mono hash">9a6f96a6de428e34d2c1cd136fb3ebb631a82a33d7c3152748ca0ab028956b10</td></tr>
+<tr><td class="mono">source-manifest/task9-windows-ledger</td><td class="mono hash">683102d242f601909ae64bbff71c96ff09970e41fd842de5503e2182ee9215f7</td></tr></tbody>
+    </table>
+  </section>
+
+  <section id="appendix-commits" class="chapter">
+    <div class="chapter-head" data-index="D">
+      <div class="kicker">Ek D</div>
+      <h1>Geliştirme ve inceleme zaman çizelgesi</h1>
+      <p>Liste reviewed evidence commit'ine kadar local Git history'den üretilir; bu raporun yayın commit'i döngüsel bağı önlemek için dahil değildir.</p>
+    </div>
+
+    <div id="commit-timeline" class="visual">
+      <div class="visual-title"><span>Şekil 11 - Program 1 mühendislik fazları</span><small>catalog -> lab -> evidence -> review</small></div>
+      <svg viewBox="0 0 980 300" role="img" aria-label="Program 1 commit fazları zaman çizelgesi">
+        <rect width="980" height="300" fill="#fbfdff"/>
+        <g font-family="Segoe UI, Arial">
+          <line x1="90" y1="145" x2="890" y2="145" stroke="#9aacb9" stroke-width="5"/>
+          <g text-anchor="middle">
+            <circle cx="110" cy="145" r="16" fill="#00b8d9"/><text x="110" y="105" fill="#26384b" font-size="14" font-weight="700">Catalog</text><text x="110" y="190" fill="#6c7a89" font-size="11">rules + schema</text>
+            <circle cx="265" cy="145" r="16" fill="#00b8d9"/><text x="265" y="105" fill="#26384b" font-size="14" font-weight="700">Oracles</text><text x="265" y="190" fill="#6c7a89" font-size="11">WIF / STS / OIDC</text>
+            <circle cx="420" cy="145" r="16" fill="#b54889"/><text x="420" y="105" fill="#26384b" font-size="14" font-weight="700">PAC</text><text x="420" y="190" fill="#6c7a89" font-size="11">bounded parser</text>
+            <circle cx="575" cy="145" r="16" fill="#e39a18"/><text x="575" y="105" fill="#26384b" font-size="14" font-weight="700">Windows lab</text><text x="575" y="190" fill="#6c7a89" font-size="11">dMSA + tickets</text>
+            <circle cx="730" cy="145" r="16" fill="#17845b"/><text x="730" y="105" fill="#26384b" font-size="14" font-weight="700">Evidence</text><text x="730" y="190" fill="#6c7a89" font-size="11">ledger + report</text>
+            <circle cx="870" cy="145" r="16" fill="#7045a0"/><text x="870" y="105" fill="#26384b" font-size="14" font-weight="700">Review</text><text x="870" y="190" fill="#6c7a89" font-size="11">R1-R5 closure</text>
+          </g>
+          <rect x="120" y="235" width="740" height="32" rx="8" fill="#eef2f6"/>
+          <text x="490" y="256" text-anchor="middle" fill="#536274" font-size="12">Her faz: test-first -> minimum change -> VM verification -> DCO commit</text>
+        </g>
+      </svg>
+    </div>
+
+    <table class="appendix-table">
+      <thead><tr><th class="num">#</th><th>Commit</th><th>Tarih</th><th>Konu</th></tr></thead>
+      <tbody><tr><td class="num">1</td><td class="mono keep">82c57c901e4a</td><td class="keep">2026-10-30</td><td>chore: initialize identity invariant research</td></tr>
+<tr><td class="num">2</td><td class="mono keep">91b8ee6dbeb2</td><td class="keep">2026-10-30</td><td>test: define identity invariant catalog</td></tr>
+<tr><td class="num">3</td><td class="mono keep">fc24b7cf26d5</td><td class="keep">2026-10-30</td><td>feat: add typed assertion state machines</td></tr>
+<tr><td class="num">4</td><td class="mono keep">48a16fb6917c</td><td class="keep">2026-10-30</td><td>feat: model token exchange contracts</td></tr>
+<tr><td class="num">5</td><td class="mono keep">910872f8cead</td><td class="keep">2026-10-30</td><td>feat: record redacted invariant evidence</td></tr>
+<tr><td class="num">6</td><td class="mono keep">7c46bbed99c5</td><td class="keep">2026-10-30</td><td>feat: validate bounded PAC structures</td></tr>
+<tr><td class="num">7</td><td class="mono keep">fdd6ad0bf322</td><td class="keep">2026-10-30</td><td>lab: provision isolated identity topology</td></tr>
+<tr><td class="num">8</td><td class="mono keep">06e0daf4abc3</td><td class="keep">2026-10-30</td><td>test: verify dMSA lifecycle invariants</td></tr>
+<tr><td class="num">9</td><td class="mono keep">9fec5c8da558</td><td class="keep">2026-10-30</td><td>test: correlate PAC issuance contracts</td></tr>
+<tr><td class="num">10</td><td class="mono keep">0d8770814a84</td><td class="keep">2026-10-30</td><td>feat: gate live identity observations</td></tr>
+<tr><td class="num">11</td><td class="mono keep">a83fbc95bced</td><td class="keep">2026-10-30</td><td>docs: publish identity invariant evidence model</td></tr>
+<tr><td class="num">12</td><td class="mono keep">413559db709a</td><td class="keep">2026-10-30</td><td>fix: execute declared identity cases</td></tr>
+<tr><td class="num">13</td><td class="mono keep">0746bbf92164</td><td class="keep">2026-10-30</td><td>fix: preserve identity evidence provenance</td></tr>
+<tr><td class="num">14</td><td class="mono keep">5700f5b0258b</td><td class="keep">2026-10-30</td><td>fix: close live observation state gates</td></tr>
+<tr><td class="num">15</td><td class="mono keep">4a4524a20688</td><td class="keep">2026-10-30</td><td>fix: harden identity evidence boundaries</td></tr>
+<tr><td class="num">16</td><td class="mono keep">122c87bfbb29</td><td class="keep">2026-10-30</td><td>fix: bind cloud probes to joined clients</td></tr>
+<tr><td class="num">17</td><td class="mono keep">937063c019bb</td><td class="keep">2026-10-30</td><td>docs: rebuild reviewed identity evidence</td></tr></tbody>
+    </table>
+  </section>
+
+  <section id="appendix-reproduction" class="chapter">
+    <div class="chapter-head" data-index="E">
+      <div class="kicker">Ek E</div>
+      <h1>Yeniden üretim ve doğrulama komutları</h1>
+      <p>Derleme ve testler yalnızca izole VM'lerde yürütülür; host Git ve artifact koordinasyonuyla sınırlıdır.</p>
+    </div>
+
+    <h2>Ubuntu test ve manifest doğrulaması</h2>
+    <div class="command">python3 -m venv .venv
+.venv/bin/python -m pip install --require-hashes -r requirements-dev.lock
+PYTHONPATH=src .venv/bin/python -m pytest -q
+PYTHONPATH=src .venv/bin/python -m compileall -q src tests tools
+PYTHONPATH=src .venv/bin/python -m identity_invariants.reports.render --verify-only evidence/manifest.json</div>
+
+    <h2>Deterministik machine-readable report</h2>
+    <div class="command">PYTHONPATH=src .venv/bin/python -m identity_invariants.reports.render \
+  --render evidence/manifest.json \
+  --catalog spec/invariants.yaml \
+  --output reports/identity-invariants.md</div>
+
+    <h2>Detaylı HTML raporu</h2>
+    <div class="command">PYTHONPATH=src .venv/bin/python tools/build_detailed_report.py \
+  --root . \
+  --template reports/program1-detailed-report.template.html \
+  --output reports/program1-detailed-report.html \
+  --data-output reports/program1-detailed-report-data.json</div>
+
+    <h2>Windows contract testleri</h2>
+    <div class="command">Invoke-Pester -Path .\lab\windows\tests -PassThru</div>
+
+    <h2>PDF bağımsız kontrolü</h2>
+    <div class="command">pdfinfo reports/program1-detailed-report.pdf
+pdftotext -layout reports/program1-detailed-report.pdf /tmp/program1-report.txt
+sha256sum reports/program1-detailed-report.pdf</div>
+
+    <div class="callout limit"><h4>Önkoşul</h4><p>Windows mutating laboratuvar case'leri yalnızca exact three-node checkpoint seti, private switch, no-default-route, ADWS readiness, graph digest ve secure-channel kapıları geçtikten sonra yürütülmelidir.</p></div>
+  </section>
+
+  <section id="appendix-glossary" class="chapter">
+    <div class="chapter-head" data-index="F">
+      <div class="kicker">Ek F</div>
+      <h1>Terimler ve karar sözlüğü</h1>
+      <p>Rapor boyunca kullanılan teknik sözcüklerin bağlama özgü anlamları.</p>
+    </div>
+    <table>
+      <thead><tr><th>Terim</th><th>Bu rapordaki anlamı</th></tr></thead>
+      <tbody>
+        <tr><td>İnvariyant</td><td>Kaynak bölümü, typed predicate, evidence class ve case setiyle sabitlenen doğrulanabilir sözleşme.</td></tr>
+        <tr><td>Oracle</td><td>Network I/O yapmadan typed input üzerinde deterministic karar veren yerel state machine.</td></tr>
+        <tr><td>Adapter</td><td>Bir dış veya platform sınırındaki veriyi allow-listed, bounded metadata'ya dönüştüren katman.</td></tr>
+        <tr><td>Evidence class</td><td>Bir kararın hangi güven düzeyinde yorumlanacağını belirleyen sınıf.</td></tr>
+        <tr><td>Accept</td><td>Belirtilen yerel veya laboratuvar sözleşmesinin positive predicate'i sağlandı.</td></tr>
+        <tr><td>Reject</td><td>Belirtilen negative predicate doğru reason code ile kapandı.</td></tr>
+        <tr><td>Observe</td><td>Durum ölçüldü; tek başına uygunluk veya ürün etkisi sonucu değildir.</td></tr>
+        <tr><td>Skip</td><td>Gerekli bağlam yok; deney başlamadan fail-closed sonuç üretildi.</td></tr>
+        <tr><td>Inconclusive</td><td>Retained evidence invariyantı çözmeye yetmedi.</td></tr>
+        <tr><td>Canonical JSONL</td><td>Sorted keys, compact separators, UTF-8 ve LF ile byte-stable record serialization.</td></tr>
+        <tr><td>Source manifest</td><td>Normalize kaynak artifact'ının exact SHA-256 bağını taşıyan belge.</td></tr>
+        <tr><td>Graph digest</td><td>dMSA ve topology state'inin normalize, sıralı görünümünden üretilen karşılaştırma özeti.</td></tr>
+        <tr><td>Line-of-sight</td><td>Beklenen joined Windows client'ın on-prem domain controller ile gerekli erişim bağlamı.</td></tr>
+        <tr><td>Partial TGT</td><td>Cloud Kerberos Trust akışında on-prem doğrulamadan önceki sınırlı ticket aşaması.</td></tr>
+        <tr><td>RODC identifier</td><td>KDC key version ve PAC signature bağlamında ayrı yorumlanan read-only domain controller bileşeni.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section id="appendix-sources" class="chapter">
+    <div class="chapter-head" data-index="G">
+      <div class="kicker">Ek G</div>
+      <h1>Normatif ve teknik kaynak indeksi</h1>
+      <p>Kaynak başlığı, raporda kullanılan sabit revizyon tanımı ve primary HTTPS adresi.</p>
+    </div>
+    <table class="appendix-table">
+      <thead><tr><th>ID</th><th>Başlık</th><th>Revizyon</th><th>Primary URL</th></tr></thead>
+      <tbody><tr><td class="mono keep">DMSA-OVERVIEW</td><td>Delegated Managed Service Accounts overview</td><td>Windows Server 2025 documentation</td><td class="url"><a href="https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/delegated-managed-service-accounts/delegated-managed-service-accounts-overview">https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/delegated-managed-service-accounts/delegated-managed-service-accounts-overview</a></td></tr>
+<tr><td class="mono keep">DMSA-SETUP</td><td>Set up delegated Managed Service Accounts</td><td>Windows Server 2025 documentation</td><td class="url"><a href="https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/delegated-managed-service-accounts/delegated-managed-service-accounts-set-up-dmsa">https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/delegated-managed-service-accounts/delegated-managed-service-accounts-set-up-dmsa</a></td></tr>
+<tr><td class="mono keep">ENTRA-CLIENT-CREDENTIALS</td><td>Microsoft identity platform OAuth 2.0 client credentials flow</td><td>Microsoft identity platform v2.0 endpoint</td><td class="url"><a href="https://learn.microsoft.com/en-us/entra/identity-platform/v2-oauth2-client-creds-grant-flow">https://learn.microsoft.com/en-us/entra/identity-platform/v2-oauth2-client-creds-grant-flow</a></td></tr>
+<tr><td class="mono keep">ENTRA-FIC</td><td>Microsoft Graph federated identity credential overview</td><td>Microsoft Graph REST API v1.0</td><td class="url"><a href="https://learn.microsoft.com/en-us/graph/api/resources/federatedidentitycredentials-overview?view=graph-rest-1.0">https://learn.microsoft.com/en-us/graph/api/resources/federatedidentitycredentials-overview?view=graph-rest-1.0</a></td></tr>
+<tr><td class="mono keep">ENTRA-FLEX-FIC</td><td>Flexible federated identity credentials</td><td>Microsoft Entra workload identities public preview</td><td class="url"><a href="https://learn.microsoft.com/en-us/entra/workload-id/workload-identities-flexible-federated-identity-credentials">https://learn.microsoft.com/en-us/entra/workload-id/workload-identities-flexible-federated-identity-credentials</a></td></tr>
+<tr><td class="mono keep">MS-KILE</td><td>Kerberos Protocol Extensions</td><td>MS-KILE Open Specifications current revision, accessed 2026-10-30</td><td class="url"><a href="https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-kile/">https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-kile/</a></td></tr>
+<tr><td class="mono keep">MS-PAC</td><td>Privilege Attribute Certificate Data Structure</td><td>MS-PAC Open Specifications current revision, accessed 2026-10-30</td><td class="url"><a href="https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-pac/">https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-pac/</a></td></tr>
+<tr><td class="mono keep">OIDC-CORE</td><td>OpenID Connect Core 1.0 incorporating errata set 2</td><td>OpenID Connect Core 1.0, errata set 2</td><td class="url"><a href="https://openid.net/specs/openid-connect-core-1_0.html">https://openid.net/specs/openid-connect-core-1_0.html</a></td></tr>
+<tr><td class="mono keep">RFC7523</td><td>JSON Web Token Profile for OAuth 2.0 Client Authentication and Authorization Grants</td><td>RFC 7523, May 2015</td><td class="url"><a href="https://datatracker.ietf.org/doc/html/rfc7523">https://datatracker.ietf.org/doc/html/rfc7523</a></td></tr>
+<tr><td class="mono keep">RFC8693</td><td>OAuth 2.0 Token Exchange</td><td>RFC 8693, January 2020</td><td class="url"><a href="https://datatracker.ietf.org/doc/html/rfc8693">https://datatracker.ietf.org/doc/html/rfc8693</a></td></tr>
+<tr><td class="mono keep">WHFB-AUTH</td><td>Windows Hello for Business authentication</td><td>Windows Server 2025 documentation</td><td class="url"><a href="https://learn.microsoft.com/en-us/windows/security/identity-protection/hello-for-business/how-it-works-authentication">https://learn.microsoft.com/en-us/windows/security/identity-protection/hello-for-business/how-it-works-authentication</a></td></tr>
+<tr><td class="mono keep">WHFB-CLOUD-TRUST</td><td>Hybrid cloud Kerberos trust deployment</td><td>Windows Server 2025 documentation</td><td class="url"><a href="https://learn.microsoft.com/en-us/windows/security/identity-protection/hello-for-business/deploy/hybrid-cloud-kerberos-trust">https://learn.microsoft.com/en-us/windows/security/identity-protection/hello-for-business/deploy/hybrid-cloud-kerberos-trust</a></td></tr></tbody>
+    </table>
+
+    <div class="footer-note">
+      <p><strong>Son not:</strong> Bu rapor public-safe normalize kanıtı açıklar. Ham assertion, token, Kerberos ticket, PAC byte dizisi, private key, directory credential, reusable identifier veya tam service response içermez.</p>
+      <p>© 2026 Adil Alperen Çiftci. Teknik doğrulama belgesi.</p>
+    </div>
+  </section>
+</body>
+</html>

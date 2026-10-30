@@ -1,0 +1,22 @@
+{
+  "commits": [
+    {"authored_at": "2026-10-30T10:44:18+03:00", "sha": "82c57c901e4a011c74e090384396fdcb948294ca", "subject": "chore: initialize identity invariant research"},
+    {"authored_at": "2026-10-30T10:52:59+03:00", "sha": "91b8ee6dbeb20bc830f91b590f079b59eb245b36", "subject": "test: define identity invariant catalog"},
+    {"authored_at": "2026-10-30T10:56:05+03:00", "sha": "fc24b7cf26d5a46e5b3a7d66d51b413c2d37777e", "subject": "feat: add typed assertion state machines"},
+    {"authored_at": "2026-10-30T10:58:07+03:00", "sha": "48a16fb6917c8ca31a3c4ebcf72f96c995c08bd5", "subject": "feat: model token exchange contracts"},
+    {"authored_at": "2026-10-30T11:00:01+03:00", "sha": "910872f8ceadaffe48dc8a678e1238e655b07d70", "subject": "feat: record redacted invariant evidence"},
+    {"authored_at": "2026-10-30T11:02:01+03:00", "sha": "7c46bbed99c58fd9bf01bdd7e3a773c995d9bab4", "subject": "feat: validate bounded PAC structures"},
+    {"authored_at": "2026-10-30T12:37:57+03:00", "sha": "fdd6ad0bf3226a57d41db0b33c210c7f7343009d", "subject": "lab: provision isolated identity topology"},
+    {"authored_at": "2026-10-30T14:03:07+03:00", "sha": "06e0daf4abc3e8b4aba769d48eb52d671c3f1a28", "subject": "test: verify dMSA lifecycle invariants"},
+    {"authored_at": "2026-10-30T14:45:14+03:00", "sha": "9fec5c8da558987bcae7a31374f1c22eace6839e", "subject": "test: correlate PAC issuance contracts"},
+    {"authored_at": "2026-10-30T15:11:02+03:00", "sha": "0d8770814a84374bd969de588e06f257204705cb", "subject": "feat: gate live identity observations"},
+    {"authored_at": "2026-10-30T15:31:10+03:00", "sha": "a83fbc95bced99b564ff1a6de38eb5d0b4538c4e", "subject": "docs: publish identity invariant evidence model"},
+    {"authored_at": "2026-10-30T15:41:20+03:00", "sha": "413559db709a78f59649709821bfa2f089d38365", "subject": "fix: execute declared identity cases"},
+    {"authored_at": "2026-10-30T15:46:08+03:00", "sha": "0746bbf92164986b38c5fbaefca15595abee3d39", "subject": "fix: preserve identity evidence provenance"},
+    {"authored_at": "2026-10-30T15:58:15+03:00", "sha": "5700f5b0258b7ae64d10f2bd34b0a34e0cdf63e2", "subject": "fix: close live observation state gates"},
+    {"authored_at": "2026-10-30T16:09:44+03:00", "sha": "4a4524a2068831ad2d744888a7efb257b0f30f3b", "subject": "fix: harden identity evidence boundaries"},
+    {"authored_at": "2026-10-30T16:36:02+03:00", "sha": "122c87bfbb29147468798525138127585e968b1f", "subject": "fix: bind cloud probes to joined clients"},
+    {"authored_at": "2026-10-30T16:36:11+03:00", "sha": "937063c019bbe1d9d860b5bed64810c6f5256cb5", "subject": "docs: rebuild reviewed identity evidence"}
+  ],
+  "format_version": 1
+}

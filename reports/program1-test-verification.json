@@ -1,0 +1,17 @@
+{
+  "conditional_integrations": 3,
+  "evidence_commit": "937063c019bbe1d9d860b5bed64810c6f5256cb5",
+  "format_version": 1,
+  "ubuntu": {
+    "command": "PYTHONPATH=src .venv/bin/python -m pytest -q",
+    "failed": 0,
+    "passed": 148,
+    "platform": "Ubuntu 24.04.5 LTS; Python 3.12.3"
+  },
+  "windows": {
+    "command": "Invoke-Pester -Path lab/windows/tests -PassThru",
+    "failed": 0,
+    "passed": 50,
+    "platform": "Windows Server 2025 build 26100; ID-DC01; Pester 3.4.0"
+  }
+}
