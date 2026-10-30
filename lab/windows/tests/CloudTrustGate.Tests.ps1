@@ -3,6 +3,10 @@ $ErrorActionPreference = 'Stop'
 $labRoot = Split-Path -Parent $PSScriptRoot
 . (Join-Path $labRoot 'Test-CloudTrustGate.ps1')
 
+if (-not (Get-Command Test-CloudTrustPartialTgt -ErrorAction SilentlyContinue)) {
+    function Test-CloudTrustPartialTgt { $false }
+}
+
 Describe 'Cloud Kerberos trust preflight gate' {
     It 'defines a read-only prerequisite plan' {
         $plan = Get-CloudTrustGatePlan
@@ -112,7 +116,9 @@ Describe 'Cloud Kerberos trust preflight gate' {
     }
 
     It 'does not inherit RWDC line of sight outside the expected client' {
-        Mock Import-Module {}
+        Mock Import-Module {} -ParameterFilter {
+            $Name -eq 'ActiveDirectory'
+        }
         Mock Get-ADDomainController {
             [pscustomobject]@{
                 ComputerObjectDN = 'CN=ID-DC01,DC=idlab,DC=test'
@@ -140,6 +146,106 @@ Describe 'Cloud Kerberos trust preflight gate' {
         $inventory.ClientJoined | Should Be $false
         $inventory.LineOfSight | Should Be $false
         Assert-MockCalled Get-ADDomain -Times 0
+    }
+
+    It 'does not probe a disabled expected client' {
+        Mock Import-Module {} -ParameterFilter {
+            $Name -eq 'ActiveDirectory'
+        }
+        Mock Get-ADDomainController {
+            [pscustomobject]@{
+                ComputerObjectDN = 'CN=ID-DC01,DC=idlab,DC=test'
+                IsReadOnly = $false
+            }
+        }
+        $global:cloudComputerCall = 0
+        Mock Get-ADComputer {
+            $global:cloudComputerCall++
+            if ($global:cloudComputerCall -eq 1) {
+                return [pscustomobject]@{
+                    OperatingSystem = 'Windows Server 2025 Standard'
+                }
+            }
+            if ($global:cloudComputerCall -eq 3) {
+                return [pscustomobject]@{
+                    Enabled = $false
+                    OperatingSystem = 'Windows 11 Enterprise'
+                }
+            }
+            return $null
+        }
+        Mock Get-ItemPropertyValue { 1 }
+        Mock Test-ComputerSecureChannel { $true }
+        Mock Get-ADDomain { [pscustomobject]@{ DNSRoot = 'idlab.test' } }
+        Mock Test-CloudTrustPartialTgt { $true }
+
+        $originalComputerName = $env:COMPUTERNAME
+        try {
+            $env:COMPUTERNAME = 'ID-CL01'
+            $inventory = Get-CloudTrustInventory
+
+            $global:cloudComputerCall | Should Be 3
+            $inventory.Windows11Client | Should Be $false
+            $inventory.ClientJoined | Should Be $false
+            $inventory.LineOfSight | Should Be $false
+            $inventory.PartialTgt | Should Be $false
+            Assert-MockCalled Test-ComputerSecureChannel -Times 0 -Scope It
+            Assert-MockCalled Get-ADDomain -Times 0 -Scope It
+            Assert-MockCalled Test-CloudTrustPartialTgt -Times 0 -Scope It
+        } finally {
+            $env:COMPUTERNAME = $originalComputerName
+            Remove-Variable cloudComputerCall -Scope Global -ErrorAction SilentlyContinue
+        }
+    }
+
+    It 'does not probe an unjoined expected client' {
+        Mock Import-Module {} -ParameterFilter {
+            $Name -eq 'ActiveDirectory'
+        }
+        Mock Get-ADDomainController {
+            [pscustomobject]@{
+                ComputerObjectDN = 'CN=ID-DC01,DC=idlab,DC=test'
+                IsReadOnly = $false
+            }
+        }
+        $global:cloudComputerCall = 0
+        Mock Get-ADComputer {
+            $global:cloudComputerCall++
+            if ($global:cloudComputerCall -eq 1) {
+                return [pscustomobject]@{
+                    OperatingSystem = 'Windows Server 2025 Standard'
+                }
+            }
+            if ($global:cloudComputerCall -eq 3) {
+                return [pscustomobject]@{
+                    Enabled = $true
+                    OperatingSystem = 'Windows 11 Enterprise'
+                }
+            }
+            return $null
+        }
+        Mock Get-ItemPropertyValue { 1 }
+        Mock Test-ComputerSecureChannel { $false }
+        Mock Get-ADDomain { [pscustomobject]@{ DNSRoot = 'idlab.test' } }
+        Mock Test-CloudTrustPartialTgt { $true }
+
+        $originalComputerName = $env:COMPUTERNAME
+        try {
+            $env:COMPUTERNAME = 'ID-CL01'
+            $inventory = Get-CloudTrustInventory
+
+            $global:cloudComputerCall | Should Be 3
+            $inventory.Windows11Client | Should Be $true
+            $inventory.ClientJoined | Should Be $false
+            $inventory.LineOfSight | Should Be $false
+            $inventory.PartialTgt | Should Be $false
+            Assert-MockCalled Test-ComputerSecureChannel -Times 1 -Scope It
+            Assert-MockCalled Get-ADDomain -Times 0 -Scope It
+            Assert-MockCalled Test-CloudTrustPartialTgt -Times 0 -Scope It
+        } finally {
+            $env:COMPUTERNAME = $originalComputerName
+            Remove-Variable cloudComputerCall -Scope Global -ErrorAction SilentlyContinue
+        }
     }
 
     It 'passes only a complete cloud-trust inventory' {

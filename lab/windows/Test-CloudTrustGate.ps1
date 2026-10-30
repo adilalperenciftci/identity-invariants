@@ -129,6 +129,16 @@ function Test-CloudTrustInventory {
     }
 }
 
+function Test-CloudTrustPartialTgt {
+    [CmdletBinding()]
+    param()
+
+    $cloudDebug = & (Join-Path $env:SystemRoot 'System32\klist.exe') cloud_debug 2>&1
+    return [bool](
+        $LASTEXITCODE -eq 0 -and $cloudDebug -match 'Partial TGT'
+    )
+}
+
 function Get-CloudTrustInventory {
     [CmdletBinding()]
     param()
@@ -179,7 +189,9 @@ function Get-CloudTrustInventory {
         Test-CloudTrustPasswordReplicationPolicy -DirectoryObject $azureObject
     )
     $inventory.Windows11Client = (
-        $null -ne $client -and $client.OperatingSystem -match 'Windows 11'
+        $null -ne $client -and
+        $client.Enabled -eq $true -and
+        $client.OperatingSystem -match 'Windows 11'
     )
     $isExpectedClient = $env:COMPUTERNAME -eq $plan.Windows11Client
     if ($isExpectedClient) {
@@ -194,16 +206,22 @@ function Get-CloudTrustInventory {
             -ErrorAction SilentlyContinue
         $inventory.CloudTrustPolicySelected = $cloudTrust -eq 1
         $inventory.CertificateTrustPolicySelected = $certificateTrust -eq 1
-        try {
-            $inventory.ClientJoined = Test-ComputerSecureChannel `
-                -Server $plan.Rwdc `
-                -ErrorAction Stop
-        } catch {
-            $inventory.ClientJoined = $false
-            $Error.Clear()
+        if ($inventory.Windows11Client) {
+            try {
+                $inventory.ClientJoined = Test-ComputerSecureChannel `
+                    -Server $plan.Rwdc `
+                    -ErrorAction Stop
+            } catch {
+                $inventory.ClientJoined = $false
+                $Error.Clear()
+            }
         }
     }
-    if ($isExpectedClient) {
+    if (
+        $isExpectedClient -and
+        $inventory.Windows11Client -and
+        $inventory.ClientJoined
+    ) {
         try {
             $inventory.LineOfSight = (
                 Get-ADDomain -Server $plan.Rwdc -ErrorAction Stop
@@ -212,10 +230,7 @@ function Get-CloudTrustInventory {
             $inventory.LineOfSight = $false
             $Error.Clear()
         }
-        $cloudDebug = & (Join-Path $env:SystemRoot 'System32\klist.exe') cloud_debug 2>&1
-        $inventory.PartialTgt = (
-            $LASTEXITCODE -eq 0 -and $cloudDebug -match 'Partial TGT'
-        )
+        $inventory.PartialTgt = Test-CloudTrustPartialTgt
     }
     return $inventory
 }
