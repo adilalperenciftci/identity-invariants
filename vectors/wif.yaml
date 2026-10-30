@@ -1,0 +1,14 @@
+profile: entra-wif
+cases:
+  - id: exact-standard-credential
+    claims:
+      iss: https://issuer.example/tenant
+      sub: repo:org/project:ref:refs/heads/main
+      aud: api://AzureADTokenExchange
+    expected: accept
+  - id: issuer-case-change
+    mutation: issuer-ascii-case
+    expected: reject
+  - id: repeated-jti-observation
+    mutation: repeat-jti-digest
+    expected: observe

@@ -1,0 +1,11 @@
+profile: oidc-core
+cases:
+  - id: exact-issuer-client-fresh-nonce
+    claims: [iss, sub, aud, exp, iat, nonce]
+    expected: accept
+  - id: untrusted-additional-audience
+    mutation: append-untrusted-audience
+    expected: reject
+  - id: consumed-nonce
+    mutation: consume-nonce-digest-twice
+    expected: reject
