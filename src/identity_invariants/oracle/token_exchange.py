@@ -53,6 +53,18 @@ class TokenExchangePolicy:
     allowed_rights: frozenset[tuple[Target, Scope]]
 
 
+@dataclass(frozen=True, slots=True)
+class TokenIdentity:
+    issuer: str
+    subject: str
+
+    def __post_init__(self) -> None:
+        if type(self.issuer) is not str or not self.issuer:
+            raise ValueError("token identity issuer must be a non-empty string")
+        if type(self.subject) is not str or not self.subject:
+            raise ValueError("token identity subject must be a non-empty string")
+
+
 def _group_form(items: Sequence[tuple[str, str]]) -> Mapping[str, list[str]]:
     grouped: defaultdict[str, list[str]] = defaultdict(list)
     for name, value in items:
@@ -149,7 +161,11 @@ def parse_entra_wif_form(items: Sequence[tuple[str, str]]) -> EntraWIFRequest:
     if values["client_assertion_type"] != JWT_BEARER_ASSERTION_TYPE:
         raise ValueError("Entra WIF client_assertion_type is invalid")
     scope = values["scope"]
-    if scope is None or not scope.endswith("/.default") or any(char.isspace() for char in scope):
+    if (
+        scope is None
+        or not scope.endswith("/.default")
+        or any(char.isspace() for char in scope)
+    ):
         raise ValueError("Entra WIF scope must name one resource /.default scope")
     return EntraWIFRequest(
         grant_type=values["grant_type"],
@@ -189,6 +205,9 @@ def validate_token_exchange(
     policy: TokenExchangePolicy,
     subject_decision: Decision,
     actor_decision: Decision | None = None,
+    *,
+    subject_identity: TokenIdentity | None = None,
+    actor_identity: TokenIdentity | None = None,
 ) -> Decision:
     """Validate the strict reference profile without narrowing requested rights."""
 
@@ -205,6 +224,14 @@ def validate_token_exchange(
             )
         if actor_decision is None or actor_decision.outcome != "accept":
             return Decision("reject", "STS-ACTOR-001", ReasonCode.ACTOR_REJECTED)
+        if subject_identity is None or actor_identity is None:
+            return Decision(
+                "reject", "STS-ACTOR-001", ReasonCode.ACTOR_IDENTITY_REQUIRED
+            )
+        if subject_identity == actor_identity:
+            return Decision(
+                "reject", "STS-ACTOR-001", ReasonCode.SUBJECT_ACTOR_COLLAPSED
+            )
 
     target_values = request.resources + request.audiences
     if not target_values:

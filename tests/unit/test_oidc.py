@@ -114,3 +114,49 @@ def test_oidc_issuer_and_client_audience_are_exact() -> None:
 
     assert issuer.reason is ReasonCode.ISSUER_MISMATCH
     assert audience.reason is ReasonCode.AUDIENCE_MISMATCH
+
+
+def test_oidc_requires_typed_auth_time_when_max_age_is_requested() -> None:
+    missing = _claims()
+    invalid = _claims(auth_time=True)
+
+    missing_decision = validate_id_token_claims(
+        missing,
+        _context(max_auth_age=300),
+        _nonce_store(),
+        FrozenClock(NOW),
+    )
+    invalid_decision = validate_id_token_claims(
+        invalid,
+        _context(max_auth_age=300),
+        _nonce_store(),
+        FrozenClock(NOW),
+    )
+
+    assert missing_decision.reason is ReasonCode.AUTH_TIME_REQUIRED
+    assert invalid_decision.reason is ReasonCode.CLAIM_TYPE_INVALID
+
+
+def test_oidc_auth_time_enforces_exact_age_and_future_boundaries() -> None:
+    at_boundary = validate_id_token_claims(
+        _claims(auth_time=NOW - 300),
+        _context(max_auth_age=300),
+        _nonce_store(),
+        FrozenClock(NOW),
+    )
+    stale = validate_id_token_claims(
+        _claims(auth_time=NOW - 301),
+        _context(max_auth_age=300),
+        _nonce_store(),
+        FrozenClock(NOW),
+    )
+    future = validate_id_token_claims(
+        _claims(auth_time=NOW + 1),
+        _context(max_auth_age=300),
+        _nonce_store(),
+        FrozenClock(NOW),
+    )
+
+    assert at_boundary.outcome == "accept"
+    assert stale.reason is ReasonCode.AUTH_TIME_OUT_OF_RANGE
+    assert future.reason is ReasonCode.AUTH_TIME_OUT_OF_RANGE

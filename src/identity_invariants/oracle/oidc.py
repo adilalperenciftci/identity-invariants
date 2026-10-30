@@ -8,7 +8,11 @@ from dataclasses import dataclass
 from identity_invariants.canonical import JSONValue
 from identity_invariants.clock import Clock, NonceStore
 from identity_invariants.decisions import Decision, ReasonCode
-from identity_invariants.oracle.jwt_assertion import TypedClaims, _ClaimError
+from identity_invariants.oracle.jwt_assertion import (
+    TypedClaims,
+    _ClaimError,
+    parse_numeric_date,
+)
 
 
 @dataclass(frozen=True, slots=True)
@@ -19,10 +23,15 @@ class OIDCContext:
     expected_nonce: str | None
     nonce_namespace: str
     clock_skew: int
+    max_auth_age: int | None = None
 
     def __post_init__(self) -> None:
         if self.clock_skew < 0:
             raise ValueError("OIDC clock skew cannot be negative")
+        if self.max_auth_age is not None and (
+            type(self.max_auth_age) is not int or self.max_auth_age < 0
+        ):
+            raise ValueError("OIDC maximum authentication age is invalid")
         if self.client_id not in self.trusted_audiences:
             raise ValueError("trusted audiences must include the client ID")
 
@@ -57,6 +66,25 @@ def validate_id_token_claims(
         return _reject("OIDC-TIME-001", ReasonCode.EXPIRED)
     if typed.issued_at is None or typed.issued_at > now + context.clock_skew:
         return _reject("OIDC-TIME-001", ReasonCode.ISSUED_AT_OUT_OF_RANGE)
+
+    auth_time: int | None = None
+    if "auth_time" in claims:
+        try:
+            auth_time = parse_numeric_date(claims["auth_time"], "auth_time")
+        except ValueError as error:
+            return _reject(
+                "OIDC-TIME-001", ReasonCode.CLAIM_TYPE_INVALID, str(error)
+            )
+    if context.max_auth_age is not None and auth_time is None:
+        return _reject("OIDC-TIME-001", ReasonCode.AUTH_TIME_REQUIRED)
+    if auth_time is not None and (
+        auth_time > now + context.clock_skew
+        or (
+            context.max_auth_age is not None
+            and auth_time + context.max_auth_age + context.clock_skew < now
+        )
+    ):
+        return _reject("OIDC-TIME-001", ReasonCode.AUTH_TIME_OUT_OF_RANGE)
 
     if context.expected_nonce is not None:
         nonce = claims.get("nonce")

@@ -10,6 +10,7 @@ from identity_invariants.oracle.token_exchange import (
     TOKEN_EXCHANGE_GRANT,
     JWT_BEARER_ASSERTION_TYPE,
     Target,
+    TokenIdentity,
     TokenExchangePolicy,
     parse_entra_wif_form,
     parse_token_exchange_form,
@@ -156,6 +157,39 @@ def test_subject_and_actor_decisions_remain_separate() -> None:
         validate_token_exchange(request, _policy(), ACCEPT, REJECT).reason
         is ReasonCode.ACTOR_REJECTED
     )
+
+
+def test_actor_exchange_requires_distinct_normalized_identities() -> None:
+    request = parse_token_exchange_form(
+        _form(
+            ("actor_token", "actor-token"),
+            ("actor_token_type", "urn:ietf:params:oauth:token-type:jwt"),
+        )
+    )
+    subject = TokenIdentity("https://issuer.example", "workload-a")
+    actor = TokenIdentity("https://issuer.example", "broker-b")
+
+    missing = validate_token_exchange(request, _policy(), ACCEPT, ACCEPT)
+    collapsed = validate_token_exchange(
+        request,
+        _policy(),
+        ACCEPT,
+        ACCEPT,
+        subject_identity=subject,
+        actor_identity=subject,
+    )
+    distinct = validate_token_exchange(
+        request,
+        _policy(),
+        ACCEPT,
+        ACCEPT,
+        subject_identity=subject,
+        actor_identity=actor,
+    )
+
+    assert missing.reason is ReasonCode.ACTOR_IDENTITY_REQUIRED
+    assert collapsed.reason is ReasonCode.SUBJECT_ACTOR_COLLAPSED
+    assert distinct.outcome == "accept"
 
 
 def test_entra_wif_and_rfc8693_transport_profiles_are_distinct() -> None:
