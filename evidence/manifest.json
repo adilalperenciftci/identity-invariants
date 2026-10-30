@@ -7,12 +7,12 @@
   },
   "format_version": 1,
   "ledger": "evidence.jsonl",
-  "ledger_sha256": "f2a51ed468ce95690cb8276ba766f1369e08db5c12401b78b5a634c6a41d93f2",
+  "ledger_sha256": "9852c4e00a4c1b25165708541774ba23975ec6c97acd6e0c2b90c6377633f44c",
   "record_count": 25,
   "source_manifests": {
     "task7-windows-ledger": "024bbf6c01333a08a383587cf701985d26dbe9eef975518aebc271e8f25ef9fc",
     "task8-pac-ledger": "3d1bda6af895f7de22eeaa5f6df5707c60d9ee6a631b507c226a309845707ffe",
-    "task9-cloud-gate": "95c75bd14adcac7b9fb22c0e4abde06fdeb33afe1d8cc43be47e4d0d32ddf271",
+    "task9-cloud-gate": "464736fc7f5fe25bc775ef1e4097f23556f31775a5b912e7b44134a504cd6af0",
     "task9-ubuntu-ledger": "9a6f96a6de428e34d2c1cd136fb3ebb631a82a33d7c3152748ca0ab028956b10",
     "task9-windows-ledger": "683102d242f601909ae64bbff71c96ff09970e41fd842de5503e2182ee9215f7"
   }

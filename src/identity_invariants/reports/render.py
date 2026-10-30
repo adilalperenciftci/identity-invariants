@@ -431,6 +431,8 @@ def render_technical_report(
         "inconclusive.\n"
         "- dMSA Reset and Undo restored state and links but cleared machine "
         "enrollment; exact cleanup required checkpoint restoration.\n"
+        "- Supported dMSA events were not observed during direct service logon, "
+        "local-system ticket refresh, or Service Control Manager windows.\n"
         "- CWE and CVSS remain `not assessed` until product behavior and impact "
         "are independently confirmed."
     )

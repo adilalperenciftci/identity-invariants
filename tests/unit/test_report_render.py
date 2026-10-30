@@ -152,6 +152,7 @@ def test_report_is_reproducible_and_contains_required_boundaries(
     assert "windows-lab" in report
     assert "c" * 64 in report
     assert "## Limitations" in report
+    assert "direct service logon" in report
     validate_report_safety(first)
     validate_report_safety(first.with_suffix(".json"))
 

@@ -131,20 +131,22 @@ SHA-256 value. The manifest binds the following source artifacts:
 | --- | --- |
 | Task 7 Windows ledger | `024bbf6c01333a08a383587cf701985d26dbe9eef975518aebc271e8f25ef9fc` |
 | Task 8 PAC ledger | `3d1bda6af895f7de22eeaa5f6df5707c60d9ee6a631b507c226a309845707ffe` |
-| Task 9 Cloud gate | `95c75bd14adcac7b9fb22c0e4abde06fdeb33afe1d8cc43be47e4d0d32ddf271` |
+| Corrected Cloud gate | `464736fc7f5fe25bc775ef1e4097f23556f31775a5b912e7b44134a504cd6af0` |
 | Task 9 Ubuntu Entra ledger | `9a6f96a6de428e34d2c1cd136fb3ebb631a82a33d7c3152748ca0ab028956b10` |
 | Task 9 Windows Entra ledger | `683102d242f601909ae64bbff71c96ff09970e41fd842de5503e2182ee9215f7` |
 
 The assembled 25-record ledger has SHA-256
-`f2a51ed468ce95690cb8276ba766f1369e08db5c12401b78b5a634c6a41d93f2`.
+`9852c4e00a4c1b25165708541774ba23975ec6c97acd6e0c2b90c6377633f44c`.
 Its manifest has SHA-256
-`8580a3ed2fa308662442060b3251312c892ddf92a91906cef117b929176ae489`.
+`7603270cf4c0d3c1092cbb2eca4b5b7e07a8599b0071090a554e9093d0d65c24`.
+The corrected Cloud artifact has a separate normalized manifest with SHA-256
+`ad456eace6634f97719982963e31f372ffa16bb917409b27255b9339188946fd`.
 
 Assemble, verify, and render only in Ubuntu. Source paths below refer to sealed,
 normalized artifacts copied into ignored private storage:
 
 ```text
-PYTHONPATH=src .venv/bin/python -m identity_invariants.reports.assemble --config evidence/sources.json --source task7-windows-ledger=evidence/private/review-sources/task7.jsonl --source task8-pac-ledger=evidence/private/review-sources/task8.jsonl --source task9-cloud-gate=evidence/private/review-sources/cloud.json --source task9-ubuntu-ledger=evidence/private/review-sources/ubuntu.jsonl --source task9-windows-ledger=evidence/private/review-sources/windows.jsonl --output evidence
+PYTHONPATH=src .venv/bin/python -m identity_invariants.reports.assemble --config evidence/sources.json --source task7-windows-ledger=evidence/private/review-sources-r5/task7.jsonl --source task8-pac-ledger=evidence/private/review-sources-r5/task8.jsonl --source task9-cloud-gate=evidence/private/review-sources-r5/cloud.json --source task9-ubuntu-ledger=evidence/private/review-sources-r5/ubuntu.jsonl --source task9-windows-ledger=evidence/private/review-sources-r5/windows.jsonl --output evidence
 PYTHONPATH=src .venv/bin/python -m identity_invariants.reports.render --verify-only evidence/manifest.json
 PYTHONPATH=src .venv/bin/python -m identity_invariants.reports.render --render evidence/manifest.json --catalog spec/invariants.yaml --output reports/identity-invariants.md
 PYTHONPATH=src .venv/bin/pytest -q tests/integration/test_end_to_end_run.py
@@ -154,8 +156,8 @@ The expected report hashes are:
 
 | Report | SHA-256 |
 | --- | --- |
-| `reports/identity-invariants.md` | `b1a7563fad8f26f0ecfe8b542c36fca4c03489cd1dff153a038279a7a7e4a86c` |
-| `reports/identity-invariants.json` | `78483af4a330ed01127a0c2f8e3a72a8659e35d642ae8312a7c128009c4ebd41` |
+| `reports/identity-invariants.md` | `db0ce4afd29d83388ff93c96c39edfe3b0efc1a96797b6dd01692cb8bd13bbc7` |
+| `reports/identity-invariants.json` | `040ccec120ed95e449cd9a4f5b1df4506ddde726d4c1b27ab28320f98fbea127` |
 
 ## Completion gate
 
@@ -170,7 +172,7 @@ Before considering the identity program complete:
    graph digests:
    - RWDC full graph:
      `9c19162c8e7d44ad74a1990ef5775f8fdc3b8fe7a3c2fab5e08451c2eb79ae59`;
-   - RODC core graph:
+   - RODC full graph:
      `5be77ff6160d84dcfee8cba5bb935b13f0337492676124a1b02a1e0d4771bfe2`;
    - shared core graph:
      `fd1b0cdbab699e3a765295409b2711f2b1a8da0094f022ec7de2965cfe13afd5`.

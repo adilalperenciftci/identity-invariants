@@ -37,16 +37,16 @@ The inventory contains booleans and stable reason codes only. `NetworkRequestCou
 
 ## Current isolated-lab result
 
-The 2026-10-30 run used the Task 9 source revision in Ubuntu and `ID-SRV01`, plus the read-only Cloud Kerberos inventory on `ID-DC01`.
+The corrected 2026-10-30 review run retained the two closed Entra ledgers and regenerated the read-only Cloud Kerberos inventory on `ID-DC01` from source commit `4a4524a2068831ad2d744888a7efb257b0f30f3b`.
 
 | Gate | Outcome | Stable reasons | External requests |
 | --- | --- | --- | ---: |
 | Ubuntu Entra | `skip` | `tenant_context_missing`, `disposable_application_missing`, `authority_host_not_allowed`, `fic_identifier_missing`, `redaction_probe_failed`, `request_ceiling_invalid`, `run_label_missing` | 0 |
 | Windows Entra | `skip` | Same closed-environment reasons as Ubuntu | 0 |
-| Cloud Kerberos | `skip` | `cloud_kerberos_object_missing`, `password_replication_policy_unverified`, `cloud_trust_policy_unverified`, `windows_11_client_missing`, `partial_tgt_missing` | 0 |
+| Cloud Kerberos | `skip` | `cloud_kerberos_object_missing`, `password_replication_policy_unverified`, `cloud_trust_policy_unverified`, `windows_11_client_missing`, `line_of_sight_missing`, `partial_tgt_missing` | 0 |
 
-The local forest did satisfy the Server 2025 RWDC check. The read-only run executed on `ID-DC01`, so it did not claim client-local line of sight. Certificate Trust was not selected. No cloud state was provisioned and no external endpoint was contacted.
+The local forest satisfied the Server 2025 RWDC check. Because the read-only run executed on `ID-DC01` rather than `ID-CL01`, `LineOfSight` remained false without a domain probe and the result records `line_of_sight_missing`. Certificate Trust was not selected. No cloud state was provisioned and no external endpoint was contacted. The normalized Cloud artifact SHA-256 is `464736fc7f5fe25bc775ef1e4097f23556f31775a5b912e7b44134a504cd6af0`; its separate manifest SHA-256 is `ad456eace6634f97719982963e31f372ffa16bb917409b27255b9339188946fd`.
 
 ## Evidence and cleanup
 
-Write normalized records through `EvidenceWriter`, seal the JSONL ledger, and verify the manifest in Ubuntu. Retain no raw response body or token-shaped value. Copy only sealed, normalized evidence out of a VM. Restore all identity VMs to the exact `dmsa-baseline` checkpoints after the final run and revalidate AD Web Services, the member secure channel, and baseline graph digests.
+Write Entra records through `EvidenceWriter`; serialize the Cloud gate as one bounded canonical JSON artifact with its own digest manifest. Verify every manifest in Ubuntu. Retain no raw response body or token-shaped value. Copy only sealed, normalized evidence out of a VM. Restore all identity VMs to the exact `dmsa-baseline` checkpoints after the final run and revalidate AD Web Services, the member secure channel, and baseline graph digests.

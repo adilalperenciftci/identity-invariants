@@ -312,10 +312,31 @@ def _task9_cloud_record(
         isinstance(reason, str) for reason in reasons
     ):
         raise ValueError("Cloud gate source reason codes are invalid")
+    expected_reasons: list[str] = []
+    if not inventory["Server2025Rwdc"]:
+        expected_reasons.append("server_2025_rwdc_missing")
+    if not inventory["AzureAdKerberosObject"]:
+        expected_reasons.append("cloud_kerberos_object_missing")
+    if not inventory["PasswordReplicationPolicyIntact"]:
+        expected_reasons.append("password_replication_policy_unverified")
+    if not inventory["CloudTrustPolicySelected"]:
+        expected_reasons.append("cloud_trust_policy_unverified")
+    if inventory["CertificateTrustPolicySelected"]:
+        expected_reasons.append("certificate_trust_precedence")
+    if not inventory["Windows11Client"] or not inventory["ClientJoined"]:
+        expected_reasons.append("windows_11_client_missing")
+    if not inventory["LineOfSight"]:
+        expected_reasons.append("line_of_sight_missing")
+    if not inventory["PartialTgt"]:
+        expected_reasons.append("partial_tgt_missing")
+    if reasons != expected_reasons:
+        raise ValueError("Cloud gate reason codes do not match inventory")
     required_reasons = {
         "cloud_kerberos_object_missing",
+        "password_replication_policy_unverified",
         "cloud_trust_policy_unverified",
         "windows_11_client_missing",
+        "line_of_sight_missing",
         "partial_tgt_missing",
     }
     if not required_reasons.issubset(reasons):
@@ -325,12 +346,12 @@ def _task9_cloud_record(
         (
             "ckt-line-of-sight",
             "CKT-LOS-001",
-            ReasonCode.WINDOWS_11_CLIENT_MISSING,
+            ReasonCode.LINE_OF_SIGHT_MISSING,
         ),
         (
             "ckt-partial-tgt-gate",
             "CKT-PARTIAL-001",
-            ReasonCode.WINDOWS_11_CLIENT_MISSING,
+            ReasonCode.PARTIAL_TGT_MISSING,
         ),
         (
             "ckt-policy-precedence-gate",

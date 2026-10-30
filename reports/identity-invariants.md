@@ -8,7 +8,7 @@
 ## Evidence manifest
 
 - Ledger: `evidence.jsonl`
-- Ledger SHA-256: `f2a51ed468ce95690cb8276ba766f1369e08db5c12401b78b5a634c6a41d93f2`
+- Ledger SHA-256: `9852c4e00a4c1b25165708541774ba23975ec6c97acd6e0c2b90c6377633f44c`
 - Record count: `25`
 
 ## Environment fingerprint
@@ -24,8 +24,8 @@
 
 | Invariant | Primary source | Section | Catalog class | Observed class | Outcomes | Cases |
 | --- | --- | --- | --- | --- | --- | ---: |
-| `CKT-LOS-001` | [Hybrid cloud Kerberos trust deployment](https://learn.microsoft.com/en-us/windows/security/identity-protection/hello-for-business/deploy/hybrid-cloud-kerberos-trust) (Windows Server 2025 documentation) | Prerequisites and deployment validation | `windows-observation` | `windows-observation` | `windows-observation`: `skip` (windows_11_client_missing) | 1 |
-| `CKT-PARTIAL-001` | [Windows Hello for Business authentication](https://learn.microsoft.com/en-us/windows/security/identity-protection/hello-for-business/how-it-works-authentication) (Windows Server 2025 documentation) | Cloud Kerberos trust authentication | `windows-observation` | `windows-observation` | `windows-observation`: `skip` (windows_11_client_missing) | 1 |
+| `CKT-LOS-001` | [Hybrid cloud Kerberos trust deployment](https://learn.microsoft.com/en-us/windows/security/identity-protection/hello-for-business/deploy/hybrid-cloud-kerberos-trust) (Windows Server 2025 documentation) | Prerequisites and deployment validation | `windows-observation` | `windows-observation` | `windows-observation`: `skip` (line_of_sight_missing) | 1 |
+| `CKT-PARTIAL-001` | [Windows Hello for Business authentication](https://learn.microsoft.com/en-us/windows/security/identity-protection/hello-for-business/how-it-works-authentication) (Windows Server 2025 documentation) | Cloud Kerberos trust authentication | `windows-observation` | `windows-observation` | `windows-observation`: `skip` (partial_tgt_missing) | 1 |
 | `CKT-PRECEDENCE-001` | [Hybrid cloud Kerberos trust deployment](https://learn.microsoft.com/en-us/windows/security/identity-protection/hello-for-business/deploy/hybrid-cloud-kerberos-trust) (Windows Server 2025 documentation) | Policy configuration | `windows-observation` | `windows-observation` | `windows-observation`: `skip` (cloud_trust_policy_unverified) | 1 |
 | `CKT-RODC-001` | [Hybrid cloud Kerberos trust deployment](https://learn.microsoft.com/en-us/windows/security/identity-protection/hello-for-business/deploy/hybrid-cloud-kerberos-trust) (Windows Server 2025 documentation) | Azure AD Kerberos and password replication policy | `windows-observation` | `windows-observation` | `windows-observation`: `skip` (cloud_kerberos_object_missing) | 1 |
 | `DMSA-ACL-001` | [Delegated Managed Service Accounts overview](https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/delegated-managed-service-accounts/delegated-managed-service-accounts-overview) (Windows Server 2025 documentation) | Account migration permissions | `windows-observation` | `windows-observation` | `windows-observation`: `accept` (ordered_completion) | 1 |
@@ -68,14 +68,14 @@
 
 - Invariant: `CKT-LOS-001`
 - Outcome: `skip`
-- Reason: `windows_11_client_missing`
+- Reason: `line_of_sight_missing`
 - Evidence class: `windows-observation`
 
 ### `ckt-partial-tgt-gate`
 
 - Invariant: `CKT-PARTIAL-001`
 - Outcome: `skip`
-- Reason: `windows_11_client_missing`
+- Reason: `partial_tgt_missing`
 - Evidence class: `windows-observation`
 
 ### `ckt-policy-precedence-gate`
@@ -246,18 +246,19 @@
 - PAC requestor binding remains inconclusive where only the service ticket, not the encrypted TGT, was decoded.
 - dMSA standalone state 3 was not observed on build 26100 and remains inconclusive.
 - dMSA Reset and Undo restored state and links but cleared machine enrollment; exact cleanup required checkpoint restoration.
+- Supported dMSA events were not observed during direct service logon, local-system ticket refresh, or Service Control Manager windows.
 - CWE and CVSS remain `not assessed` until product behavior and impact are independently confirmed.
 
 ## Artifact hashes
 
-- `record/ckt-line-of-sight/source-ledger`: `95c75bd14adcac7b9fb22c0e4abde06fdeb33afe1d8cc43be47e4d0d32ddf271`
-- `record/ckt-line-of-sight/source-record`: `95c75bd14adcac7b9fb22c0e4abde06fdeb33afe1d8cc43be47e4d0d32ddf271`
-- `record/ckt-partial-tgt-gate/source-ledger`: `95c75bd14adcac7b9fb22c0e4abde06fdeb33afe1d8cc43be47e4d0d32ddf271`
-- `record/ckt-partial-tgt-gate/source-record`: `95c75bd14adcac7b9fb22c0e4abde06fdeb33afe1d8cc43be47e4d0d32ddf271`
-- `record/ckt-policy-precedence-gate/source-ledger`: `95c75bd14adcac7b9fb22c0e4abde06fdeb33afe1d8cc43be47e4d0d32ddf271`
-- `record/ckt-policy-precedence-gate/source-record`: `95c75bd14adcac7b9fb22c0e4abde06fdeb33afe1d8cc43be47e4d0d32ddf271`
-- `record/ckt-rodc-object-gate/source-ledger`: `95c75bd14adcac7b9fb22c0e4abde06fdeb33afe1d8cc43be47e4d0d32ddf271`
-- `record/ckt-rodc-object-gate/source-record`: `95c75bd14adcac7b9fb22c0e4abde06fdeb33afe1d8cc43be47e4d0d32ddf271`
+- `record/ckt-line-of-sight/source-ledger`: `464736fc7f5fe25bc775ef1e4097f23556f31775a5b912e7b44134a504cd6af0`
+- `record/ckt-line-of-sight/source-record`: `464736fc7f5fe25bc775ef1e4097f23556f31775a5b912e7b44134a504cd6af0`
+- `record/ckt-partial-tgt-gate/source-ledger`: `464736fc7f5fe25bc775ef1e4097f23556f31775a5b912e7b44134a504cd6af0`
+- `record/ckt-partial-tgt-gate/source-record`: `464736fc7f5fe25bc775ef1e4097f23556f31775a5b912e7b44134a504cd6af0`
+- `record/ckt-policy-precedence-gate/source-ledger`: `464736fc7f5fe25bc775ef1e4097f23556f31775a5b912e7b44134a504cd6af0`
+- `record/ckt-policy-precedence-gate/source-record`: `464736fc7f5fe25bc775ef1e4097f23556f31775a5b912e7b44134a504cd6af0`
+- `record/ckt-rodc-object-gate/source-ledger`: `464736fc7f5fe25bc775ef1e4097f23556f31775a5b912e7b44134a504cd6af0`
+- `record/ckt-rodc-object-gate/source-record`: `464736fc7f5fe25bc775ef1e4097f23556f31775a5b912e7b44134a504cd6af0`
 - `record/dmsa-baseline-restore/source-ledger`: `024bbf6c01333a08a383587cf701985d26dbe9eef975518aebc271e8f25ef9fc`
 - `record/dmsa-baseline-restore/source-record`: `10a41931157ea15bdae43f981795da94327ff117a128a05796e0942f903d5bf7`
 - `record/dmsa-complete-before-start/source-ledger`: `024bbf6c01333a08a383587cf701985d26dbe9eef975518aebc271e8f25ef9fc`
@@ -308,6 +309,6 @@
 - `record/wif-live-gate-windows-lab/source-record`: `31c45ebd581a1056cf3f3eb07e68591c71174b693c560efbb8c14e6c78ed8616`
 - `source-manifest/task7-windows-ledger`: `024bbf6c01333a08a383587cf701985d26dbe9eef975518aebc271e8f25ef9fc`
 - `source-manifest/task8-pac-ledger`: `3d1bda6af895f7de22eeaa5f6df5707c60d9ee6a631b507c226a309845707ffe`
-- `source-manifest/task9-cloud-gate`: `95c75bd14adcac7b9fb22c0e4abde06fdeb33afe1d8cc43be47e4d0d32ddf271`
+- `source-manifest/task9-cloud-gate`: `464736fc7f5fe25bc775ef1e4097f23556f31775a5b912e7b44134a504cd6af0`
 - `source-manifest/task9-ubuntu-ledger`: `9a6f96a6de428e34d2c1cd136fb3ebb631a82a33d7c3152748ca0ab028956b10`
 - `source-manifest/task9-windows-ledger`: `683102d242f601909ae64bbff71c96ff09970e41fd842de5503e2182ee9215f7`

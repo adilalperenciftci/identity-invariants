@@ -145,6 +145,7 @@ def _source_fixture(tmp_path: Path) -> tuple[Path, dict[str, Path]]:
                     "password_replication_policy_unverified",
                     "cloud_trust_policy_unverified",
                     "windows_11_client_missing",
+                    "line_of_sight_missing",
                     "partial_tgt_missing",
                 ],
                 "network_request_count": 0,
@@ -241,6 +242,8 @@ def test_assembler_preserves_source_outcomes_and_record_provenance(
         any(name.startswith("source-record") for name in record["artifact_digests"])
         for record in records
     )
+    assert by_case["ckt-line-of-sight"]["reason"] == "line_of_sight_missing"
+    assert by_case["ckt-partial-tgt-gate"]["reason"] == "partial_tgt_missing"
 
     second = assemble_public_evidence(
         config,
@@ -260,6 +263,28 @@ def test_assembler_rejects_source_digest_mismatch(tmp_path: Path) -> None:
     )
 
     with pytest.raises(ValueError, match="source digest mismatch"):
+        assemble_public_evidence(config, sources, tmp_path / "output")
+
+
+def test_assembler_rejects_cloud_reasons_that_do_not_match_inventory(
+    tmp_path: Path,
+) -> None:
+    config, sources = _source_fixture(tmp_path)
+    cloud_path = sources["task9-cloud-gate"]
+    cloud = json.loads(cloud_path.read_text(encoding="utf-8"))
+    cloud["reason_codes"].remove("line_of_sight_missing")
+    cloud_path.write_text(
+        json.dumps(cloud, sort_keys=True, separators=(",", ":")) + "\n",
+        encoding="utf-8",
+    )
+    config_document = json.loads(config.read_text(encoding="utf-8"))
+    config_document["sources"]["task9-cloud-gate"]["sha256"] = _digest(cloud_path)
+    config.write_text(
+        json.dumps(config_document, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+
+    with pytest.raises(ValueError, match="reason codes do not match inventory"):
         assemble_public_evidence(config, sources, tmp_path / "output")
 
 

@@ -17,7 +17,7 @@
     },
     "task9-cloud-gate": {
       "kind": "task9-cloud-gate",
-      "sha256": "95c75bd14adcac7b9fb22c0e4abde06fdeb33afe1d8cc43be47e4d0d32ddf271"
+      "sha256": "464736fc7f5fe25bc775ef1e4097f23556f31775a5b912e7b44134a504cd6af0"
     },
     "task9-ubuntu-ledger": {
       "kind": "task9-ubuntu-ledger",

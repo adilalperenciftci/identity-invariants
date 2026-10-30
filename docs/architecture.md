@@ -93,10 +93,12 @@ The report pipeline is deterministic:
 - output uses UTF-8 and LF line endings;
 - integration coverage regenerates both outputs and requires byte equality.
 
-Before writing, the renderer rejects oversized output, NUL bytes, private-key
-markers, bearer headers, credential-shaped fields, token-shaped values, local
-credential paths, and UUID-shaped raw identifiers. It applies the same screen
-to every raw ledger line, including metadata that is not rendered.
+Before persistence, the evidence writer rejects private-key markers, embedded
+bearer or JWT values, credential assignments, credential-shaped keys, and local
+credential paths at any metadata depth. Before writing a report, the renderer
+also rejects oversized output, NUL bytes, those secret shapes, and UUID-shaped
+raw identifiers. It applies the same screen to every raw ledger line, including
+metadata that is not rendered.
 
 ## Laboratory isolation
 
@@ -116,5 +118,8 @@ protocol reproducers or compile laboratory code.
 `observe` means that a bounded state was measured in the declared laboratory;
 it does not independently establish specification conformance. `skip` means a
 required context was absent. `inconclusive` means the retained evidence cannot
-resolve the invariant. CWE and CVSS remain unassigned until independent product
-behavior and impact are confirmed.
+resolve the invariant. In this build, standalone dMSA state `3` was not
+observed, Undo and Reset cleared machine enrollment, and the exercised live
+service paths emitted no supported dMSA events. These remain explicit
+observation limits, not inferred product behavior. CWE and CVSS remain
+unassigned until independent product behavior and impact are confirmed.

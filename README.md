@@ -66,14 +66,20 @@ The catalog contains 37 source-linked invariants. The public evidence index
 contains 25 normalized Windows and closed-environment observations:
 
 - dMSA state, reciprocal-link, temporary-ACL, enrollment, transfer, RODC, and
-  checkpoint restoration observations are recorded; supported event emission
-  remains inconclusive for the exercised windows.
+  checkpoint restoration observations are recorded. The build-created account
+  remained in state `0`; documented standalone state `3` was not observed.
+  Undo and Reset restored state and links but cleared machine enrollment, so
+  only exact checkpoint restoration reproduced the baseline digest.
+- Supported dMSA event emission remains inconclusive for the exercised direct
+  service logon, local-system ticket refresh, and Service Control Manager
+  windows.
 - RWDC- and RODC-issued service tickets were decoded through the bounded PAC
   parser. Signature roles and the RODC identifier were observed. Requestor
   binding in an encrypted TGT remains unassessed.
 - Live Entra and Cloud Kerberos behavior is not claimed. Both paths are marked
   `skip` because their required disposable tenant and Windows 11 client context
-  were absent; their external request count remained zero.
+  were absent. Client line of sight and a partial TGT were not inferred from
+  RWDC-local state; their external request count remained zero.
 - CWE and CVSS are `not assessed`. Local oracle behavior and laboratory
   observations are not statements about hosted product impact.
 
