@@ -81,6 +81,7 @@ class ReasonCode(StrEnum):
     LINE_OF_SIGHT_MISSING = "line_of_sight_missing"
     PARTIAL_TGT_MISSING = "partial_tgt_missing"
     INVALID_TRANSITION = "invalid_transition"
+    MUTATION_NOT_APPROVED = "mutation_not_approved"
     WRITABLE_DIRECTORY_TRANSITION = "writable_directory_transition"
     RECIPROCAL_LINKS_REPLICATED = "reciprocal_links_replicated"
     ORDERED_COMPLETION = "ordered_completion"

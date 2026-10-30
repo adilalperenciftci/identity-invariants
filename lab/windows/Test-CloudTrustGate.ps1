@@ -179,15 +179,15 @@ function Get-CloudTrustInventory {
             $Error.Clear()
         }
     }
-    try {
-        $inventory.LineOfSight = (
-            Get-ADDomain -Server $plan.Rwdc -ErrorAction Stop
-        ).DNSRoot -eq 'idlab.test'
-    } catch {
-        $inventory.LineOfSight = $false
-        $Error.Clear()
-    }
     if ($isExpectedClient) {
+        try {
+            $inventory.LineOfSight = (
+                Get-ADDomain -Server $plan.Rwdc -ErrorAction Stop
+            ).DNSRoot -eq 'idlab.test'
+        } catch {
+            $inventory.LineOfSight = $false
+            $Error.Clear()
+        }
         $cloudDebug = & (Join-Path $env:SystemRoot 'System32\klist.exe') cloud_debug 2>&1
         $inventory.PartialTgt = (
             $LASTEXITCODE -eq 0 -and $cloudDebug -match 'Partial TGT'

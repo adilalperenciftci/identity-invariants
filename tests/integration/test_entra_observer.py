@@ -11,6 +11,7 @@ from identity_invariants.adapters.entra import (
     evaluate_entra_gate,
     observe_entra_case,
 )
+from identity_invariants.canonical import digest_identifier
 from identity_invariants.decisions import ReasonCode
 from identity_invariants.evidence.ledger import EvidenceWriter
 from identity_invariants.vectors.generator import TestCase as InvariantCase
@@ -99,12 +100,16 @@ def test_observer_persists_only_bounded_response_metadata(tmp_path: Path) -> Non
         "request_ordinal": 1,
         "status_code": 400,
         "error_code": "invalid_client",
-        "correlation_id": "33333333-3333-4333-8333-333333333333",
+        "correlation_id_digest": digest_identifier(
+            "entra-correlation-id",
+            "33333333-3333-4333-8333-333333333333",
+        ),
         "elapsed_ms": 125,
     }
     persisted = (tmp_path / "evidence.jsonl").read_text(encoding="utf-8")
     assert "must-not-be-persisted" not in persisted
     assert "header.payload.signature" not in persisted
+    assert "33333333-3333-4333-8333-333333333333" not in persisted
 
 
 def test_request_ceiling_stops_before_transport_call() -> None:

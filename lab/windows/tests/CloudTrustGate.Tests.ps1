@@ -101,6 +101,37 @@ Describe 'Cloud Kerberos trust preflight gate' {
         ($result.ReasonCodes -contains 'windows_11_client_missing') | Should Be $true
     }
 
+    It 'does not inherit RWDC line of sight outside the expected client' {
+        Mock Import-Module {}
+        Mock Get-ADDomainController {
+            [pscustomobject]@{
+                ComputerObjectDN = 'CN=ID-DC01,DC=idlab,DC=test'
+                IsReadOnly = $false
+            }
+        }
+        Mock Get-ADComputer {
+            param($Identity)
+
+            if (-not [string]::IsNullOrEmpty($Identity)) {
+                return [pscustomobject]@{
+                    OperatingSystem = 'Windows Server 2025 Standard'
+                }
+            }
+            return $null
+        }
+        Mock Get-ADDomain {
+            [pscustomobject]@{ DNSRoot = 'idlab.test' }
+        }
+
+        $inventory = Get-CloudTrustInventory
+
+        $env:COMPUTERNAME | Should Not Be 'ID-CL01'
+        $inventory.Windows11Client | Should Be $false
+        $inventory.ClientJoined | Should Be $false
+        $inventory.LineOfSight | Should Be $false
+        Assert-MockCalled Get-ADDomain -Times 0
+    }
+
     It 'passes only a complete cloud-trust inventory' {
         $result = Test-CloudTrustInventory -Inventory ([ordered]@{
             Server2025Rwdc = $true

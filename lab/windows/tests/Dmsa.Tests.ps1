@@ -150,6 +150,39 @@ Describe 'dMSA lifecycle contract' {
         $result | Should Be (Join-Path $env:SystemRoot 'System32\klist.exe')
     }
 
+    It 'reports declined mutation without claiming an observation' {
+        $document = [pscustomobject]@{
+            Dmsa = [pscustomobject]@{ State = 0 }
+        }
+        Mock Import-Module {}
+        Mock Get-DmsaGraphSnapshot {
+            [pscustomobject]@{
+                Digest = ('a' * 64)
+                Document = $document
+            }
+        }
+        Mock Resolve-DmsaLegacyDistinguishedName {
+            'CN=svc-legacy,OU=IdentityLab,DC=idlab,DC=test'
+        }
+        Mock Start-ADServiceAccountMigration {}
+        Mock Get-WinEvent { @() }
+
+        $result = Invoke-DmsaInvariantCase `
+            -CaseId 'dmsa-start-whatif' `
+            -Phase Start `
+            -WhatIf
+
+        $result.Outcome | Should Be 'skip'
+        $result.Reason | Should Be 'mutation_not_approved'
+        $result.BeforeDigest | Should Be ('a' * 64)
+        $result.AfterDigest | Should Be ('a' * 64)
+        $result.MutationAttempted | Should Be $false
+        Assert-MockCalled Start-ADServiceAccountMigration -Times 0 -Scope It
+        Assert-MockCalled Resolve-DmsaLegacyDistinguishedName -Times 0 -Scope It
+        Assert-MockCalled Get-WinEvent -Times 0 -Scope It
+        Assert-MockCalled Get-DmsaGraphSnapshot -Times 1 -Scope It
+    }
+
     It 'exports only redacted records with a sealed manifest' {
         $root = Join-Path $TestDrive 'evidence'
         New-Item -ItemType Directory -Path $root | Out-Null

@@ -299,7 +299,11 @@ def _parse_response(response: HttpObservation) -> dict[str, JSONValue]:
     return {
         "status_code": response.status_code,
         "error_code": error_code,
-        "correlation_id": correlation_id,
+        "correlation_id_digest": (
+            digest_identifier("entra-correlation-id", correlation_id)
+            if correlation_id is not None
+            else None
+        ),
         "elapsed_ms": response.elapsed_ms,
     }
 

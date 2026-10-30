@@ -792,39 +792,56 @@ function Invoke-DmsaInvariantCase {
             MutationAttempted = $false
         }
     }
+    if (-not $PSCmdlet.ShouldProcess(
+        $DmsaAccount,
+        "$Phase dMSA lifecycle transition"
+    )) {
+        return [pscustomobject][ordered]@{
+            CaseId = $CaseId
+            Phase = $Phase
+            Outcome = 'skip'
+            Reason = 'mutation_not_approved'
+            BeforeDigest = $before.Digest
+            AfterDigest = $before.Digest
+            Before = $before.Document
+            After = $before.Document
+            EventIds = @()
+            StartedUtc = $started.ToString('o')
+            EndedUtc = ([DateTime]::UtcNow).ToString('o')
+            MutationAttempted = $false
+        }
+    }
     $legacyIdentity = Resolve-DmsaLegacyDistinguishedName `
         -LegacyAccount $LegacyAccount `
         -Server $Server
-    if ($PSCmdlet.ShouldProcess($DmsaAccount, "$Phase dMSA lifecycle transition")) {
-        switch ($Phase) {
-            'Start' {
-                Start-ADServiceAccountMigration `
-                    -Identity $DmsaAccount `
-                    -SupersededAccount $legacyIdentity `
-                    -Server $Server `
-                    -ErrorAction Stop
-            }
-            'Complete' {
-                Complete-ADServiceAccountMigration `
-                    -Identity $DmsaAccount `
-                    -SupersededAccount $legacyIdentity `
-                    -Server $Server `
-                    -ErrorAction Stop
-            }
-            'Undo' {
-                Undo-ADServiceAccountMigration `
-                    -Identity $DmsaAccount `
-                    -SupersededAccount $legacyIdentity `
-                    -Server $Server `
-                    -ErrorAction Stop
-            }
-            'Reset' {
-                Reset-ADServiceAccountMigration `
-                    -Identity $DmsaAccount `
-                    -SupersededAccount $legacyIdentity `
-                    -Server $Server `
-                    -ErrorAction Stop
-            }
+    switch ($Phase) {
+        'Start' {
+            Start-ADServiceAccountMigration `
+                -Identity $DmsaAccount `
+                -SupersededAccount $legacyIdentity `
+                -Server $Server `
+                -ErrorAction Stop
+        }
+        'Complete' {
+            Complete-ADServiceAccountMigration `
+                -Identity $DmsaAccount `
+                -SupersededAccount $legacyIdentity `
+                -Server $Server `
+                -ErrorAction Stop
+        }
+        'Undo' {
+            Undo-ADServiceAccountMigration `
+                -Identity $DmsaAccount `
+                -SupersededAccount $legacyIdentity `
+                -Server $Server `
+                -ErrorAction Stop
+        }
+        'Reset' {
+            Reset-ADServiceAccountMigration `
+                -Identity $DmsaAccount `
+                -SupersededAccount $legacyIdentity `
+                -Server $Server `
+                -ErrorAction Stop
         }
     }
     $after = Get-DmsaGraphSnapshot `
