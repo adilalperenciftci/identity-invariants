@@ -103,3 +103,72 @@ The RODC TGT metadata used composite key version `297730049`, equal to `4543 << 
 Pass only the exact type-128 authdata region to the bounded PAC parser. Persist frame number, exact KDC address, key versions, buffer metadata, field-specific signature digests, and capture/PAC SHA-256 values. Delete raw JSON input in a `finally` block, then delete the keytab and packet captures before restoring the VMs. The sealed Task 8 ledger contains two normalized records and has SHA-256 `3d1bda6af895f7de22eeaa5f6df5707c60d9ee6a631b507c226a309845707ffe`.
 
 Every evidence run must contain only normalized graph fields, event IDs/counts, stable reason codes, and SHA-256 artifact digests. Seal `evidence.jsonl` with `manifest.json`, validate the manifest in the Ubuntu VM, and restore the exact baseline checkpoints after the final case.
+
+## Closed observation gates
+
+Run the Entra and Cloud Kerberos gates only as described in
+`docs/entra-observation-runbook.md`. The current isolated environment has no
+disposable tenant context, Azure AD Kerberos object, or Windows 11 client. Both
+Entra executions and all Cloud Kerberos client-dependent checks must therefore
+remain closed with zero external requests. RWDC-local directory reachability
+is environment context only; it does not satisfy the Windows 11 client
+line-of-sight invariant.
+
+After any checkpoint restore, do not infer RODC readiness from an open TCP port
+or running ADWS service. Require successful `Get-ADUser` and
+`Get-ADServiceAccount` queries explicitly targeting `ID-RODC01` before hashing
+the replicated graph.
+
+## Public evidence assembly
+
+The committed `evidence/evidence.jsonl` is a normalized index, not raw
+laboratory output. Each record binds one invariant outcome to a source-ledger
+SHA-256 value. The manifest binds the following source artifacts:
+
+| Source | SHA-256 |
+| --- | --- |
+| Task 7 Windows ledger | `024bbf6c01333a08a383587cf701985d26dbe9eef975518aebc271e8f25ef9fc` |
+| Task 8 PAC ledger | `3d1bda6af895f7de22eeaa5f6df5707c60d9ee6a631b507c226a309845707ffe` |
+| Task 9 Cloud gate | `95c75bd14adcac7b9fb22c0e4abde06fdeb33afe1d8cc43be47e4d0d32ddf271` |
+| Task 9 Ubuntu Entra ledger | `9a6f96a6de428e34d2c1cd136fb3ebb631a82a33d7c3152748ca0ab028956b10` |
+| Task 9 Windows Entra ledger | `683102d242f601909ae64bbff71c96ff09970e41fd842de5503e2182ee9215f7` |
+
+The assembled 20-record ledger has SHA-256
+`ebb62eb6075fac1e52a3d8075c16dab6ec2c58b827a95c6709922f15df099a8f`.
+Its manifest has SHA-256
+`1d46c07f03f7212f8e9a117c5940635b0e3d6515969f66c8ec459cb6611c9e83`.
+
+Verify and render only in Ubuntu:
+
+```text
+PYTHONPATH=src .venv/bin/python -m identity_invariants.reports.render --verify-only evidence/manifest.json
+PYTHONPATH=src .venv/bin/python -m identity_invariants.reports.render --render evidence/manifest.json --catalog spec/invariants.yaml --output reports/identity-invariants.md
+PYTHONPATH=src .venv/bin/pytest -q tests/integration/test_end_to_end_run.py
+```
+
+The expected report hashes are:
+
+| Report | SHA-256 |
+| --- | --- |
+| `reports/identity-invariants.md` | `98d48299bf908441615b3001eda275b9725931967df7c9c1e867c7cdd50003c7` |
+| `reports/identity-invariants.json` | `7d95cfb5398116ffa69d485c0d721160f713e4e2193739c150f2344b8ea29feb` |
+
+## Completion gate
+
+Before considering the identity program complete:
+
+1. Run the complete Python suite and `compileall` in Ubuntu.
+2. Verify the committed manifest and regenerate the report byte-for-byte.
+3. Run every PowerShell contract suite in the Windows Server lab.
+4. Confirm the three identity VMs use only `Bluex-Identity`, have no default
+   route, and the member secure channel is valid.
+5. Restore the exact `dmsa-baseline` checkpoint identifiers and prove these
+   graph digests:
+   - RWDC full graph:
+     `9c19162c8e7d44ad74a1990ef5775f8fdc3b8fe7a3c2fab5e08451c2eb79ae59`;
+   - RODC core graph:
+     `5be77ff6160d84dcfee8cba5bb935b13f0337492676124a1b02a1e0d4771bfe2`;
+   - shared core graph:
+     `fd1b0cdbab699e3a765295409b2711f2b1a8da0094f022ec7de2965cfe13afd5`.
+6. Scan the tracked tree for credentials, tokens, raw tickets, captures, and
+   private-key material. Retain only normalized records and hashes.

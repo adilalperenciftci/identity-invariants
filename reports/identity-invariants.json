@@ -1,0 +1,608 @@
+{
+  "artifact_hashes": {
+    "record/ckt-line-of-sight/source-ledger": "95c75bd14adcac7b9fb22c0e4abde06fdeb33afe1d8cc43be47e4d0d32ddf271",
+    "record/ckt-partial-tgt-gate/source-ledger": "95c75bd14adcac7b9fb22c0e4abde06fdeb33afe1d8cc43be47e4d0d32ddf271",
+    "record/ckt-policy-precedence-gate/source-ledger": "95c75bd14adcac7b9fb22c0e4abde06fdeb33afe1d8cc43be47e4d0d32ddf271",
+    "record/ckt-rodc-object-gate/source-ledger": "95c75bd14adcac7b9fb22c0e4abde06fdeb33afe1d8cc43be47e4d0d32ddf271",
+    "record/dmsa-baseline-restore/source-ledger": "024bbf6c01333a08a383587cf701985d26dbe9eef975518aebc271e8f25ef9fc",
+    "record/dmsa-enrolled-machine/source-ledger": "024bbf6c01333a08a383587cf701985d26dbe9eef975518aebc271e8f25ef9fc",
+    "record/dmsa-event-directory-correlation/source-ledger": "024bbf6c01333a08a383587cf701985d26dbe9eef975518aebc271e8f25ef9fc",
+    "record/dmsa-ordered-state-transfer/source-ledger": "024bbf6c01333a08a383587cf701985d26dbe9eef975518aebc271e8f25ef9fc",
+    "record/dmsa-reciprocal-migration-links/source-ledger": "024bbf6c01333a08a383587cf701985d26dbe9eef975518aebc271e8f25ef9fc",
+    "record/dmsa-rwdc-rodc-boundary/source-ledger": "024bbf6c01333a08a383587cf701985d26dbe9eef975518aebc271e8f25ef9fc",
+    "record/dmsa-state-transitions/source-ledger": "024bbf6c01333a08a383587cf701985d26dbe9eef975518aebc271e8f25ef9fc",
+    "record/dmsa-temporary-acl-lifecycle/source-ledger": "024bbf6c01333a08a383587cf701985d26dbe9eef975518aebc271e8f25ef9fc",
+    "record/pac-attributes-service-ticket/source-ledger": "3d1bda6af895f7de22eeaa5f6df5707c60d9ee6a631b507c226a309845707ffe",
+    "record/pac-domain-local-processing/source-ledger": "3d1bda6af895f7de22eeaa5f6df5707c60d9ee6a631b507c226a309845707ffe",
+    "record/pac-requestor-tgt-boundary/source-ledger": "3d1bda6af895f7de22eeaa5f6df5707c60d9ee6a631b507c226a309845707ffe",
+    "record/pac-rodc-identifier/source-ledger": "3d1bda6af895f7de22eeaa5f6df5707c60d9ee6a631b507c226a309845707ffe",
+    "record/pac-service-ticket-issuance/source-ledger": "3d1bda6af895f7de22eeaa5f6df5707c60d9ee6a631b507c226a309845707ffe",
+    "record/pac-signature-roles/source-ledger": "3d1bda6af895f7de22eeaa5f6df5707c60d9ee6a631b507c226a309845707ffe",
+    "record/wif-live-gate-ubuntu-lab/source-ledger": "9a6f96a6de428e34d2c1cd136fb3ebb631a82a33d7c3152748ca0ab028956b10",
+    "record/wif-live-gate-windows-lab/source-ledger": "683102d242f601909ae64bbff71c96ff09970e41fd842de5503e2182ee9215f7",
+    "source-manifest/task7-windows-ledger": "024bbf6c01333a08a383587cf701985d26dbe9eef975518aebc271e8f25ef9fc",
+    "source-manifest/task8-pac-ledger": "3d1bda6af895f7de22eeaa5f6df5707c60d9ee6a631b507c226a309845707ffe",
+    "source-manifest/task9-cloud-gate": "95c75bd14adcac7b9fb22c0e4abde06fdeb33afe1d8cc43be47e4d0d32ddf271",
+    "source-manifest/task9-ubuntu-ledger": "9a6f96a6de428e34d2c1cd136fb3ebb631a82a33d7c3152748ca0ab028956b10",
+    "source-manifest/task9-windows-ledger": "683102d242f601909ae64bbff71c96ff09970e41fd842de5503e2182ee9215f7"
+  },
+  "assessment": {
+    "cvss": "not assessed",
+    "cwe": "not assessed"
+  },
+  "environment_fingerprint": {
+    "seed": "20261030",
+    "topology": "ID-DC01, ID-RODC01, and ID-SRV01 on private Bluex-Identity; no default route",
+    "ubuntu": "Ubuntu 24.04.5 LTS; Python 3.12.3",
+    "windows": "Windows Server 2025 build 26100; forest and domain mode 2025; schema 91"
+  },
+  "format_version": 1,
+  "invariant_count": 37,
+  "invariants": [
+    {
+      "evidence_class": "windows-observation",
+      "id": "CKT-LOS-001",
+      "section": "Prerequisites and deployment validation",
+      "source": "WHFB-CLOUD-TRUST",
+      "source_primary_url": "https://learn.microsoft.com/en-us/windows/security/identity-protection/hello-for-business/deploy/hybrid-cloud-kerberos-trust",
+      "source_revision": "Windows Server 2025 documentation",
+      "source_title": "Hybrid cloud Kerberos trust deployment",
+      "summary": "Domain controller line-of-sight is an explicit precondition for first use and on-premises resource access."
+    },
+    {
+      "evidence_class": "windows-observation",
+      "id": "CKT-PARTIAL-001",
+      "section": "Cloud Kerberos trust authentication",
+      "source": "WHFB-AUTH",
+      "source_primary_url": "https://learn.microsoft.com/en-us/windows/security/identity-protection/hello-for-business/how-it-works-authentication",
+      "source_revision": "Windows Server 2025 documentation",
+      "source_title": "Windows Hello for Business authentication",
+      "summary": "The partial TGT carries the user SID and is verified by the on-premises domain controller before a full TGT is issued."
+    },
+    {
+      "evidence_class": "windows-observation",
+      "id": "CKT-PRECEDENCE-001",
+      "section": "Policy configuration",
+      "source": "WHFB-CLOUD-TRUST",
+      "source_primary_url": "https://learn.microsoft.com/en-us/windows/security/identity-protection/hello-for-business/deploy/hybrid-cloud-kerberos-trust",
+      "source_revision": "Windows Server 2025 documentation",
+      "source_title": "Hybrid cloud Kerberos trust deployment",
+      "summary": "Certificate trust policy precedence is recorded so its successful path is not classified as cloud trust."
+    },
+    {
+      "evidence_class": "windows-observation",
+      "id": "CKT-RODC-001",
+      "section": "Azure AD Kerberos and password replication policy",
+      "source": "WHFB-CLOUD-TRUST",
+      "source_primary_url": "https://learn.microsoft.com/en-us/windows/security/identity-protection/hello-for-business/deploy/hybrid-cloud-kerberos-trust",
+      "source_revision": "Windows Server 2025 documentation",
+      "source_title": "Hybrid cloud Kerberos trust deployment",
+      "summary": "The AzureADKerberos object retains RODC-like password replication restrictions for privileged identities."
+    },
+    {
+      "evidence_class": "windows-observation",
+      "id": "DMSA-ACL-001",
+      "section": "Account migration permissions",
+      "source": "DMSA-OVERVIEW",
+      "source_primary_url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/delegated-managed-service-accounts/delegated-managed-service-accounts-overview",
+      "source_revision": "Windows Server 2025 documentation",
+      "source_title": "Delegated Managed Service Accounts overview",
+      "summary": "Migration start grants documented temporary rights and completion removes them."
+    },
+    {
+      "evidence_class": "windows-observation",
+      "id": "DMSA-EVENT-001",
+      "section": "Auditing dMSA activity",
+      "source": "DMSA-OVERVIEW",
+      "source_primary_url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/delegated-managed-service-accounts/delegated-managed-service-accounts-overview",
+      "source_revision": "Windows Server 2025 documentation",
+      "source_title": "Delegated Managed Service Accounts overview",
+      "summary": "Operational events 307, 308, and 309 correlate migration, permission enrollment, and key fetch with directory snapshots."
+    },
+    {
+      "evidence_class": "windows-observation",
+      "id": "DMSA-LINK-001",
+      "section": "Account migration",
+      "source": "DMSA-OVERVIEW",
+      "source_primary_url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/delegated-managed-service-accounts/delegated-managed-service-accounts-overview",
+      "source_revision": "Windows Server 2025 documentation",
+      "source_title": "Delegated Managed Service Accounts overview",
+      "summary": "Migration maintains the documented predecessor and successor link relation between the legacy account and dMSA."
+    },
+    {
+      "evidence_class": "windows-observation",
+      "id": "DMSA-MACHINE-001",
+      "section": "Grant client access to the dMSA",
+      "source": "DMSA-SETUP",
+      "source_primary_url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/delegated-managed-service-accounts/delegated-managed-service-accounts-set-up-dmsa",
+      "source_revision": "Windows Server 2025 documentation",
+      "source_title": "Set up delegated Managed Service Accounts",
+      "summary": "Only explicitly enrolled machine identities receive dMSA behavior and ticket refresh is a separate transition."
+    },
+    {
+      "evidence_class": "windows-observation",
+      "id": "DMSA-ROLLBACK-001",
+      "section": "Reset a dMSA account",
+      "source": "DMSA-SETUP",
+      "source_primary_url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/delegated-managed-service-accounts/delegated-managed-service-accounts-set-up-dmsa",
+      "source_revision": "Windows Server 2025 documentation",
+      "source_title": "Set up delegated Managed Service Accounts",
+      "summary": "Reset and undo cases restore a documented inactive or unlinked state without deleting the original account."
+    },
+    {
+      "evidence_class": "windows-observation",
+      "id": "DMSA-RWDC-001",
+      "section": "Prerequisites",
+      "source": "DMSA-SETUP",
+      "source_primary_url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/delegated-managed-service-accounts/delegated-managed-service-accounts-set-up-dmsa",
+      "source_revision": "Windows Server 2025 documentation",
+      "source_title": "Set up delegated Managed Service Accounts",
+      "summary": "Migration graph changes require a writable domain controller and an RODC observation never counts as a successful write."
+    },
+    {
+      "evidence_class": "windows-observation",
+      "id": "DMSA-SPN-001",
+      "section": "Account migration completion",
+      "source": "DMSA-OVERVIEW",
+      "source_primary_url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/delegated-managed-service-accounts/delegated-managed-service-accounts-overview",
+      "source_revision": "Windows Server 2025 documentation",
+      "source_title": "Delegated Managed Service Accounts overview",
+      "summary": "Completion transfers SPNs and supported policy attributes before disabling and clearing the legacy account."
+    },
+    {
+      "evidence_class": "windows-observation",
+      "id": "DMSA-STATE-001",
+      "section": "Migration states",
+      "source": "DMSA-OVERVIEW",
+      "source_primary_url": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/delegated-managed-service-accounts/delegated-managed-service-accounts-overview",
+      "source_revision": "Windows Server 2025 documentation",
+      "source_title": "Delegated Managed Service Accounts overview",
+      "summary": "States one, two, and three mean started, completed, and standalone, with unsupported transition order rejected atomically."
+    },
+    {
+      "evidence_class": "spec-oracle",
+      "id": "OIDC-AUD-001",
+      "section": "3.1.3.7",
+      "source": "OIDC-CORE",
+      "source_primary_url": "https://openid.net/specs/openid-connect-core-1_0.html",
+      "source_revision": "OpenID Connect Core 1.0, errata set 2",
+      "source_title": "OpenID Connect Core 1.0 incorporating errata set 2",
+      "summary": "The audience includes the registered client and contains no untrusted additional audience."
+    },
+    {
+      "evidence_class": "spec-oracle",
+      "id": "OIDC-ISS-001",
+      "section": "3.1.3.7",
+      "source": "OIDC-CORE",
+      "source_primary_url": "https://openid.net/specs/openid-connect-core-1_0.html",
+      "source_revision": "OpenID Connect Core 1.0, errata set 2",
+      "source_title": "OpenID Connect Core 1.0 incorporating errata set 2",
+      "summary": "The ID token issuer exactly matches the discovered issuer identifier."
+    },
+    {
+      "evidence_class": "spec-oracle",
+      "id": "OIDC-NONCE-001",
+      "section": "3.1.2.1 and 3.1.3.7",
+      "source": "OIDC-CORE",
+      "source_primary_url": "https://openid.net/specs/openid-connect-core-1_0.html",
+      "source_revision": "OpenID Connect Core 1.0, errata set 2",
+      "source_title": "OpenID Connect Core 1.0 incorporating errata set 2",
+      "summary": "A sent nonce must match and is consumed once by the local bounded replay policy."
+    },
+    {
+      "evidence_class": "spec-oracle",
+      "id": "OIDC-TIME-001",
+      "section": "2 and 3.1.3.7",
+      "source": "OIDC-CORE",
+      "source_primary_url": "https://openid.net/specs/openid-connect-core-1_0.html",
+      "source_revision": "OpenID Connect Core 1.0, errata set 2",
+      "source_title": "OpenID Connect Core 1.0 incorporating errata set 2",
+      "summary": "Expiration, issued-at, authentication time, and nonce retention share one injected clock and explicit skew."
+    },
+    {
+      "evidence_class": "local-adapter",
+      "id": "PAC-ATTR-001",
+      "section": "2.14 PAC_ATTRIBUTES_INFO",
+      "source": "MS-PAC",
+      "source_primary_url": "https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-pac/",
+      "source_revision": "MS-PAC Open Specifications current revision, accessed 2026-10-30",
+      "source_title": "Privilege Attribute Certificate Data Structure",
+      "summary": "FlagsLength counts defined bits, storage is padded to 32-bit units, and undefined padding bits are ignored."
+    },
+    {
+      "evidence_class": "local-adapter",
+      "id": "PAC-BOUNDS-001",
+      "section": "2.4 PAC_INFO_BUFFER",
+      "source": "MS-PAC",
+      "source_primary_url": "https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-pac/",
+      "source_revision": "MS-PAC Open Specifications current revision, accessed 2026-10-30",
+      "source_title": "Privilege Attribute Certificate Data Structure",
+      "summary": "Every offset is eight-byte aligned and each offset-plus-size range is overflow-safe and contained in the PACTYPE."
+    },
+    {
+      "evidence_class": "windows-observation",
+      "id": "PAC-DLG-001",
+      "section": "Domain Local Group Membership processing",
+      "source": "MS-KILE",
+      "source_primary_url": "https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-kile/",
+      "source_revision": "MS-KILE Open Specifications current revision, accessed 2026-10-30",
+      "source_title": "Kerberos Protocol Extensions",
+      "summary": "Applicable domain-local group processing removes requestor and attributes structures from the resulting service ticket."
+    },
+    {
+      "evidence_class": "local-adapter",
+      "id": "PAC-ORDER-001",
+      "section": "2.8 PAC Signatures",
+      "source": "MS-PAC",
+      "source_primary_url": "https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-pac/",
+      "source_revision": "MS-PAC Open Specifications current revision, accessed 2026-10-30",
+      "source_title": "Privilege Attribute Certificate Data Structure",
+      "summary": "Buffer order is semantically free before signing and immutable after signatures are produced."
+    },
+    {
+      "evidence_class": "windows-observation",
+      "id": "PAC-REQ-001",
+      "section": "TGS request PAC requestor validation",
+      "source": "MS-KILE",
+      "source_primary_url": "https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-kile/",
+      "source_revision": "MS-KILE Open Specifications current revision, accessed 2026-10-30",
+      "source_title": "Kerberos Protocol Extensions",
+      "summary": "A same-realm requestor SID resolves to the cname account while delegation identity remains separate."
+    },
+    {
+      "evidence_class": "windows-observation",
+      "id": "PAC-RODC-001",
+      "section": "2.8.1 PAC_SIGNATURE_DATA",
+      "source": "MS-PAC",
+      "source_primary_url": "https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-pac/",
+      "source_revision": "MS-PAC Open Specifications current revision, accessed 2026-10-30",
+      "source_title": "Privilege Attribute Certificate Data Structure",
+      "summary": "RODCIdentifier is present only for an RODC-issued signature and maps to the documented key-version portion."
+    },
+    {
+      "evidence_class": "local-adapter",
+      "id": "PAC-SIG-001",
+      "section": "2.8 PAC Signatures",
+      "source": "MS-PAC",
+      "source_primary_url": "https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-pac/",
+      "source_revision": "MS-PAC Open Specifications current revision, accessed 2026-10-30",
+      "source_title": "Privilege Attribute Certificate Data Structure",
+      "summary": "Server, KDC, ticket, and extended KDC signature roles remain distinct and correctly ordered."
+    },
+    {
+      "evidence_class": "windows-observation",
+      "id": "PAC-TGS-001",
+      "section": "TGS ticket construction",
+      "source": "MS-KILE",
+      "source_primary_url": "https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-kile/",
+      "source_revision": "MS-KILE Open Specifications current revision, accessed 2026-10-30",
+      "source_title": "Kerberos Protocol Extensions",
+      "summary": "A service ticket receives new server and KDC signatures and cannot end with a zero-length PAC buffer."
+    },
+    {
+      "evidence_class": "spec-oracle",
+      "id": "STS-ACTOR-001",
+      "section": "2.1",
+      "source": "RFC8693",
+      "source_primary_url": "https://datatracker.ietf.org/doc/html/rfc8693",
+      "source_revision": "RFC 8693, January 2020",
+      "source_title": "OAuth 2.0 Token Exchange",
+      "summary": "Actor token and actor token type occur together while subject and actor identities remain distinct."
+    },
+    {
+      "evidence_class": "spec-oracle",
+      "id": "STS-LIFETIME-001",
+      "section": "2.1 and 2.2",
+      "source": "RFC8693",
+      "source_primary_url": "https://datatracker.ietf.org/doc/html/rfc8693",
+      "source_revision": "RFC 8693, January 2020",
+      "source_title": "OAuth 2.0 Token Exchange",
+      "summary": "Exchange does not consume or tightly link the input token unless the selected token profile says otherwise."
+    },
+    {
+      "evidence_class": "spec-oracle",
+      "id": "STS-REQ-001",
+      "section": "2.1",
+      "source": "RFC8693",
+      "source_primary_url": "https://datatracker.ietf.org/doc/html/rfc8693",
+      "source_revision": "RFC 8693, January 2020",
+      "source_title": "OAuth 2.0 Token Exchange",
+      "summary": "Grant type, subject token, and subject token type are required and type-consistent."
+    },
+    {
+      "evidence_class": "spec-oracle",
+      "id": "STS-RIGHTS-001",
+      "section": "2.1",
+      "source": "RFC8693",
+      "source_primary_url": "https://datatracker.ietf.org/doc/html/rfc8693",
+      "source_revision": "RFC 8693, January 2020",
+      "source_title": "OAuth 2.0 Token Exchange",
+      "summary": "Requested rights preserve the full scope and target product without silently dropping a target."
+    },
+    {
+      "evidence_class": "spec-oracle",
+      "id": "STS-TARGET-001",
+      "section": "2.1",
+      "source": "RFC8693",
+      "source_primary_url": "https://datatracker.ietf.org/doc/html/rfc8693",
+      "source_revision": "RFC 8693, January 2020",
+      "source_title": "OAuth 2.0 Token Exchange",
+      "summary": "Resource indicators are absolute fragment-free URIs and audience identifiers remain unambiguous."
+    },
+    {
+      "evidence_class": "spec-oracle",
+      "id": "WIF-BIND-001",
+      "section": "federatedIdentityCredential resource",
+      "source": "ENTRA-FIC",
+      "source_primary_url": "https://learn.microsoft.com/en-us/graph/api/resources/federatedidentitycredentials-overview?view=graph-rest-1.0",
+      "source_revision": "Microsoft Graph REST API v1.0",
+      "source_title": "Microsoft Graph federated identity credential overview",
+      "summary": "Credential selection remains bound to tenant, application object, client ID, credential, issuer, subject matcher, and audience."
+    },
+    {
+      "evidence_class": "spec-oracle",
+      "id": "WIF-FLEX-001",
+      "section": "Flexible federated identity credential configuration",
+      "source": "ENTRA-FLEX-FIC",
+      "source_primary_url": "https://learn.microsoft.com/en-us/entra/workload-id/workload-identities-flexible-federated-identity-credentials",
+      "source_revision": "Microsoft Entra workload identities public preview",
+      "source_title": "Flexible federated identity credentials",
+      "summary": "A flexible credential uses either subject or a supported claim expression and retains its immutable platform-claim binding."
+    },
+    {
+      "evidence_class": "spec-oracle",
+      "id": "WIF-KEY-001",
+      "section": "3.1 and 3.2",
+      "source": "RFC7523",
+      "source_primary_url": "https://datatracker.ietf.org/doc/html/rfc7523",
+      "source_revision": "RFC 7523, May 2015",
+      "source_title": "JSON Web Token Profile for OAuth 2.0 Client Authentication and Authorization Grants",
+      "summary": "Algorithm and trusted issuer key validation complete before claim-based credential selection."
+    },
+    {
+      "evidence_class": "spec-oracle",
+      "id": "WIF-MATCH-001",
+      "section": "issuer subject and audiences properties",
+      "source": "ENTRA-FIC",
+      "source_primary_url": "https://learn.microsoft.com/en-us/graph/api/resources/federatedidentitycredentials-overview?view=graph-rest-1.0",
+      "source_revision": "Microsoft Graph REST API v1.0",
+      "source_title": "Microsoft Graph federated identity credential overview",
+      "summary": "Standard federated credential issuer, subject, and audience comparisons are exact and case-sensitive."
+    },
+    {
+      "evidence_class": "spec-oracle",
+      "id": "WIF-REPLAY-001",
+      "section": "3",
+      "source": "RFC7523",
+      "source_primary_url": "https://datatracker.ietf.org/doc/html/rfc7523",
+      "source_revision": "RFC 7523, May 2015",
+      "source_title": "JSON Web Token Profile for OAuth 2.0 Client Authentication and Authorization Grants",
+      "summary": "Repeated JWT IDs are observations unless the selected profile explicitly defines one-time use."
+    },
+    {
+      "evidence_class": "spec-oracle",
+      "id": "WIF-TIME-001",
+      "section": "3.1 and 3.2",
+      "source": "RFC7523",
+      "source_primary_url": "https://datatracker.ietf.org/doc/html/rfc7523",
+      "source_revision": "RFC 7523, May 2015",
+      "source_title": "JSON Web Token Profile for OAuth 2.0 Client Authentication and Authorization Grants",
+      "summary": "Expiration is required and all temporal decisions use one injected clock with explicit skew."
+    },
+    {
+      "evidence_class": "spec-oracle",
+      "id": "WIF-TRANSPORT-001",
+      "section": "Protocol diagram and access token request",
+      "source": "ENTRA-CLIENT-CREDENTIALS",
+      "source_primary_url": "https://learn.microsoft.com/en-us/entra/identity-platform/v2-oauth2-client-creds-grant-flow",
+      "source_revision": "Microsoft identity platform v2.0 endpoint",
+      "source_title": "Microsoft identity platform OAuth 2.0 client credentials flow",
+      "summary": "Entra workload federation uses client credentials with a JWT bearer client assertion and one resource default scope."
+    },
+    {
+      "evidence_class": "spec-oracle",
+      "id": "WIF-TYPE-001",
+      "section": "3",
+      "source": "RFC7523",
+      "source_primary_url": "https://datatracker.ietf.org/doc/html/rfc7523",
+      "source_revision": "RFC 7523, May 2015",
+      "source_title": "JSON Web Token Profile for OAuth 2.0 Client Authentication and Authorization Grants",
+      "summary": "Issuer and subject are strings, temporal claims are NumericDate numbers, and audience is interpreted without scalar coercion."
+    }
+  ],
+  "manifest": {
+    "ledger": "evidence.jsonl",
+    "ledger_sha256": "ebb62eb6075fac1e52a3d8075c16dab6ec2c58b827a95c6709922f15df099a8f",
+    "record_count": 20
+  },
+  "observations": [
+    {
+      "case_id": "ckt-line-of-sight",
+      "evidence_class": "windows-observation",
+      "outcome": "skip",
+      "reason": "windows_11_client_missing",
+      "rule_ids": [
+        "CKT-LOS-001"
+      ]
+    },
+    {
+      "case_id": "ckt-partial-tgt-gate",
+      "evidence_class": "windows-observation",
+      "outcome": "skip",
+      "reason": "windows_11_client_missing",
+      "rule_ids": [
+        "CKT-PARTIAL-001"
+      ]
+    },
+    {
+      "case_id": "ckt-policy-precedence-gate",
+      "evidence_class": "windows-observation",
+      "outcome": "skip",
+      "reason": "cloud_trust_policy_unverified",
+      "rule_ids": [
+        "CKT-PRECEDENCE-001"
+      ]
+    },
+    {
+      "case_id": "ckt-rodc-object-gate",
+      "evidence_class": "windows-observation",
+      "outcome": "skip",
+      "reason": "cloud_kerberos_object_missing",
+      "rule_ids": [
+        "CKT-RODC-001"
+      ]
+    },
+    {
+      "case_id": "dmsa-temporary-acl-lifecycle",
+      "evidence_class": "windows-observation",
+      "outcome": "observe",
+      "reason": "temporary_acl_lifecycle_observed",
+      "rule_ids": [
+        "DMSA-ACL-001"
+      ]
+    },
+    {
+      "case_id": "dmsa-event-directory-correlation",
+      "evidence_class": "windows-observation",
+      "outcome": "inconclusive",
+      "reason": "supported_events_not_observed",
+      "rule_ids": [
+        "DMSA-EVENT-001"
+      ]
+    },
+    {
+      "case_id": "dmsa-reciprocal-migration-links",
+      "evidence_class": "windows-observation",
+      "outcome": "observe",
+      "reason": "reciprocal_links_observed",
+      "rule_ids": [
+        "DMSA-LINK-001"
+      ]
+    },
+    {
+      "case_id": "dmsa-enrolled-machine",
+      "evidence_class": "windows-observation",
+      "outcome": "observe",
+      "reason": "explicit_enrollment_observed",
+      "rule_ids": [
+        "DMSA-MACHINE-001"
+      ]
+    },
+    {
+      "case_id": "dmsa-baseline-restore",
+      "evidence_class": "windows-observation",
+      "outcome": "observe",
+      "reason": "checkpoint_restore_verified",
+      "rule_ids": [
+        "DMSA-ROLLBACK-001"
+      ]
+    },
+    {
+      "case_id": "dmsa-rwdc-rodc-boundary",
+      "evidence_class": "windows-observation",
+      "outcome": "observe",
+      "reason": "rodc_local_transition_observed",
+      "rule_ids": [
+        "DMSA-RWDC-001"
+      ]
+    },
+    {
+      "case_id": "dmsa-ordered-state-transfer",
+      "evidence_class": "windows-observation",
+      "outcome": "observe",
+      "reason": "ordered_state_transfer_observed",
+      "rule_ids": [
+        "DMSA-SPN-001"
+      ]
+    },
+    {
+      "case_id": "dmsa-state-transitions",
+      "evidence_class": "windows-observation",
+      "outcome": "observe",
+      "reason": "bounded_lifecycle_observation",
+      "rule_ids": [
+        "DMSA-STATE-001"
+      ]
+    },
+    {
+      "case_id": "pac-attributes-service-ticket",
+      "evidence_class": "windows-observation",
+      "outcome": "observe",
+      "reason": "attributes_buffer_absent",
+      "rule_ids": [
+        "PAC-ATTR-001"
+      ]
+    },
+    {
+      "case_id": "pac-domain-local-processing",
+      "evidence_class": "windows-observation",
+      "outcome": "observe",
+      "reason": "service_ticket_buffers_observed",
+      "rule_ids": [
+        "PAC-DLG-001"
+      ]
+    },
+    {
+      "case_id": "pac-requestor-tgt-boundary",
+      "evidence_class": "windows-observation",
+      "outcome": "inconclusive",
+      "reason": "tgt_requestor_not_assessed",
+      "rule_ids": [
+        "PAC-REQ-001"
+      ]
+    },
+    {
+      "case_id": "pac-rodc-identifier",
+      "evidence_class": "windows-observation",
+      "outcome": "observe",
+      "reason": "rodc_identifier_observed",
+      "rule_ids": [
+        "PAC-RODC-001"
+      ]
+    },
+    {
+      "case_id": "pac-signature-roles",
+      "evidence_class": "windows-observation",
+      "outcome": "observe",
+      "reason": "signature_roles_observed",
+      "rule_ids": [
+        "PAC-SIG-001"
+      ]
+    },
+    {
+      "case_id": "pac-service-ticket-issuance",
+      "evidence_class": "windows-observation",
+      "outcome": "observe",
+      "reason": "service_ticket_issuance_observed",
+      "rule_ids": [
+        "PAC-TGS-001"
+      ]
+    },
+    {
+      "case_id": "wif-live-gate-ubuntu-lab",
+      "evidence_class": "entra-observation",
+      "outcome": "skip",
+      "reason": "tenant_context_missing",
+      "rule_ids": [
+        "WIF-BIND-001"
+      ]
+    },
+    {
+      "case_id": "wif-live-gate-windows-lab",
+      "evidence_class": "entra-observation",
+      "outcome": "skip",
+      "reason": "tenant_context_missing",
+      "rule_ids": [
+        "WIF-BIND-001"
+      ]
+    }
+  ],
+  "record_count": 20,
+  "source_manifests": {
+    "task7-windows-ledger": "024bbf6c01333a08a383587cf701985d26dbe9eef975518aebc271e8f25ef9fc",
+    "task8-pac-ledger": "3d1bda6af895f7de22eeaa5f6df5707c60d9ee6a631b507c226a309845707ffe",
+    "task9-cloud-gate": "95c75bd14adcac7b9fb22c0e4abde06fdeb33afe1d8cc43be47e4d0d32ddf271",
+    "task9-ubuntu-ledger": "9a6f96a6de428e34d2c1cd136fb3ebb631a82a33d7c3152748ca0ab028956b10",
+    "task9-windows-ledger": "683102d242f601909ae64bbff71c96ff09970e41fd842de5503e2182ee9215f7"
+  }
+}
