@@ -10,7 +10,9 @@ from pathlib import Path
 
 import pytest
 
+from identity_invariants.adapters import windows_pac
 from identity_invariants.adapters.windows_pac import normalize_windows_pac_observation
+from identity_invariants.pac.model import PacLimits
 
 
 def _pac(*buffers: tuple[int, bytes]) -> bytes:
@@ -141,6 +143,28 @@ def test_adapter_rejects_kdc_mismatch_and_unbounded_identifiers() -> None:
     wrong_realm["realm"] = "OTHER.TEST"
     with pytest.raises(ValueError, match="realm"):
         normalize_windows_pac_observation(wrong_realm)
+
+
+def test_adapter_rejects_oversized_pac_before_hex_decode(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    class DecodeTrap:
+        called = False
+
+        @classmethod
+        def fromhex(cls, value: str) -> bytes:
+            cls.called = True
+            raise AssertionError("hex decoder reached")
+
+    limits = PacLimits(max_total_size=8, max_buffer_size=8)
+    monkeypatch.setattr(windows_pac, "PacLimits", lambda: limits)
+    monkeypatch.setattr(windows_pac, "bytes", DecodeTrap, raising=False)
+    observation = _observation()
+    observation["raw_pac_hex"] = "00" * 9
+
+    with pytest.raises(ValueError, match="configured size"):
+        windows_pac.normalize_windows_pac_observation(observation)
+    assert DecodeTrap.called is False
 
 
 def test_adapter_cli_writes_only_normalized_metadata(tmp_path: Path) -> None:

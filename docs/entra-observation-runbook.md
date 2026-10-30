@@ -27,7 +27,7 @@ Run `Test-CloudTrustGate` from `lab/windows/Test-CloudTrustGate.ps1` under an ac
 
 - a writable Windows Server 2025 domain controller;
 - the exact `AzureADKerberos$` directory object;
-- non-empty reveal-on-demand and never-reveal password replication policy sets;
+- exact references to the allowed and denied RODC password replication policy groups;
 - Cloud Trust policy selection without Certificate Trust precedence;
 - an enabled, domain-joined Windows 11 client object;
 - domain-controller line of sight measured locally on that Windows 11 client; and

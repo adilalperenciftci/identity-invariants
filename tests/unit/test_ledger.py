@@ -74,3 +74,26 @@ def test_writer_rejects_undeclared_reason_code(tmp_path: Path) -> None:
 
     with pytest.raises(ValueError, match="reason code"):
         writer.append(record)
+
+
+@pytest.mark.parametrize(
+    "embedded_value",
+    [
+        "request Authorization: Bearer reusable-token-material",
+        "prefix eyJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJzZXJ2aWNlIn0.signature suffix",
+        "config client_secret=must-not-be-retained",
+        "prefix -----BEGIN PRIVATE KEY----- suffix",
+        r"C:\Hyper-V\BluexLab\secrets\windows-admin.credential.xml",
+    ],
+)
+def test_writer_rejects_embedded_secret_shapes(
+    tmp_path: Path, embedded_value: str
+) -> None:
+    writer = EvidenceWriter(tmp_path / "evidence.jsonl")
+    record = replace(
+        _record(),
+        metadata={"nested": {"diagnostic": f"safe context {embedded_value}"}},
+    )
+
+    with pytest.raises(ValueError, match="prohibited value shape"):
+        writer.append(record)

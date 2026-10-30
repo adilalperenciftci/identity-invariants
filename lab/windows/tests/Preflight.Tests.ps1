@@ -2,10 +2,12 @@ $ErrorActionPreference = 'Stop'
 
 $labRoot = Split-Path -Parent $PSScriptRoot
 . (Join-Path $labRoot 'Test-IdentityLabPreflight.ps1')
+. (Join-Path $labRoot 'New-IdentityLabTemplate.ps1')
 
 function Get-VM { param($Name, $ErrorAction) }
 function Get-VMSnapshot { param($VMName, $Name, $ErrorAction) }
 function Get-VMSwitch { param($Name, $ErrorAction) }
+function Export-VMSnapshot { param($VMSnapshot, $Path) }
 
 Describe 'Identity lab preflight' {
     BeforeEach {
@@ -97,5 +99,28 @@ Describe 'Identity lab preflight' {
             $Error.Clear()
         }
         $message | Should Match 'must be Private'
+    }
+
+    It 'refuses incomplete template apply before creating any path' {
+        Mock New-Item {}
+        Mock Set-Content {}
+        Mock Export-VMSnapshot {}
+
+        $message = $null
+        try {
+            New-IdentityLabTemplate `
+                -RootPath 'C:\Hyper-V\BluexLab\Identity' `
+                -SourceVmName 'Bluex-Windows' `
+                -Apply `
+                -Confirm:$false
+        } catch {
+            $message = $_.Exception.Message
+            $Error.Clear()
+        }
+
+        $message | Should Match 'not implemented'
+        Assert-MockCalled New-Item -Times 0 -Scope It
+        Assert-MockCalled Set-Content -Times 0 -Scope It
+        Assert-MockCalled Export-VMSnapshot -Times 0 -Scope It
     }
 }

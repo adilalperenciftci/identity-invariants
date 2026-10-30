@@ -15,6 +15,24 @@ from identity_invariants.decisions import DecisionClass, EvidenceClass, ReasonCo
 
 _DIGEST = re.compile(r"^[0-9a-f]{64}$")
 _JWT_SHAPE = re.compile(r"^[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{3,}$")
+_EMBEDDED_JWT_SHAPE = re.compile(
+    r"(?<![A-Za-z0-9_-])[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}\."
+    r"[A-Za-z0-9_-]{3,}(?![A-Za-z0-9_-])"
+)
+_BEARER_SHAPE = re.compile(
+    r"(?:^|[^A-Za-z0-9])bearer[ \t]+[A-Za-z0-9._~+/=-]{8,}",
+    re.IGNORECASE,
+)
+_CREDENTIAL_ASSIGNMENT = re.compile(
+    r"[\"']?(?:password|client[_-]?secret|access[_-]?token|refresh[_-]?token|"
+    r"client[_-]?assertion)[\"']?\s*[:=]\s*[\"']?\S+",
+    re.IGNORECASE,
+)
+_LOCAL_CREDENTIAL_PATH = re.compile(
+    r"(?:[a-z]:\\|/)[^\r\n]*(?:(?:\\|/)(?:secrets?|credentials?)(?:\\|/)"
+    r"|\.credentials?(?:\.[A-Za-z0-9_-]+)?(?:$|\s))",
+    re.IGNORECASE,
+)
 _PROHIBITED_KEY_PARTS = (
     "password",
     "clientsecret",
@@ -74,10 +92,17 @@ def _validate_redacted(value: JSONValue, path: str = "metadata") -> None:
         for index, item in enumerate(value):
             _validate_redacted(item, f"{path}[{index}]")
         return
-    if isinstance(value, str) and (
-        _JWT_SHAPE.fullmatch(value) or "-----BEGIN " in value or "-----END " in value
-    ):
-        raise ValueError(f"prohibited value shape: {path}")
+    if isinstance(value, str):
+        if (
+            _JWT_SHAPE.fullmatch(value)
+            or _EMBEDDED_JWT_SHAPE.search(value)
+            or _BEARER_SHAPE.search(value)
+            or _CREDENTIAL_ASSIGNMENT.search(value)
+            or _LOCAL_CREDENTIAL_PATH.search(value)
+            or "-----BEGIN " in value
+            or "-----END " in value
+        ):
+            raise ValueError(f"prohibited value shape: {path}")
 
 
 class EvidenceWriter:

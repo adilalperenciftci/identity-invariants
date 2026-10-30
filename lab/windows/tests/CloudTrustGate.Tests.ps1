@@ -15,17 +15,27 @@ Describe 'Cloud Kerberos trust preflight gate' {
         )
     }
 
-    It 'requires both password replication policy sets' {
+    It 'requires the exact password replication policy groups' {
         $incomplete = [pscustomobject]@{
             'msDS-RevealOnDemandGroup' = @()
             'msDS-NeverRevealGroup' = @('CN=Denied,DC=idlab,DC=test')
         }
-        $complete = [pscustomobject]@{
+        $arbitrary = [pscustomobject]@{
             'msDS-RevealOnDemandGroup' = @('CN=Allowed,DC=idlab,DC=test')
             'msDS-NeverRevealGroup' = @('CN=Denied,DC=idlab,DC=test')
         }
+        $complete = [pscustomobject]@{
+            'msDS-RevealOnDemandGroup' = @(
+                'CN=Allowed RODC Password Replication Group,CN=Users,DC=idlab,DC=test'
+            )
+            'msDS-NeverRevealGroup' = @(
+                'CN=Denied RODC Password Replication Group,CN=Users,DC=idlab,DC=test'
+            )
+        }
 
         (Test-CloudTrustPasswordReplicationPolicy -DirectoryObject $incomplete) |
+            Should Be $false
+        (Test-CloudTrustPasswordReplicationPolicy -DirectoryObject $arbitrary) |
             Should Be $false
         (Test-CloudTrustPasswordReplicationPolicy -DirectoryObject $complete) |
             Should Be $true

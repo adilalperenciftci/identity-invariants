@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 from dataclasses import replace
 from pathlib import Path
@@ -296,11 +297,27 @@ def test_unsafe_render_does_not_replace_existing_report(tmp_path: Path) -> None:
 
 def test_render_rejects_secret_shape_in_unrendered_metadata(tmp_path: Path) -> None:
     rule = _rule("A-RULE-001", "SOURCE-A")
-    record = replace(
-        _record(rule.id, "accepted", "accept", ReasonCode.ACCEPTED),
-        metadata={"note": "Authorization: Bearer reusable-value"},
+    manifest = _seal(
+        tmp_path,
+        [_record(rule.id, "accepted", "accept", ReasonCode.ACCEPTED)],
     )
-    manifest = _seal(tmp_path, [record])
+    ledger = tmp_path / "evidence.jsonl"
+    document = json.loads(ledger.read_text(encoding="utf-8"))
+    document["metadata"] = {"note": "Authorization: Bearer reusable-value"}
+    encoded = json.dumps(
+        document,
+        ensure_ascii=True,
+        allow_nan=False,
+        sort_keys=True,
+        separators=(",", ":"),
+    ) + "\n"
+    ledger.write_text(encoded, encoding="utf-8")
+    manifest_document = json.loads(manifest.read_text(encoding="utf-8"))
+    manifest_document["ledger_sha256"] = hashlib.sha256(encoded.encode()).hexdigest()
+    manifest.write_text(
+        json.dumps(manifest_document, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
 
     with pytest.raises(ValueError, match="unsafe report content"):
         render_technical_report(manifest, (rule,), tmp_path / "report.md")

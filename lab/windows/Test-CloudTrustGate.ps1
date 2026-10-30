@@ -36,9 +36,33 @@ function Test-CloudTrustPasswordReplicationPolicy {
     ) {
         return $false
     }
+    $reveal = @($DirectoryObject.'msDS-RevealOnDemandGroup' | ForEach-Object {
+        [string]$_
+    })
+    $neverReveal = @($DirectoryObject.'msDS-NeverRevealGroup' | ForEach-Object {
+        [string]$_
+    })
+    $expectedReveal = (
+        'CN=Allowed RODC Password Replication Group,' +
+        'CN=Users,DC=idlab,DC=test'
+    )
+    $expectedNeverReveal = (
+        'CN=Denied RODC Password Replication Group,' +
+        'CN=Users,DC=idlab,DC=test'
+    )
     return (
-        @($DirectoryObject.'msDS-RevealOnDemandGroup').Count -gt 0 -and
-        @($DirectoryObject.'msDS-NeverRevealGroup').Count -gt 0
+        $reveal.Count -eq 1 -and
+        $neverReveal.Count -eq 1 -and
+        [string]::Equals(
+            $reveal[0],
+            $expectedReveal,
+            [StringComparison]::OrdinalIgnoreCase
+        ) -and
+        [string]::Equals(
+            $neverReveal[0],
+            $expectedNeverReveal,
+            [StringComparison]::OrdinalIgnoreCase
+        )
     )
 }
 

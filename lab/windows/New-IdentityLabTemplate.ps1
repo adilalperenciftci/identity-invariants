@@ -12,6 +12,13 @@ function New-IdentityLabTemplate {
         [switch]$Apply
     )
 
+    if ($PlanOnly -and $Apply) {
+        throw 'PlanOnly and Apply are mutually exclusive.'
+    }
+    if ($Apply) {
+        throw 'Template Apply mode is not implemented as one complete lifecycle.'
+    }
+
     $plan = Test-IdentityLabPreflight `
         -RootPath $RootPath `
         -SourceVmName $SourceVmName `
@@ -26,28 +33,5 @@ function New-IdentityLabTemplate {
         'Remove temporary imported VM while retaining the generalized export'
     )
     $plan | Add-Member -NotePropertyName Actions -NotePropertyValue $actions
-    if (-not $Apply) {
-        return $plan
-    }
-
-    foreach ($path in @(
-        $plan.Template.SourceExportPath,
-        $plan.Template.WorkingPath,
-        $plan.Template.GeneralizedExportPath,
-        (Join-Path $plan.RootPath 'Plans')
-    )) {
-        if (-not (Test-Path -LiteralPath $path)) {
-            New-Item -ItemType Directory -Path $path -Force | Out-Null
-        }
-    }
-    $planPath = Join-Path $plan.RootPath 'Plans\template-plan.json'
-    $plan | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath $planPath -Encoding UTF8
-    if ($PSCmdlet.ShouldProcess(
-        "$SourceVmName/$SourceCheckpoint",
-        "Export checkpoint to $($plan.Template.SourceExportPath)"
-    )) {
-        $snapshot = Get-VMSnapshot -VMName $SourceVmName -Name $SourceCheckpoint
-        Export-VMSnapshot -VMSnapshot $snapshot -Path $plan.Template.SourceExportPath
-    }
     return $plan
 }

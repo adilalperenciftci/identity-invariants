@@ -13,6 +13,8 @@
 
 ## Template boundary
 
+`New-IdentityLabTemplate.ps1` is plan-only. Its `-Apply` switch fails closed before creating a path, writing a plan, or invoking Hyper-V because the full export, import, generalize, re-export, and cleanup lifecycle is not implemented as one transaction. Use the generated plan to review exact boundaries, then execute and verify every documented lifecycle step explicitly.
+
 Export only the `tools-installed` checkpoint into `TemplateSource`. Import the exported copy as `ID-TEMPLATE-WORK`; run Sysprep `/generalize /oobe /shutdown` only in that copy. Keep the PowerShell Direct session alive until Sysprep exits and the temporary VM reaches `Off`; a detached process can be interrupted when its user session closes. Never retry generalization on a partially generalized image. Retain that copy for diagnosis, import a fresh source export, and start again.
 
 Before exporting the generalized template, require all of the following:

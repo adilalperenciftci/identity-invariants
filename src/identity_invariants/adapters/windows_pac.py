@@ -92,10 +92,12 @@ def _format_sid(value: Sid) -> str:
     return f"S-{value.revision}-{value.identifier_authority}{suffix}"
 
 
-def _decode_pac(document: Mapping[str, object]) -> bytes:
+def _decode_pac(document: Mapping[str, object], limits: PacLimits) -> bytes:
     encoded = _require_string(document, "raw_pac_hex")
     if len(encoded) % 2:
         raise ValueError("raw_pac_hex must contain complete bytes")
+    if len(encoded) > limits.max_total_size * 2:
+        raise ValueError("raw_pac_hex exceeds the configured size")
     try:
         return bytes.fromhex(encoded)
     except ValueError as error:
@@ -173,8 +175,9 @@ def normalize_windows_pac_observation(
         raise ValueError("capture_sha256 must be a lowercase SHA-256 digest")
 
     expected_sid = _require_string(document, "expected_requestor_sid")
-    pac_bytes = _decode_pac(document)
-    pac = parse_pac(pac_bytes, PacLimits())
+    limits = PacLimits()
+    pac_bytes = _decode_pac(document, limits)
+    pac = parse_pac(pac_bytes, limits)
     requestor = _format_sid(pac.requestor_sid) if pac.requestor_sid else None
 
     signatures: list[JSONValue] = []
