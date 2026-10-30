@@ -14,7 +14,7 @@ from typing import Any, cast
 from urllib.parse import urlparse
 
 from identity_invariants.catalog import load_catalog
-from identity_invariants.decisions import InvariantRule
+from identity_invariants.decisions import InvariantRule, ReasonCode
 from identity_invariants.evidence.ledger import verify_manifest
 
 
@@ -128,6 +128,10 @@ def _normalized_records(records: Sequence[object]) -> list[dict[str, Any]]:
         reason = _scalar(record.get("reason"))
         if not _REASON.fullmatch(reason):
             raise ValueError("evidence reason is outside the report bound")
+        try:
+            ReasonCode(reason)
+        except ValueError as error:
+            raise ValueError("evidence reason code is not declared") from error
         evidence_class = _scalar(record.get("evidence_class"))
         if evidence_class not in _EVIDENCE_CLASSES:
             raise ValueError("evidence class is not recognized")
@@ -198,14 +202,16 @@ def render_invariant_matrix(
             by_rule[rule_id].append(record)
 
     lines = [
-        "| Invariant | Primary source | Section | Evidence class | Outcomes | Cases |",
-        "| --- | --- | --- | --- | --- | ---: |",
+        "| Invariant | Primary source | Section | Catalog class | "
+        "Observed class | Outcomes | Cases |",
+        "| --- | --- | --- | --- | --- | --- | ---: |",
     ]
     for rule in ordered_rules:
         mapped = by_rule.get(rule.id, [])
         outcomes = "<br>".join(
             sorted(
                 {
+                    f"`{record['evidence_class']}`: "
                     f"`{record['outcome']}` ({_markdown(record['reason'])})"
                     for record in mapped
                 }
@@ -213,6 +219,14 @@ def render_invariant_matrix(
         )
         if not outcomes:
             outcomes = "`not recorded`"
+        observed_classes = "<br>".join(
+            f"`{evidence_class}`"
+            for evidence_class in sorted(
+                {record["evidence_class"] for record in mapped}
+            )
+        )
+        if not observed_classes:
+            observed_classes = "`not recorded`"
         source = (
             f"[{_markdown(rule.source_title)}]({rule.source_primary_url}) "
             f"({_markdown(rule.source_revision)})"
@@ -225,6 +239,7 @@ def render_invariant_matrix(
                     source,
                     _markdown(rule.section),
                     f"`{rule.evidence_class}`",
+                    observed_classes,
                     outcomes,
                     str(len(mapped)),
                 )
@@ -412,6 +427,10 @@ def render_technical_report(
         "prerequisite gate reports `skip`.\n"
         "- PAC requestor binding remains inconclusive where only the service "
         "ticket, not the encrypted TGT, was decoded.\n"
+        "- dMSA standalone state 3 was not observed on build 26100 and remains "
+        "inconclusive.\n"
+        "- dMSA Reset and Undo restored state and links but cleared machine "
+        "enrollment; exact cleanup required checkpoint restoration.\n"
         "- CWE and CVSS remain `not assessed` until product behavior and impact "
         "are independently confirmed."
     )

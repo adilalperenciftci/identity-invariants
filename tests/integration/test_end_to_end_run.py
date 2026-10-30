@@ -6,6 +6,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+import pytest
+
 from identity_invariants.catalog import load_catalog
 from identity_invariants.decisions import ReasonCode
 from identity_invariants.evidence.ledger import EvidenceRecord, EvidenceWriter
@@ -13,6 +15,7 @@ from identity_invariants.reports.render import (
     render_technical_report,
     validate_report_safety,
 )
+from identity_invariants.reports.assemble import assemble_public_evidence
 from identity_invariants.vectors.generator import canonical_digest
 
 
@@ -113,4 +116,31 @@ def test_committed_report_matches_verified_evidence(tmp_path: Path) -> None:
     assert generated.read_bytes() == committed.read_bytes()
     assert generated.with_suffix(".json").read_bytes() == committed.with_suffix(
         ".json"
+    ).read_bytes()
+
+
+def test_committed_evidence_matches_verified_sources(tmp_path: Path) -> None:
+    configured = os.environ.get("IDENTITY_SOURCE_ROOT")
+    if configured is None:
+        pytest.skip("IDENTITY_SOURCE_ROOT is set only in the isolated lab")
+    source_root = Path(configured)
+    sources = {
+        "task7-windows-ledger": source_root / "task7.jsonl",
+        "task8-pac-ledger": source_root / "task8.jsonl",
+        "task9-cloud-gate": source_root / "cloud.json",
+        "task9-ubuntu-ledger": source_root / "ubuntu.jsonl",
+        "task9-windows-ledger": source_root / "windows.jsonl",
+    }
+
+    generated = assemble_public_evidence(
+        ROOT / "evidence" / "sources.json",
+        sources,
+        tmp_path / "assembled",
+    )
+
+    assert (generated.path.parent / generated.ledger).read_bytes() == (
+        ROOT / "evidence" / "evidence.jsonl"
+    ).read_bytes()
+    assert generated.path.read_bytes() == (
+        ROOT / "evidence" / "manifest.json"
     ).read_bytes()

@@ -133,14 +133,16 @@ SHA-256 value. The manifest binds the following source artifacts:
 | Task 9 Ubuntu Entra ledger | `9a6f96a6de428e34d2c1cd136fb3ebb631a82a33d7c3152748ca0ab028956b10` |
 | Task 9 Windows Entra ledger | `683102d242f601909ae64bbff71c96ff09970e41fd842de5503e2182ee9215f7` |
 
-The assembled 20-record ledger has SHA-256
-`ebb62eb6075fac1e52a3d8075c16dab6ec2c58b827a95c6709922f15df099a8f`.
+The assembled 25-record ledger has SHA-256
+`f2a51ed468ce95690cb8276ba766f1369e08db5c12401b78b5a634c6a41d93f2`.
 Its manifest has SHA-256
-`1d46c07f03f7212f8e9a117c5940635b0e3d6515969f66c8ec459cb6611c9e83`.
+`8580a3ed2fa308662442060b3251312c892ddf92a91906cef117b929176ae489`.
 
-Verify and render only in Ubuntu:
+Assemble, verify, and render only in Ubuntu. Source paths below refer to sealed,
+normalized artifacts copied into ignored private storage:
 
 ```text
+PYTHONPATH=src .venv/bin/python -m identity_invariants.reports.assemble --config evidence/sources.json --source task7-windows-ledger=evidence/private/review-sources/task7.jsonl --source task8-pac-ledger=evidence/private/review-sources/task8.jsonl --source task9-cloud-gate=evidence/private/review-sources/cloud.json --source task9-ubuntu-ledger=evidence/private/review-sources/ubuntu.jsonl --source task9-windows-ledger=evidence/private/review-sources/windows.jsonl --output evidence
 PYTHONPATH=src .venv/bin/python -m identity_invariants.reports.render --verify-only evidence/manifest.json
 PYTHONPATH=src .venv/bin/python -m identity_invariants.reports.render --render evidence/manifest.json --catalog spec/invariants.yaml --output reports/identity-invariants.md
 PYTHONPATH=src .venv/bin/pytest -q tests/integration/test_end_to_end_run.py
@@ -150,8 +152,8 @@ The expected report hashes are:
 
 | Report | SHA-256 |
 | --- | --- |
-| `reports/identity-invariants.md` | `98d48299bf908441615b3001eda275b9725931967df7c9c1e867c7cdd50003c7` |
-| `reports/identity-invariants.json` | `7d95cfb5398116ffa69d485c0d721160f713e4e2193739c150f2344b8ea29feb` |
+| `reports/identity-invariants.md` | `b1a7563fad8f26f0ecfe8b542c36fca4c03489cd1dff153a038279a7a7e4a86c` |
+| `reports/identity-invariants.json` | `78483af4a330ed01127a0c2f8e3a72a8659e35d642ae8312a7c128009c4ebd41` |
 
 ## Completion gate
 

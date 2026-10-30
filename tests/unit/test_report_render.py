@@ -101,6 +101,25 @@ def test_matrix_is_stable_source_mapped_and_explicit_about_outcomes() -> None:
     assert "response_invalid" in matrix
 
 
+def test_matrix_separates_catalog_and_observed_evidence_classes() -> None:
+    rule = replace(_rule("A-RULE-001", "SOURCE-A"), evidence_class="local-adapter")
+    record = {
+        "artifact_digests": {},
+        "case_id": "windows-observation",
+        "evidence_class": "windows-observation",
+        "outcome": "observe",
+        "reason": "observation_recorded",
+        "rule_id": rule.id,
+    }
+
+    matrix = render_invariant_matrix((rule,), [record])
+
+    assert "Catalog class" in matrix
+    assert "Observed class" in matrix
+    assert "`local-adapter`" in matrix
+    assert "`windows-observation`" in matrix
+
+
 def test_report_is_reproducible_and_contains_required_boundaries(
     tmp_path: Path,
 ) -> None:

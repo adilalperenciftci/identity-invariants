@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import json
+from dataclasses import replace
 from pathlib import Path
+from typing import cast
 
 import pytest
 
@@ -61,3 +63,14 @@ def test_writer_rejects_append_after_seal(tmp_path: Path) -> None:
 
     with pytest.raises(RuntimeError, match="sealed"):
         writer.append(_record("late"))
+
+
+def test_writer_rejects_undeclared_reason_code(tmp_path: Path) -> None:
+    writer = EvidenceWriter(tmp_path / "evidence.jsonl")
+    record = replace(
+        _record(),
+        reason=cast(ReasonCode, "unregistered_observation_reason"),
+    )
+
+    with pytest.raises(ValueError, match="reason code"):
+        writer.append(record)

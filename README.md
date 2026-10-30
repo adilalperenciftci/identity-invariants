@@ -63,7 +63,7 @@ with the committed report.
 ## Current bounded result
 
 The catalog contains 37 source-linked invariants. The public evidence index
-contains 20 normalized Windows and closed-environment observations:
+contains 25 normalized Windows and closed-environment observations:
 
 - dMSA state, reciprocal-link, temporary-ACL, enrollment, transfer, RODC, and
   checkpoint restoration observations are recorded; supported event emission

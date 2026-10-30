@@ -1,25 +1,61 @@
 {
   "artifact_hashes": {
     "record/ckt-line-of-sight/source-ledger": "95c75bd14adcac7b9fb22c0e4abde06fdeb33afe1d8cc43be47e4d0d32ddf271",
+    "record/ckt-line-of-sight/source-record": "95c75bd14adcac7b9fb22c0e4abde06fdeb33afe1d8cc43be47e4d0d32ddf271",
     "record/ckt-partial-tgt-gate/source-ledger": "95c75bd14adcac7b9fb22c0e4abde06fdeb33afe1d8cc43be47e4d0d32ddf271",
+    "record/ckt-partial-tgt-gate/source-record": "95c75bd14adcac7b9fb22c0e4abde06fdeb33afe1d8cc43be47e4d0d32ddf271",
     "record/ckt-policy-precedence-gate/source-ledger": "95c75bd14adcac7b9fb22c0e4abde06fdeb33afe1d8cc43be47e4d0d32ddf271",
+    "record/ckt-policy-precedence-gate/source-record": "95c75bd14adcac7b9fb22c0e4abde06fdeb33afe1d8cc43be47e4d0d32ddf271",
     "record/ckt-rodc-object-gate/source-ledger": "95c75bd14adcac7b9fb22c0e4abde06fdeb33afe1d8cc43be47e4d0d32ddf271",
+    "record/ckt-rodc-object-gate/source-record": "95c75bd14adcac7b9fb22c0e4abde06fdeb33afe1d8cc43be47e4d0d32ddf271",
     "record/dmsa-baseline-restore/source-ledger": "024bbf6c01333a08a383587cf701985d26dbe9eef975518aebc271e8f25ef9fc",
+    "record/dmsa-baseline-restore/source-record": "10a41931157ea15bdae43f981795da94327ff117a128a05796e0942f903d5bf7",
+    "record/dmsa-complete-before-start/source-ledger": "024bbf6c01333a08a383587cf701985d26dbe9eef975518aebc271e8f25ef9fc",
+    "record/dmsa-complete-before-start/source-record": "afc7a6ccaaf23641982253a217521961bf4a0366b21dac9a1490fdcd48e53ed2",
     "record/dmsa-enrolled-machine/source-ledger": "024bbf6c01333a08a383587cf701985d26dbe9eef975518aebc271e8f25ef9fc",
+    "record/dmsa-enrolled-machine/source-record": "3beadb0c4ead768999593cf42d6db1013d35dd24fa548600de6ee8e5cbafcb12",
     "record/dmsa-event-directory-correlation/source-ledger": "024bbf6c01333a08a383587cf701985d26dbe9eef975518aebc271e8f25ef9fc",
-    "record/dmsa-ordered-state-transfer/source-ledger": "024bbf6c01333a08a383587cf701985d26dbe9eef975518aebc271e8f25ef9fc",
+    "record/dmsa-event-directory-correlation/source-record": "5cd381882d94c9624fafb244712a2bb97c0e4f4cef442821fb7291709041d82b",
     "record/dmsa-reciprocal-migration-links/source-ledger": "024bbf6c01333a08a383587cf701985d26dbe9eef975518aebc271e8f25ef9fc",
-    "record/dmsa-rwdc-rodc-boundary/source-ledger": "024bbf6c01333a08a383587cf701985d26dbe9eef975518aebc271e8f25ef9fc",
-    "record/dmsa-state-transitions/source-ledger": "024bbf6c01333a08a383587cf701985d26dbe9eef975518aebc271e8f25ef9fc",
-    "record/dmsa-temporary-acl-lifecycle/source-ledger": "024bbf6c01333a08a383587cf701985d26dbe9eef975518aebc271e8f25ef9fc",
+    "record/dmsa-reciprocal-migration-links/source-record": "5f3320bf5180927b7288ca6a515b9a30a3fdf84e508af2cc1e06a64058feb8e4",
+    "record/dmsa-reset-to-documented-state/source-ledger": "024bbf6c01333a08a383587cf701985d26dbe9eef975518aebc271e8f25ef9fc",
+    "record/dmsa-reset-to-documented-state/source-record": "89d931cf3e9dc280d5fe2a9fe5812ac3a2cf764a6c84fadeef7fcd640ec7132e",
+    "record/dmsa-rodc-migration-write/source-ledger": "024bbf6c01333a08a383587cf701985d26dbe9eef975518aebc271e8f25ef9fc",
+    "record/dmsa-rodc-migration-write/source-record": "4d014c3c70adaecd568f5d602f8acc03e2530d92412ba0ef48f86dfa3b67b929",
+    "record/dmsa-rwdc-migration-write/source-ledger": "024bbf6c01333a08a383587cf701985d26dbe9eef975518aebc271e8f25ef9fc",
+    "record/dmsa-rwdc-migration-write/source-record": "05ef5fb49d9003cde66457177b58dbbfa3271aed25864af982b3c0a7785cf135",
+    "record/dmsa-standalone/source-ledger": "024bbf6c01333a08a383587cf701985d26dbe9eef975518aebc271e8f25ef9fc",
+    "record/dmsa-standalone/source-record": "34800b16b0f8e89b88bbf9b6a725f354f65c3eaf22e8bad9d8b8b8bcb73747c2",
+    "record/dmsa-started-to-complete--dmsa-acl-001/source-ledger": "024bbf6c01333a08a383587cf701985d26dbe9eef975518aebc271e8f25ef9fc",
+    "record/dmsa-started-to-complete--dmsa-acl-001/source-record": "cf6e0bcb4faa2c6d3c886c5c9d15784043dd09035716980f4c7a5ad6c756417b",
+    "record/dmsa-started-to-complete--dmsa-spn-001/source-ledger": "024bbf6c01333a08a383587cf701985d26dbe9eef975518aebc271e8f25ef9fc",
+    "record/dmsa-started-to-complete--dmsa-spn-001/source-record": "cf6e0bcb4faa2c6d3c886c5c9d15784043dd09035716980f4c7a5ad6c756417b",
+    "record/dmsa-started-to-complete--dmsa-state-001/source-ledger": "024bbf6c01333a08a383587cf701985d26dbe9eef975518aebc271e8f25ef9fc",
+    "record/dmsa-started-to-complete--dmsa-state-001/source-record": "cf6e0bcb4faa2c6d3c886c5c9d15784043dd09035716980f4c7a5ad6c756417b",
+    "record/dmsa-undo-to-documented-state/source-ledger": "024bbf6c01333a08a383587cf701985d26dbe9eef975518aebc271e8f25ef9fc",
+    "record/dmsa-undo-to-documented-state/source-record": "d13a70bf1b23b13fae3b2c1cf4b4482914406507cedce3945b09f8eb07ce1109",
     "record/pac-attributes-service-ticket/source-ledger": "3d1bda6af895f7de22eeaa5f6df5707c60d9ee6a631b507c226a309845707ffe",
+    "record/pac-attributes-service-ticket/source-record-rodc": "d77d0ed8da9a12196794998e8c69ff19aba3012c80cc86c1b132d30314e534be",
+    "record/pac-attributes-service-ticket/source-record-rwdc": "44f5e1a4644724f46b53971da784a2531a36453127015b539d4186bfd29e4e06",
     "record/pac-domain-local-processing/source-ledger": "3d1bda6af895f7de22eeaa5f6df5707c60d9ee6a631b507c226a309845707ffe",
+    "record/pac-domain-local-processing/source-record-rodc": "d77d0ed8da9a12196794998e8c69ff19aba3012c80cc86c1b132d30314e534be",
+    "record/pac-domain-local-processing/source-record-rwdc": "44f5e1a4644724f46b53971da784a2531a36453127015b539d4186bfd29e4e06",
     "record/pac-requestor-tgt-boundary/source-ledger": "3d1bda6af895f7de22eeaa5f6df5707c60d9ee6a631b507c226a309845707ffe",
+    "record/pac-requestor-tgt-boundary/source-record-rodc": "d77d0ed8da9a12196794998e8c69ff19aba3012c80cc86c1b132d30314e534be",
+    "record/pac-requestor-tgt-boundary/source-record-rwdc": "44f5e1a4644724f46b53971da784a2531a36453127015b539d4186bfd29e4e06",
     "record/pac-rodc-identifier/source-ledger": "3d1bda6af895f7de22eeaa5f6df5707c60d9ee6a631b507c226a309845707ffe",
+    "record/pac-rodc-identifier/source-record-rodc": "d77d0ed8da9a12196794998e8c69ff19aba3012c80cc86c1b132d30314e534be",
+    "record/pac-rodc-identifier/source-record-rwdc": "44f5e1a4644724f46b53971da784a2531a36453127015b539d4186bfd29e4e06",
     "record/pac-service-ticket-issuance/source-ledger": "3d1bda6af895f7de22eeaa5f6df5707c60d9ee6a631b507c226a309845707ffe",
+    "record/pac-service-ticket-issuance/source-record-rodc": "d77d0ed8da9a12196794998e8c69ff19aba3012c80cc86c1b132d30314e534be",
+    "record/pac-service-ticket-issuance/source-record-rwdc": "44f5e1a4644724f46b53971da784a2531a36453127015b539d4186bfd29e4e06",
     "record/pac-signature-roles/source-ledger": "3d1bda6af895f7de22eeaa5f6df5707c60d9ee6a631b507c226a309845707ffe",
+    "record/pac-signature-roles/source-record-rodc": "d77d0ed8da9a12196794998e8c69ff19aba3012c80cc86c1b132d30314e534be",
+    "record/pac-signature-roles/source-record-rwdc": "44f5e1a4644724f46b53971da784a2531a36453127015b539d4186bfd29e4e06",
     "record/wif-live-gate-ubuntu-lab/source-ledger": "9a6f96a6de428e34d2c1cd136fb3ebb631a82a33d7c3152748ca0ab028956b10",
+    "record/wif-live-gate-ubuntu-lab/source-record": "5dbdab7652f42a2dcc3e9e4111ed2305b34361e9a585ab31c3994fb69b1c1395",
     "record/wif-live-gate-windows-lab/source-ledger": "683102d242f601909ae64bbff71c96ff09970e41fd842de5503e2182ee9215f7",
+    "record/wif-live-gate-windows-lab/source-record": "31c45ebd581a1056cf3f3eb07e68591c71174b693c560efbb8c14e6c78ed8616",
     "source-manifest/task7-windows-ledger": "024bbf6c01333a08a383587cf701985d26dbe9eef975518aebc271e8f25ef9fc",
     "source-manifest/task8-pac-ledger": "3d1bda6af895f7de22eeaa5f6df5707c60d9ee6a631b507c226a309845707ffe",
     "source-manifest/task9-cloud-gate": "95c75bd14adcac7b9fb22c0e4abde06fdeb33afe1d8cc43be47e4d0d32ddf271",
@@ -412,8 +448,8 @@
   ],
   "manifest": {
     "ledger": "evidence.jsonl",
-    "ledger_sha256": "ebb62eb6075fac1e52a3d8075c16dab6ec2c58b827a95c6709922f15df099a8f",
-    "record_count": 20
+    "ledger_sha256": "f2a51ed468ce95690cb8276ba766f1369e08db5c12401b78b5a634c6a41d93f2",
+    "record_count": 25
   },
   "observations": [
     {
@@ -453,10 +489,10 @@
       ]
     },
     {
-      "case_id": "dmsa-temporary-acl-lifecycle",
+      "case_id": "dmsa-started-to-complete--dmsa-acl-001",
       "evidence_class": "windows-observation",
-      "outcome": "observe",
-      "reason": "temporary_acl_lifecycle_observed",
+      "outcome": "accept",
+      "reason": "ordered_completion",
       "rule_ids": [
         "DMSA-ACL-001"
       ]
@@ -474,7 +510,7 @@
       "case_id": "dmsa-reciprocal-migration-links",
       "evidence_class": "windows-observation",
       "outcome": "observe",
-      "reason": "reciprocal_links_observed",
+      "reason": "reciprocal_links_replicated",
       "rule_ids": [
         "DMSA-LINK-001"
       ]
@@ -483,7 +519,7 @@
       "case_id": "dmsa-enrolled-machine",
       "evidence_class": "windows-observation",
       "outcome": "observe",
-      "reason": "explicit_enrollment_observed",
+      "reason": "allow_list_membership_is_explicit",
       "rule_ids": [
         "DMSA-MACHINE-001"
       ]
@@ -491,35 +527,80 @@
     {
       "case_id": "dmsa-baseline-restore",
       "evidence_class": "windows-observation",
-      "outcome": "observe",
-      "reason": "checkpoint_restore_verified",
+      "outcome": "accept",
+      "reason": "checkpoint_restore_digest_match",
       "rule_ids": [
         "DMSA-ROLLBACK-001"
       ]
     },
     {
-      "case_id": "dmsa-rwdc-rodc-boundary",
+      "case_id": "dmsa-reset-to-documented-state",
       "evidence_class": "windows-observation",
       "outcome": "observe",
-      "reason": "rodc_local_transition_observed",
+      "reason": "state_links_restored_enrollment_cleared",
+      "rule_ids": [
+        "DMSA-ROLLBACK-001"
+      ]
+    },
+    {
+      "case_id": "dmsa-undo-to-documented-state",
+      "evidence_class": "windows-observation",
+      "outcome": "observe",
+      "reason": "state_links_restored_enrollment_cleared",
+      "rule_ids": [
+        "DMSA-ROLLBACK-001"
+      ]
+    },
+    {
+      "case_id": "dmsa-rodc-migration-write",
+      "evidence_class": "windows-observation",
+      "outcome": "observe",
+      "reason": "rodc_local_transition_persisted",
       "rule_ids": [
         "DMSA-RWDC-001"
       ]
     },
     {
-      "case_id": "dmsa-ordered-state-transfer",
+      "case_id": "dmsa-rwdc-migration-write",
       "evidence_class": "windows-observation",
-      "outcome": "observe",
-      "reason": "ordered_state_transfer_observed",
+      "outcome": "accept",
+      "reason": "writable_directory_transition",
+      "rule_ids": [
+        "DMSA-RWDC-001"
+      ]
+    },
+    {
+      "case_id": "dmsa-started-to-complete--dmsa-spn-001",
+      "evidence_class": "windows-observation",
+      "outcome": "accept",
+      "reason": "ordered_completion",
       "rule_ids": [
         "DMSA-SPN-001"
       ]
     },
     {
-      "case_id": "dmsa-state-transitions",
+      "case_id": "dmsa-complete-before-start",
       "evidence_class": "windows-observation",
-      "outcome": "observe",
-      "reason": "bounded_lifecycle_observation",
+      "outcome": "reject",
+      "reason": "invalid_transition",
+      "rule_ids": [
+        "DMSA-STATE-001"
+      ]
+    },
+    {
+      "case_id": "dmsa-standalone",
+      "evidence_class": "windows-observation",
+      "outcome": "inconclusive",
+      "reason": "documented_state_three_not_observed",
+      "rule_ids": [
+        "DMSA-STATE-001"
+      ]
+    },
+    {
+      "case_id": "dmsa-started-to-complete--dmsa-state-001",
+      "evidence_class": "windows-observation",
+      "outcome": "accept",
+      "reason": "ordered_completion",
       "rule_ids": [
         "DMSA-STATE-001"
       ]
@@ -597,7 +678,7 @@
       ]
     }
   ],
-  "record_count": 20,
+  "record_count": 25,
   "source_manifests": {
     "task7-windows-ledger": "024bbf6c01333a08a383587cf701985d26dbe9eef975518aebc271e8f25ef9fc",
     "task8-pac-ledger": "3d1bda6af895f7de22eeaa5f6df5707c60d9ee6a631b507c226a309845707ffe",

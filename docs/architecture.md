@@ -15,8 +15,10 @@ flowchart LR
     V --> W[Bounded Windows adapters]
     V --> E[Closed Entra observation gate]
     O --> N[Normalized evidence records]
-    W --> N
-    E --> N
+    W --> B[Sealed source bundle]
+    E --> B
+    B --> A[Hash-verified public assembler]
+    A --> N
     N --> L[Canonical JSONL ledger]
     L --> M[Digest-bound manifest]
     M --> R[Safety-checked Markdown and JSON report]
@@ -32,7 +34,10 @@ The primary trust boundaries are:
    transient and remain outside the committed evidence tree.
 4. `EvidenceWriter` commits canonical JSON lines, then seals their exact bytes,
    record count, and format version in a manifest.
-5. The report renderer verifies the manifest before reading records and rejects
+5. The public assembler verifies every configured source hash, retains direct
+   source outcomes/reasons, and binds each projection to its exact source-record
+   digest. PAC and Cloud gate records use explicit, tested predicates.
+6. The report renderer verifies the manifest before reading records and rejects
    unsafe content before atomically replacing either output file.
 
 ## Protocol state boundaries

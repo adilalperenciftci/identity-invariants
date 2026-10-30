@@ -1,0 +1,31 @@
+{
+  "environment_fingerprint": {
+    "seed": "20261030",
+    "topology": "ID-DC01, ID-RODC01, and ID-SRV01 on private Bluex-Identity; no default route",
+    "ubuntu": "Ubuntu 24.04.5 LTS; Python 3.12.3",
+    "windows": "Windows Server 2025 build 26100; forest and domain mode 2025; schema 91"
+  },
+  "format_version": 1,
+  "sources": {
+    "task7-windows-ledger": {
+      "kind": "task7-windows-ledger",
+      "sha256": "024bbf6c01333a08a383587cf701985d26dbe9eef975518aebc271e8f25ef9fc"
+    },
+    "task8-pac-ledger": {
+      "kind": "task8-pac-ledger",
+      "sha256": "3d1bda6af895f7de22eeaa5f6df5707c60d9ee6a631b507c226a309845707ffe"
+    },
+    "task9-cloud-gate": {
+      "kind": "task9-cloud-gate",
+      "sha256": "95c75bd14adcac7b9fb22c0e4abde06fdeb33afe1d8cc43be47e4d0d32ddf271"
+    },
+    "task9-ubuntu-ledger": {
+      "kind": "task9-ubuntu-ledger",
+      "sha256": "9a6f96a6de428e34d2c1cd136fb3ebb631a82a33d7c3152748ca0ab028956b10"
+    },
+    "task9-windows-ledger": {
+      "kind": "task9-windows-ledger",
+      "sha256": "683102d242f601909ae64bbff71c96ff09970e41fd842de5503e2182ee9215f7"
+    }
+  }
+}

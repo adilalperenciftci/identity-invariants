@@ -7,8 +7,8 @@
   },
   "format_version": 1,
   "ledger": "evidence.jsonl",
-  "ledger_sha256": "ebb62eb6075fac1e52a3d8075c16dab6ec2c58b827a95c6709922f15df099a8f",
-  "record_count": 20,
+  "ledger_sha256": "f2a51ed468ce95690cb8276ba766f1369e08db5c12401b78b5a634c6a41d93f2",
+  "record_count": 25,
   "source_manifests": {
     "task7-windows-ledger": "024bbf6c01333a08a383587cf701985d26dbe9eef975518aebc271e8f25ef9fc",
     "task8-pac-ledger": "3d1bda6af895f7de22eeaa5f6df5707c60d9ee6a631b507c226a309845707ffe",

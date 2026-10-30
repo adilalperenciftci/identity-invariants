@@ -80,6 +80,33 @@ class ReasonCode(StrEnum):
     WINDOWS_11_CLIENT_MISSING = "windows_11_client_missing"
     LINE_OF_SIGHT_MISSING = "line_of_sight_missing"
     PARTIAL_TGT_MISSING = "partial_tgt_missing"
+    INVALID_TRANSITION = "invalid_transition"
+    WRITABLE_DIRECTORY_TRANSITION = "writable_directory_transition"
+    RECIPROCAL_LINKS_REPLICATED = "reciprocal_links_replicated"
+    ORDERED_COMPLETION = "ordered_completion"
+    STATE_LINKS_RESTORED_ENROLLMENT_CLEARED = (
+        "state_links_restored_enrollment_cleared"
+    )
+    ALLOW_LIST_MEMBERSHIP_IS_EXPLICIT = "allow_list_membership_is_explicit"
+    RODC_LOCAL_TRANSITION_PERSISTED = "rodc_local_transition_persisted"
+    SUPPORTED_EVENTS_NOT_OBSERVED = "supported_events_not_observed"
+    DOCUMENTED_STATE_THREE_NOT_OBSERVED = (
+        "documented_state_three_not_observed"
+    )
+    CHECKPOINT_RESTORE_DIGEST_MATCH = "checkpoint_restore_digest_match"
+    SERVICE_TICKET_ISSUANCE_OBSERVED = "service_ticket_issuance_observed"
+    SERVICE_TICKET_BUFFERS_OBSERVED = "service_ticket_buffers_observed"
+    ATTRIBUTES_BUFFER_ABSENT = "attributes_buffer_absent"
+    TGT_REQUESTOR_NOT_ASSESSED = "tgt_requestor_not_assessed"
+    SIGNATURE_ROLES_OBSERVED = "signature_roles_observed"
+    RODC_IDENTIFIER_OBSERVED = "rodc_identifier_observed"
+    TEMPORARY_ACL_LIFECYCLE_OBSERVED = "temporary_acl_lifecycle_observed"
+    RECIPROCAL_LINKS_OBSERVED = "reciprocal_links_observed"
+    EXPLICIT_ENROLLMENT_OBSERVED = "explicit_enrollment_observed"
+    CHECKPOINT_RESTORE_VERIFIED = "checkpoint_restore_verified"
+    RODC_LOCAL_TRANSITION_OBSERVED = "rodc_local_transition_observed"
+    ORDERED_STATE_TRANSFER_OBSERVED = "ordered_state_transfer_observed"
+    BOUNDED_LIFECYCLE_OBSERVATION = "bounded_lifecycle_observation"
 
 
 @dataclass(frozen=True, slots=True)

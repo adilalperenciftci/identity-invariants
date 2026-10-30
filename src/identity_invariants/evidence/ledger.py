@@ -93,6 +93,8 @@ class EvidenceWriter:
     def append(self, record: EvidenceRecord) -> None:
         if self._sealed:
             raise RuntimeError("evidence writer is sealed")
+        if not isinstance(record.reason, ReasonCode):
+            raise ValueError("evidence reason code is not declared")
         _validate_digest(record.input_digest, "input_digest")
         for name, digest in record.artifact_digests.items():
             if not name:
@@ -113,11 +115,15 @@ class EvidenceWriter:
             stream.write("\n")
         self._record_count += 1
 
-    def seal(self) -> EvidenceManifest:
+    def seal(self, manifest_path: Path | None = None) -> EvidenceManifest:
         if self._sealed:
             raise RuntimeError("evidence writer is already sealed")
         self._sealed = True
-        manifest_path = self._path.with_suffix(self._path.suffix + ".manifest.json")
+        if manifest_path is None:
+            manifest_path = self._path.with_suffix(
+                self._path.suffix + ".manifest.json"
+            )
+        manifest_path.parent.mkdir(parents=True, exist_ok=True)
         manifest = EvidenceManifest(
             path=manifest_path,
             ledger=self._path.name,
@@ -147,7 +153,10 @@ def verify_manifest(path: Path) -> None:
         raise ValueError("manifest ledger path must be a local filename")
     ledger_path = path.parent / ledger_name
     expected_digest = document.get("ledger_sha256")
-    if not isinstance(expected_digest, str) or _file_digest(ledger_path) != expected_digest:
+    if (
+        not isinstance(expected_digest, str)
+        or _file_digest(ledger_path) != expected_digest
+    ):
         raise ValueError("ledger digest mismatch")
     lines = ledger_path.read_text(encoding="utf-8").splitlines()
     if len(lines) != document.get("record_count"):
