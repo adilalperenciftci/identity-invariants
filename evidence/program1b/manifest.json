@@ -1,0 +1,18 @@
+{
+  "environment_fingerprint": {
+    "forest": "idlab.test",
+    "hosts": "ID-DC01, ID-RODC01, ID-SRV01",
+    "network": "private Bluex-Identity switch; no default route",
+    "ubuntu": "Ubuntu 24.04.5 LTS; Python 3.12.3",
+    "windows": "Windows Server 2025 build 26100"
+  },
+  "format_version": 1,
+  "ledger": "evidence.jsonl",
+  "ledger_sha256": "c9855af1af16aa2f2367ac64d0d93d5863eb7709218c75588afa2c349b296a33",
+  "program": "program1b",
+  "record_count": 42,
+  "reproduction_runs": [
+    "run-a",
+    "run-b"
+  ]
+}
