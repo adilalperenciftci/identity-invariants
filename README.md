@@ -6,9 +6,9 @@ scope covers workload identity federation, OAuth 2.0 token exchange, OpenID
 Connect, Cloud Kerberos Trust preconditions, MS-PAC parsing, and delegated
 managed service account lifecycle state.
 
-**Merged repository totals:** 37 source-linked invariants, 67 normalized
-evidence records (25 from Program 1 and 42 from Program 1b), and 208 collected
-test cases (155 Python and 53 Pester).
+**Merged repository totals:** 37 source-linked invariants, 77 normalized
+evidence records (25 from Program 1, 42 from Program 1b, and 10 from Program
+1c), and 208 collected test cases (155 Python and 53 Pester).
 
 The project separates four evidence classes:
 
@@ -119,6 +119,28 @@ verification recorded 152 Python passes with 3 skips and 53 Pester passes.
 
 - `discrepancy-01`: prepared, not yet submitted
 - `discrepancy-02`: prepared, not yet submitted
+
+## Program 1c
+
+Program 1c answered the authorization question left open by Program 1b. Two
+independent checkpoint runs found one boundary discrepancy: during S1, the
+RODC-local dMSA descriptor grants the legacy service-account principal the
+`msDS-GroupMSAMembership` write right while the authoritative RWDC descriptor
+does not. No service-logon, group-membership, managed-retrieval, or member
+computer effective-access decision changed. Full inbound synchronization
+removed the temporary right in S2.
+
+| ID | Category | Report |
+| --- | --- | --- |
+| `discrepancy-03` | Security/authorization consistency | [RODC-local non-authoritative object right](reports/vendor/discrepancy-03.md) |
+
+The Program 1c ledger adds 10 normalized records. The complete five-observable
+digest matrix and the single blocked sub-observable are documented in the
+[Program 1c closure report](reports/program1c-closure.md).
+
+### Submission status
+
+- `discrepancy-03`: prepared, not yet submitted
 
 ## Repository map
 
