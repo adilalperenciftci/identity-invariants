@@ -6,6 +6,10 @@ scope covers workload identity federation, OAuth 2.0 token exchange, OpenID
 Connect, Cloud Kerberos Trust preconditions, MS-PAC parsing, and delegated
 managed service account lifecycle state.
 
+**Merged repository totals:** 37 source-linked invariants, 67 normalized
+evidence records (25 from Program 1 and 42 from Program 1b), and 208 collected
+test cases (155 Python and 53 Pester).
+
 The project separates four evidence classes:
 
 - `spec-oracle`: deterministic decisions derived from public protocol rules;
@@ -60,7 +64,7 @@ PYTHONPATH=src .venv/bin/python -m identity_invariants.reports.render \
 The integration gate compares the regenerated Markdown and JSON byte-for-byte
 with the committed report.
 
-## Current bounded result
+## Program 1 results
 
 The catalog contains 37 source-linked invariants. The public evidence index
 contains 25 normalized Windows and closed-environment observations:
@@ -94,6 +98,27 @@ and prioritized engineering recommendations. Its self-contained
 [machine-readable data](reports/program1-detailed-report-data.json), and
 [verification manifest](reports/program1-detailed-report-verification.json)
 are committed beside the PDF for independent review.
+
+## Program 1b
+
+Program 1b repeated and extended the incomplete dMSA checks from the same
+isolated baseline. Two documented-vs-observed discrepancies met the required
+two-run standard: one reliability/documentation discrepancy in an RODC-local
+migration graph and one telemetry discrepancy for absent events 307 and 308.
+No authorization or confidentiality boundary change was observed.
+
+| ID | Category | Report |
+| --- | --- | --- |
+| `discrepancy-01` | Reliability/documentation | [RODC-directed migration graph](reports/vendor/discrepancy-01.md) |
+| `discrepancy-02` | Telemetry | [Missing dMSA events 307 and 308](reports/vendor/discrepancy-02.md) |
+
+The merged suite collects 155 Python tests and 53 Pester tests. The Program 1b
+verification recorded 152 Python passes with 3 skips and 53 Pester passes.
+
+### Submission status
+
+- `discrepancy-01`: prepared, not yet submitted
+- `discrepancy-02`: prepared, not yet submitted
 
 ## Repository map
 
