@@ -1,0 +1,18 @@
+{
+  "classification": "boundary_discrepancy",
+  "environment_fingerprint": {
+    "forest": "idlab.test",
+    "hosts": "ID-DC01, ID-RODC01, ID-SRV01",
+    "network": "private Bluex-Identity switch; no default route",
+    "windows": "Windows Server 2025 build 26100"
+  },
+  "format_version": 1,
+  "ledger": "evidence.jsonl",
+  "ledger_sha256": "0c0955044d96cb4db1b81efcdd9cec8def4b10d70d7b8d82fe85c690e1cde0ac",
+  "program": "program1c",
+  "record_count": 10,
+  "reproduction_runs": [
+    "run-a",
+    "run-b"
+  ]
+}
