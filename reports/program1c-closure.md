@@ -33,6 +33,10 @@ Run A covered `2026-11-02T21:51:26.1246960Z` through
 restored `dmsa-baseline` checkpoint. Logon and Group Membership audit
 subcategories were enabled on `ID-SRV01` before collection.
 
+These quoted windows are ledger record-collection windows, not full run
+durations; checkpoint restore, state transitions, and replication occurred
+before the observations were normalized and sealed.
+
 ## Observable results
 
 1. **Service authentication:** the legacy service logon succeeded in all 12

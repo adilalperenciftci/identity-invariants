@@ -9,7 +9,7 @@
 
 ## Category
 
-Security / authorization consistency. Severity is not assessed.
+Authorization-data consistency / documentation. Severity is not assessed.
 
 ## Description
 
@@ -66,16 +66,42 @@ in S2.
 
 ## Impact
 
-The same principal receives different authorization data depending on which
-DC view is evaluated. In the bounded S1 state, the RODC grants the legacy
-principal permission to write the dMSA group-membership control attribute
-while the authoritative RWDC does not.
+The same principal receives different authorization metadata depending on
+which DC view is evaluated. Program 1d established that this metadata is not
+enforceable as a local RODC write: the direct request is referred, following
+the referral ends in denial, and the RWDC denies the request directly. No
+attribute value or downstream decision change was observed. The measured
+impact is therefore a consistency and documentation issue, not an enforced
+authorization boundary change.
 
-No successful directory write was attempted under the legacy identity. No
-change was observed in legacy service-logon success, its ten-group SID digest,
-the dMSA service-logon result, managed retrieval, or the member computer's
-effective rights. This report therefore claims the reproduced authorization
-decision inconsistency only; it does not claim a downstream privilege change.
+## Enforcement check (Program 1d)
+
+Two independent runs began from `dmsa-baseline` and confirmed the Program 1c
+S1 descriptor digest before attempting a write under the legacy principal.
+The results were identical:
+
+- 1a, direct RODC with referral chasing disabled: referral, LDAP result 10;
+- 1b, RODC with referral chasing enabled: denied, LDAP result 50;
+- 1c, direct RWDC: denied, LDAP result 50.
+
+The referral-target digest was
+`8d9812e6547088975062e60ed3829a5c5d33f78915539d97cff9332a84abe8fa`
+in both runs. Readback after every attempt showed the original attribute
+digest on both DCs. S2 cleanup also showed only the original value.
+
+SCM configured the dMSA service before and after the write attempts, but
+service start returned 1069 with Security event 4625. The member secure
+channel could not be reset to the RODC, so the RODC-pinned service and
+retrieval sub-observables are blocked. RWDC retrieval remained false before
+and after. These blocked sub-observables are not used to infer product
+behavior.
+
+The quoted Program 1d windows are ledger observation-collection windows, not
+full run durations. Checkpoint restore and S1 transition preceded them; S2
+replication completed before the records were normalized and sealed. The full
+matrix is in [`reports/program1d-closure.md`](../program1d-closure.md), and the
+sealed eight-record ledger digest is
+`bef7d3da03b4c0df2793976efd0aa29972e33503095f67c894e61fd3e4ce5ab4`.
 
 ## Reproducibility and evidence
 
