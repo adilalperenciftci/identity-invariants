@@ -6,9 +6,10 @@ scope covers workload identity federation, OAuth 2.0 token exchange, OpenID
 Connect, Cloud Kerberos Trust preconditions, MS-PAC parsing, and delegated
 managed service account lifecycle state.
 
-**Merged repository totals:** 37 source-linked invariants, 77 normalized
-evidence records (25 from Program 1, 42 from Program 1b, and 10 from Program
-1c), and 208 collected test cases (155 Python and 53 Pester).
+**Merged repository totals:** 37 source-linked invariants, 85 normalized
+evidence records (25 from Program 1, 42 from Program 1b, 10 from Program 1c,
+and 8 from Program 1d), and 208 collected test cases (155 Python and 53
+Pester).
 
 The project separates four evidence classes:
 
@@ -132,7 +133,7 @@ removed the temporary right in S2.
 
 | ID | Category | Report |
 | --- | --- | --- |
-| `discrepancy-03` | Security/authorization consistency | [RODC-local non-authoritative object right](reports/vendor/discrepancy-03.md) |
+| `discrepancy-03` | Authorization-data consistency/documentation | [RODC-local non-authoritative object right](reports/vendor/discrepancy-03.md) |
 
 The Program 1c ledger adds 10 normalized records. The complete five-observable
 digest matrix and the single blocked sub-observable are documented in the
@@ -141,6 +142,19 @@ digest matrix and the single blocked sub-observable are documented in the
 ### Submission status
 
 - `discrepancy-03`: prepared, not yet submitted
+
+## Program 1d
+
+Program 1d tested whether discrepancy-03's RODC-local right is enforceable.
+Two checkpoint runs produced the same result: the direct RODC write was
+referred, referral following was denied, and the RWDC denied the request
+directly. Neither directory view changed, and S2 retained only the original
+attribute value. Discrepancy-03 is reclassified as authorization-data
+consistency / documentation and the enforcement line is closed.
+
+The [Program 1d closure report](reports/program1d-closure.md) contains the
+three LDAP results, downstream observation limits, cleanup state, and the
+sealed eight-record evidence digest.
 
 ## Repository map
 
