@@ -60,3 +60,15 @@ boundary change was observed. Category: reliability/documentation.
 
 Full evidence and timestamps:
 [RODC dMSA discrepancy report](../vendor/discrepancy-01.md).
+
+## Addendum: non-authoritative object right (Program 1c/1d)
+
+In the same S1 state, the RODC's local security descriptor of the dMSA
+object carries an allow ACE granting the legacy service-account principal
+`WriteProperty` on `msDS-GroupMSAMembership`; the writable DC's descriptor
+does not, and the Windows Authz effective-access evaluation reports the right
+only in the RODC view. A modify request for that attribute under the legacy
+identity returns an LDAP referral from the RODC and is denied (result 50) by
+the writable DC, so the right is not enforceable. It is an inconsistency in
+the RODC's local copy, cleared by the next full inbound replication.
+Evidence: [discrepancy-03](../vendor/discrepancy-03.md).

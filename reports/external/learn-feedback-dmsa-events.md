@@ -1,5 +1,9 @@
 # Microsoft Learn feedback: dMSA auditing events
 
+> Withheld. See the status section of
+> [discrepancy-02](../vendor/discrepancy-02.md); the absence claim is not
+> established until the client sign-in path and log enablement are verified.
+
 ## Page and section
 
 [Delegated Managed Service Accounts overview](https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/delegated-managed-service-accounts/delegated-managed-service-accounts-overview),

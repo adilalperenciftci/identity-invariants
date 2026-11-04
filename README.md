@@ -118,8 +118,20 @@ verification recorded 152 Python passes with 3 skips and 53 Pester passes.
 
 ### Submission status
 
-- `discrepancy-01`: prepared, not yet submitted
-- `discrepancy-02`: prepared, not yet submitted
+- `discrepancy-01`: ready for Feedback Hub; the documentation channels that
+  accept unauthenticated submissions (Learn page feedback, the docs
+  repository) require a signed-in Microsoft account or prior-contributor
+  status, so submission is a manual step
+- `discrepancy-02`: on hold, not to be submitted in its current form. The
+  Program 1b event windows did not confirm that the
+  `Microsoft-Windows-Kerberos/Operational` log was enabled on all three
+  hosts, and the member server never completed a dMSA sign-in because the
+  documented `DelegatedMSAEnabled` client policy was not configured. Events
+  307-309 are written by the Kerberos client of the machine that signs in
+  with the dMSA, so their absence is not evidence until that path works.
+  Re-validation is a separate program
+- `discrepancy-03`: ready for Feedback Hub together with `discrepancy-01`
+  (same RODC migration path, consistency/documentation category)
 
 ## Program 1c
 
