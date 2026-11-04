@@ -1,0 +1,16 @@
+{
+  "classification": "part1_partial_repair_part2_blocked",
+  "environment_fingerprint": {
+    "forest": "idlab.test",
+    "hosts": "ID-DC01, ID-RODC01, ID-SRV01",
+    "network": "private Bluex-Identity switch; no default route",
+    "windows": "Windows Server 2025 build 26100"
+  },
+  "format_version": 1,
+  "kds_add_context_cause": "remote_user_context_unsupported_local_system_succeeded",
+  "key_present_both_dcs": false,
+  "ledger": "evidence.jsonl",
+  "ledger_sha256": "a9d49ea1f63e17f1d0492f35b590077fb473310385f84378428379055e3bac30",
+  "program": "program1g",
+  "record_count": 7
+}

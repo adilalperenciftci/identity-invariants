@@ -11,6 +11,19 @@
 
 On hold. Not ready for submission.
 
+Program 1g showed that the earlier `0x80070032` result was specific to the
+invocation context: the remote domain-user call failed before and after
+`KdsSvc` was started, while the same backdated call succeeded under local
+SYSTEM on `ID-DC01`. The resulting root-key inventory was visible to local
+SYSTEM on the RWDC but remained empty on the RODC after two successful
+Configuration replication calls. The required two-DC gate therefore failed
+and Program 1e was not re-run.
+
+This result does not establish that the earlier denied cells were a lab setup
+error. They were measured from a context in which the remote KDS inventory
+appeared empty, and the RODC local inventory remains empty. The event report
+stays on hold.
+
 Program 1e corrected the two known Program 1b procedure gaps. In two
 independent runs, `Microsoft-Windows-Kerberos/Operational` was enabled and
 read back on all three hosts before collection. `DelegatedMSAEnabled` was set
