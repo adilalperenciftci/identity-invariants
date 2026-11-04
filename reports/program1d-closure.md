@@ -59,6 +59,10 @@ channel reset to the RODC returned exit 1, those service observations and the
 RODC retrieval cells are explicitly blocked rather than attributed to the
 RODC. RWDC retrieval was false before and after in both runs.
 
+Program 1e resolved none of these blocked cells: the policy-enabled dMSA
+service path again failed before logon success, and RODC affinity again could
+not be established.
+
 ## Conclusion
 
 The RODC-local ACE is authorization metadata that does not yield a local RODC
