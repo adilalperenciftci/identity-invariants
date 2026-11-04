@@ -1,0 +1,15 @@
+{
+  "classification": "cause_not_found_change_blocked",
+  "environment_fingerprint": {
+    "forest": "idlab.test",
+    "hosts": "ID-DC01, ID-RODC01, ID-SRV01",
+    "network": "private Bluex-Identity switch; no default route",
+    "windows": "Windows Server 2025 build 26100"
+  },
+  "format_version": 1,
+  "leading_condition": "missing_kds_root_key",
+  "ledger": "evidence.jsonl",
+  "ledger_sha256": "2d4148baefd3cd718e43d4557a6e636372cdac5fef31ce5b9d7e251126b06807",
+  "program": "program1f",
+  "record_count": 10
+}
