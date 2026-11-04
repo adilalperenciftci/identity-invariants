@@ -7,6 +7,27 @@
 - Delegated Managed Service Accounts
 - Isolated forest: `idlab.test`
 
+## Status
+
+On hold. Not to be submitted in this form. Two gaps in the Program 1b
+procedure undermine the absence claim:
+
+1. The documentation states that `Microsoft-Windows-Kerberos/Operational` is
+   disabled by default. The Program 1b records show the event query and the
+   provider definitions but do not record that the log was enabled on
+   `ID-DC01`, `ID-RODC01`, and `ID-SRV01` before the windows opened.
+2. Events 307-309 are written by the Kerberos client of the machine that
+   signs in with the dMSA. The member server never completed a dMSA sign-in
+   in Programs 1b-1d (status 1326/1069, event 4625), and the documented
+   `DelegatedMSAEnabled` client policy was never configured in the lab. The
+   directory-side cmdlets that the program used as triggers are not the
+   documented event sources.
+
+Re-validation requires: the Operational log enabled and verified on every
+host, the client policy configured, a service running as the dMSA started
+through the service control manager, and the event windows opened around
+that sign-in. Until then the observation stands only as a lab limitation.
+
 ## Category
 
 Telemetry / auditing. No authorization boundary impact was identified.
