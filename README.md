@@ -6,10 +6,10 @@ scope covers workload identity federation, OAuth 2.0 token exchange, OpenID
 Connect, Cloud Kerberos Trust preconditions, MS-PAC parsing, and delegated
 managed service account lifecycle state.
 
-**Merged repository totals:** 37 source-linked invariants, 105 normalized
+**Merged repository totals:** 37 source-linked invariants, 112 normalized
 evidence records (25 from Program 1, 42 from Program 1b, 10 from Program 1c,
-8 from Program 1d, 10 from Program 1e, and 10 from Program 1f), and 208
-collected test cases (155 Python and 53 Pester).
+8 from Program 1d, 10 from Program 1e, 10 from Program 1f, and 7 from
+Program 1g), and 208 collected test cases (155 Python and 53 Pester).
 
 The project separates four evidence classes:
 
@@ -199,6 +199,21 @@ change blocked**. Program 1e should not be re-run until the baseline can
 create and replicate the documented KDS key. The
 [Program 1f closure report](reports/program1f-closure.md) contains the full
 checklist and sealed ten-record evidence digest.
+
+## Program 1g
+
+Program 1g isolated Program 1f's `0x80070032` result to the invocation
+context. Starting `KdsSvc` did not change the remote call, while the same
+backdated root-key operation succeeded under local SYSTEM on `ID-DC01`.
+The RWDC local inventory then exposed the key, but `ID-RODC01` continued to
+report zero keys after two successful Configuration replication calls.
+
+The required same-key visibility gate on both DCs was not met, so retrieval
+and the two Program 1e re-runs were not started. The classification is
+**Part 1 partial repair; Part 2 blocked**. No `dmsa-baseline-kds` checkpoint
+was created; the lab was restored to `dmsa-baseline`. The
+[Program 1g closure report](reports/program1g-closure.md) contains the
+diagnosis, replication gate, and sealed seven-record evidence digest.
 
 ## Repository map
 

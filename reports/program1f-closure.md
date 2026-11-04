@@ -67,3 +67,7 @@ rejected before it changed the directory, retrieval could not be re-tested
 under the corrected condition and causality could not be reproduced.
 Program 1e should not be re-run until the lab can create and replicate the
 documented KDS root key from the same baseline.
+
+Program 1g later showed that `0x80070032` was invocation-context dependent:
+the remote domain-user call failed while the same backdated call succeeded
+under local SYSTEM on `ID-DC01`; RODC visibility still did not follow.
