@@ -6,10 +6,10 @@ scope covers workload identity federation, OAuth 2.0 token exchange, OpenID
 Connect, Cloud Kerberos Trust preconditions, MS-PAC parsing, and delegated
 managed service account lifecycle state.
 
-**Merged repository totals:** 37 source-linked invariants, 95 normalized
+**Merged repository totals:** 37 source-linked invariants, 105 normalized
 evidence records (25 from Program 1, 42 from Program 1b, 10 from Program 1c,
-8 from Program 1d, and 10 from Program 1e), and 208 collected test cases
-(155 Python and 53 Pester).
+8 from Program 1d, 10 from Program 1e, and 10 from Program 1f), and 208
+collected test cases (155 Python and 53 Pester).
 
 The project separates four evidence classes:
 
@@ -182,6 +182,23 @@ The classification is **blocked**, discrepancy-02 remains on hold, and no
 vendor submission is supported by this result. The
 [Program 1e closure report](reports/program1e-closure.md) contains the full
 per-host matrix and the sealed ten-record evidence digest.
+
+## Program 1f
+
+Program 1f diagnosed the denied managed-password path without changing more
+than one condition. The dMSA directory state was enabled, unexpired, directly
+allowed the member, and had the documented post-Start state. The member had a
+valid RWDC secure channel, a machine TGT, and sub-second clock skew. The first
+failed prerequisite was an empty KDS root-key inventory. Event 309 showed a
+failed key fetch through the RODC with status `0xC000009A`.
+
+The prescribed backdated KDS key creation was rejected by `ID-DC01` with
+HRESULT `0x80070032`, so the condition could not be corrected and causality
+could not be reproduced. The classification is **cause not found; corrective
+change blocked**. Program 1e should not be re-run until the baseline can
+create and replicate the documented KDS key. The
+[Program 1f closure report](reports/program1f-closure.md) contains the full
+checklist and sealed ten-record evidence digest.
 
 ## Repository map
 
