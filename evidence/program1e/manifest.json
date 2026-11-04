@@ -1,0 +1,18 @@
+{
+  "classification": "blocked",
+  "environment_fingerprint": {
+    "forest": "idlab.test",
+    "hosts": "ID-DC01, ID-RODC01, ID-SRV01",
+    "network": "private Bluex-Identity switch; no default route",
+    "windows": "Windows Server 2025 build 26100"
+  },
+  "format_version": 1,
+  "ledger": "evidence.jsonl",
+  "ledger_sha256": "610aaac1fd6f1d9d36e45ebf02534c79cdb08b7b0d7726c98f5c7dc77541a8df",
+  "program": "program1e",
+  "record_count": 10,
+  "reproduction_runs": [
+    "run-a",
+    "run-b"
+  ]
+}

@@ -6,10 +6,10 @@ scope covers workload identity federation, OAuth 2.0 token exchange, OpenID
 Connect, Cloud Kerberos Trust preconditions, MS-PAC parsing, and delegated
 managed service account lifecycle state.
 
-**Merged repository totals:** 37 source-linked invariants, 85 normalized
+**Merged repository totals:** 37 source-linked invariants, 95 normalized
 evidence records (25 from Program 1, 42 from Program 1b, 10 from Program 1c,
-and 8 from Program 1d), and 208 collected test cases (155 Python and 53
-Pester).
+8 from Program 1d, and 10 from Program 1e), and 208 collected test cases
+(155 Python and 53 Pester).
 
 The project separates four evidence classes:
 
@@ -103,15 +103,15 @@ are committed beside the PDF for independent review.
 ## Program 1b
 
 Program 1b repeated and extended the incomplete dMSA checks from the same
-isolated baseline. Two documented-vs-observed discrepancies met the required
-two-run standard: one reliability/documentation discrepancy in an RODC-local
-migration graph and one telemetry discrepancy for absent events 307 and 308.
+isolated baseline. The RODC-local migration graph met the two-run discrepancy
+standard. The event 307/308 observation was later placed on hold because its
+client prerequisites and successful sign-in trigger were not established.
 No authorization or confidentiality boundary change was observed.
 
 | ID | Category | Report |
 | --- | --- | --- |
 | `discrepancy-01` | Reliability/documentation | [RODC-directed migration graph](reports/vendor/discrepancy-01.md) |
-| `discrepancy-02` | Telemetry | [Missing dMSA events 307 and 308](reports/vendor/discrepancy-02.md) |
+| `discrepancy-02` | Potential telemetry | [dMSA client event re-validation](reports/vendor/discrepancy-02.md) |
 
 The merged suite collects 155 Python tests and 53 Pester tests. The Program 1b
 verification recorded 152 Python passes with 3 skips and 53 Pester passes.
@@ -122,14 +122,12 @@ verification recorded 152 Python passes with 3 skips and 53 Pester passes.
   accept unauthenticated submissions (Learn page feedback, the docs
   repository) require a signed-in Microsoft account or prior-contributor
   status, so submission is a manual step
-- `discrepancy-02`: on hold, not to be submitted in its current form. The
-  Program 1b event windows did not confirm that the
-  `Microsoft-Windows-Kerberos/Operational` log was enabled on all three
-  hosts, and the member server never completed a dMSA sign-in because the
-  documented `DelegatedMSAEnabled` client policy was not configured. Events
-  307-309 are written by the Kerberos client of the machine that signs in
-  with the dMSA, so their absence is not evidence until that path works.
-  Re-validation is a separate program
+- `discrepancy-02`: on hold, not to be submitted. Program 1e enabled and
+  verified every Operational log and persisted `DelegatedMSAEnabled=1`
+  across a member restart, but both documented service attempts still ended
+  with SCM 1069 and Security 4625 status `0xc000009a`. Event 309 appeared on
+  the member in both failed windows; zero 307/308 counts remain
+  non-conclusive without a successful sign-in
 - `discrepancy-03`: ready for Feedback Hub together with `discrepancy-01`
   (same RODC migration path, consistency/documentation category)
 
@@ -167,6 +165,23 @@ consistency / documentation and the enforcement line is closed.
 The [Program 1d closure report](reports/program1d-closure.md) contains the
 three LDAP results, downstream observation limits, cleanup state, and the
 sealed eight-record evidence digest.
+
+## Program 1e
+
+Program 1e re-ran the dMSA client path with the missing prerequisites in
+place. Two independent checkpoint runs verified all three Kerberos
+Operational logs as enabled, set `DelegatedMSAEnabled` to DWORD `1`, restarted
+the member, and completed Start migration against the writable DC. Both SCM
+service starts nevertheless returned 1069; Security recorded event 4625,
+logon type 5, status `0xc000009a`, and no successful logon or 4627 group
+record.
+
+Each member window contained one event 309. Events 307 and 308 were absent,
+but the failed sign-in means that absence does not meet the discrepancy rule.
+The classification is **blocked**, discrepancy-02 remains on hold, and no
+vendor submission is supported by this result. The
+[Program 1e closure report](reports/program1e-closure.md) contains the full
+per-host matrix and the sealed ten-record evidence digest.
 
 ## Repository map
 

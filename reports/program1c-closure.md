@@ -55,6 +55,10 @@ before the observations were normalized and sealed.
    Authz allowed the property write there and denied it in the S1 RWDC view.
    Member-computer results were identical throughout.
 
+Program 1e resolved none of the previously blocked dMSA service-logon or
+group-membership cells: the documented client path still ended in Security
+event 4625, and the RODC-pinned retrieval cell remained blocked by pin exit 1.
+
 ## Digest matrix
 
 Each cell below is the SHA-256 digest of the normalized observable value. No
